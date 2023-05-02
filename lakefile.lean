@@ -9,8 +9,11 @@ require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"
 
 
-@[default_target]
 lean_lib AMM {
+  -- add any library configuration options here
+}
+
+lean_lib AMMSet {
   -- add any library configuration options here
 }
 
@@ -18,3 +21,15 @@ lean_lib Helpers {
   -- add any library configuration options here
 }
 
+lean_lib PReal {
+  -- add any library configuration options here
+}
+
+@[default_target]
+lean_lib Swap {
+  -- add any library configuration options here
+}
+
+lean_lib Tokens {
+  -- add any library configuration options here
+}
