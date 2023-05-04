@@ -7,8 +7,8 @@ import Mathlib.Algebra.Order.Positive.Ring
 
 def PReal := { r : ℝ // 0 < r} deriving One, Add, Mul
 
+notation "ℝ+" => PReal
 namespace PReal
-scoped notation "ℝ+" => PReal
 
 @[coe] def toReal : ℝ+ → ℝ := Subtype.val
 instance : Coe ℝ+ ℝ := ⟨toReal⟩

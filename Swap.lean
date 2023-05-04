@@ -9,11 +9,12 @@ import «PReal»
 import «Tokens»
 import «AMMSet»
 open Token
+open BigOperators
 
 abbrev State        := AccountSet × AMMSet
 def State.accounts (s: State) := s.fst
 abbrev State.amms     (s: State) := s.snd
-def State.amm (s: State) (amm: MintedTok) := (s.snd).map amm
+def State.amm (s: State) (amm: MintedTok) := (s.snd).map.f amm
 
 def SwapRate := PReal → PReal → PReal → PReal
 noncomputable def constprod: SwapRate := λ x r0 r1 => r1 / (r0 + x)
@@ -26,39 +27,42 @@ noncomputable def swap0
   (v0: PReal) (t0 t1: AtomicTok) (s: State)
   (_: v0.1 ≤ (s.accounts a) t0) /- UNUSED MINIMUM BALANCE PRECONDITION -/
   (exi: s.amms.map' t0 t1 ≠ none)
-  (nodrain: swap_amount sx v0 ((δ (s.amms.map' t0) t1 exi).r t0 (amm_of_pair_imp_t0_belongs' exi)) ((δ (s.amms.map' t0) t1 exi).r t1 (amm_of_pair_imp_t1_belongs' exi)) < (δ (s.amms.map' t0) t1 exi).r t1 (amm_of_pair_imp_t1_belongs' exi))
+  (nodrain: swap_amount sx v0 (get_r0 exi) (get_r1 exi) < get_r1 exi)
   : State :=
-  let ht   := map'_not_none_imp_diff s.amms t0 t1 exi
-  let ht0  := amm_of_pair_imp_t0_belongs' exi
-  let ht1  :=  amm_of_pair_imp_t1_belongs' exi
-  let r0   := (δ (s.amms.map' t0) t1 exi).r t0 ht0
-  let r1   := (δ (s.amms.map' t0) t1 exi).r t1 ht1
+  have ht   := map'_not_none_imp_diff s.amms t0 t1 exi
+  have ht0  := amm_of_pair_imp_t0_belongs' exi
+  have ht1  := amm_of_pair_imp_t1_belongs' exi
+  let amm  := get_amm exi
+  let r0   := get_r0 exi
+  let r1   := get_r1 exi
   let swam := swap_amount sx v0 r0 r1
   let w    := s.accounts a
   let w'   := w.update (Atomic t0) ((w (Atomic t0)) - v0.toNNReal)
   let w''  := w'.update (Atomic t1) ((w' (Atomic t1)) + swam)
-  let amm  := δ (s.amms.map' t0) t1 exi
   let amm' := amm.sub t1 swam ht1 nodrain
-  let ht0' := AMM.sub.still_belongs ht1 nodrain t0 ht0
   let amm'':= amm'.add t0 v0 (AMM.sub.still_belongs ht1 nodrain t0 ht0)
 
   (s.accounts.update a w'',
-  ⟨Function.update s.amms.map ⟨⟦(t0,t1)⟧,ht⟩ (some amm''),
-   by intro m a; unfold Function.update; split;
-      /- m is equal to the mintedtoken we just updated -/
-      next meq => 
-        intro h;
-        have h': amm'' = a := by simp at h; exact h
-        rw [← h']; 
-        rw [← AMM.add.t0_same v0 ht0']
-        rw [← AMM.sub.t0_same ht1 nodrain]
-        rw [← AMM.add.t1_same v0 ht0']
-        rw [← AMM.sub.t1_same ht1 nodrain]
-        rw [AMMSet.δ_map'_property (State.amms s) t0 t1 exi]
-        simp [meq]
-      /- m is different: Function.update uses the old ammset
-         So we use its proof -/
-      next mneq =>
-        intro h
-        exact (State.amms s).h m a h
-  ⟩)
+   s.amms.update ⟨⟦(t0,t1)⟧,ht⟩ amm'' (by
+   have hamm'': amm'' = amm'.add t0 v0 (AMM.sub.still_belongs ht1 nodrain t0 ht0) := by simp
+   rw [hamm'']
+   rw [← @AMM.add.t0_same amm' t0 v0 (AMM.sub.still_belongs ht1 nodrain t0 ht0)]
+   rw [← @AMM.add.t1_same amm' t0 v0 (AMM.sub.still_belongs ht1 nodrain t0 ht0)]
+   have hamm': amm' = amm.sub t1 swam ht1 nodrain := by simp
+   rw [hamm']
+   rw [← @AMM.sub.t0_same amm t1 swam ht1 nodrain]
+   rw [← @AMM.sub.t1_same amm t1 swam ht1 nodrain]
+   have hamm: amm = get_amm exi := by simp
+   rw [hamm]; clear hamm hamm' hamm'';
+   exact get_amm_lemma exi
+  ))
+
+noncomputable def supply (s: State) (t: Token): NNReal :=
+  match t with
+  | Atomic t' => 
+    ∑ a in s.accounts.support, (s.accounts a) t +
+    s.amms.map.sum (λ amm => if h:t'=amm.t0 ∨ t'=amm.t1
+                           then ((amm.r t' h): NNReal)
+                           else 0)
+  | Minted _ => 
+    ∑ a in s.accounts.support, (s.accounts a) t

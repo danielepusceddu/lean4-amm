@@ -2,6 +2,9 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Tactic.LibrarySearch
 
+lemma Or.exclude_left {p q: Prop} (or: p ∨ q) (neg: ¬p)
+  : q := by aesop
+
 theorem or_eq_contra {α: Type} [DecidableEq α] (a b c: α) (h1: a=b ∨ a=c) (h2: (Decidable.decide (a=b)) = false) (h3: Decidable.decide (a=c) = false): False := by
   rcases h1 with hb|hc
   . have contra: ¬ a=b := of_decide_eq_false h2

@@ -1,6 +1,5 @@
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Algebra.BigOperators.Basic
@@ -12,8 +11,8 @@ open BigOperators
 structure AMM where
   t0: AtomicTok
   t1: AtomicTok
-  r0: PReal
-  r1: PReal
+  r0: ℝ+
+  r1: ℝ+
   ht: t0 ≠ t1
 
 def AMM.r (a: AMM) (t: AtomicTok) (h: t=a.t0 ∨ t=a.t1) :=
@@ -38,49 +37,49 @@ lemma AMM.r_eq_r1 (a: AMM) (t: AtomicTok) (h: t=a.t1)
     split; next triv' => simp
     next cont => simp at cont; contradiction
 
-def AMM.add (a: AMM) (t: AtomicTok) (add: PReal) (h: t=a.t0 ∨ t=a.t1) :=
+def AMM.add (a: AMM) (t: AtomicTok) (add: ℝ+) (h: t=a.t0 ∨ t=a.t1) :=
   if m1:Decidable.decide (t=a.t0)
   then AMM.mk a.t0 a.t1 (a.r0 + add) a.r1 a.ht
   else if m2:Decidable.decide (t=a.t1)
   then AMM.mk a.t0 a.t1 a.r0 (a.r1+add) a.ht
   else nomatch (or_eq_contra t a.t0 a.t1 h (eq_false_of_ne_true m1) (eq_false_of_ne_true m2))
 
-def AMM.sub (a: AMM) (t: AtomicTok) (sub: PReal) (h: t=a.t0 ∨ t=a.t1)
+def AMM.sub (a: AMM) (t: AtomicTok) (sub: ℝ+) (h: t=a.t0 ∨ t=a.t1)
             (enough: sub < a.r t h) :=
   if m1:Decidable.decide (t=a.t0)
-  then AMM.mk a.t0 a.t1 (PReal.sub a.r0 sub 
+  then AMM.mk a.t0 a.t1 (a.r0.sub sub 
        (by simp at m1; rw [AMM.r_eq_r0 a t m1] at enough; exact enough)
        ) a.r1 a.ht
   else if m2:Decidable.decide (t=a.t1)
-  then AMM.mk a.t0 a.t1 a.r0 (PReal.sub a.r1 sub
+  then AMM.mk a.t0 a.t1 a.r0 (a.r1.sub sub
        (by simp at m2; rw [AMM.r_eq_r1 a t m2] at enough; exact enough)
        ) a.ht
   else nomatch (or_eq_contra t a.t0 a.t1 h (eq_false_of_ne_true m1) (eq_false_of_ne_true m2))
 
 lemma AMM.add.t0_same 
-  {a: AMM} {t: AtomicTok} (add: PReal) (h: t=a.t0 ∨ t=a.t1)
+  {a: AMM} {t: AtomicTok} (add: ℝ+) (h: t=a.t0 ∨ t=a.t1)
   : a.t0 = (a.add t add h).t0 := by
   simp [AMM.add]; aesop
 
 lemma AMM.add.t1_same 
-  {a: AMM} {t: AtomicTok} (add: PReal) (h: t=a.t0 ∨ t=a.t1)
+  {a: AMM} {t: AtomicTok} (add: ℝ+) (h: t=a.t0 ∨ t=a.t1)
   : a.t1 = (a.add t add h).t1 := by
   simp [AMM.add]; aesop
 
 lemma AMM.sub.t0_same 
-  {a: AMM} {t: AtomicTok} {sub: PReal} (h: t=a.t0 ∨ t=a.t1)
+  {a: AMM} {t: AtomicTok} {sub: ℝ+} (h: t=a.t0 ∨ t=a.t1)
   (enough: sub < a.r t h)
   : a.t0 = (a.sub t sub h enough).t0 := by
   simp [AMM.sub]; aesop
 
 lemma AMM.sub.t1_same 
-  {a: AMM} {t: AtomicTok} {sub: PReal} (h: t=a.t0 ∨ t=a.t1)
+  {a: AMM} {t: AtomicTok} {sub: ℝ+} (h: t=a.t0 ∨ t=a.t1)
   (enough: sub < a.r t h)
   : a.t1 = (a.sub t sub h enough).t1 := by
   simp [AMM.sub]; aesop
 
 lemma AMM.sub.still_belongs
-  {a: AMM} {t: AtomicTok} {sub: PReal}
+  {a: AMM} {t: AtomicTok} {sub: ℝ+}
   (h: t=a.t0 ∨ t=a.t1) (enough: sub < a.r t h)
   (t': AtomicTok)  (h': t'=a.t0 ∨ t'=a.t1)
   : t' = (a.sub t sub h enough).t0 ∨ t' = (a.sub t sub h enough).t1 := by
