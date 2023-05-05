@@ -50,6 +50,11 @@ def update {α β: Type} [DecidableEq α]
         . intro neq; simp [neq, ind];
   ⟩
 
+lemma supp_of_update_mem {α β: Type} [DecidableEq α]
+  (f: α ⇀ β) (k: α) (kin: k ∈ f.supp) (v: β):
+  (f.update k v).supp = f.supp := by
+  simp [update]; exact kin
+
 lemma update_of_self {α β: Type} [DecidableEq α]
   (f: α ⇀ β) (k: α) (v: β)
   : (f.update k v).f k = some v := by simp [update]

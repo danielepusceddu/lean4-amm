@@ -1,6 +1,40 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic.LibrarySearch
+
+def Finset.other {α: Type} [DecidableEq α]
+  (s: Finset α) (c: s.card = 2)
+  (x: α) (hin: x ∈ s): α :=
+  Finset.choose (λ y => y ∈ s.erase x) s (by
+  have sing: (s.erase x).card = 1 := by 
+    rw [Finset.card_erase_of_mem hin]; simp [c]
+  have ⟨y, hy⟩: ∃y, (s.erase x) = {y} := by
+    rw [← Finset.card_eq_one]; exact sing
+  have sAsInsert: insert x (s.erase x) = s :=
+    Finset.insert_erase hin
+  have yInErase: y ∈ s.erase x := by aesop
+  have ⟨yNeqX, yInS⟩ := Finset.mem_erase.mp yInErase; 
+  exists y; simp;
+  simp
+
+  apply And.intro
+  . apply And.intro
+    . exact yInS
+    . apply And.intro
+      . exact yNeqX
+      . exact yInS
+  . intro _ _ _ _
+    aesop
+  )
+
+def Finset.other_in {α: Type} [DecidableEq α]
+  (s: Finset α) (c: s.card = 2)
+  (x: α) (hin: x ∈ s):
+  Finset.other s c x hin ∈ s := by
+  unfold other; 
+  have help := @Finset.choose_mem α
+  aesop
 
 lemma Or.exclude_left {p q: Prop} (or: p ∨ q) (neg: ¬p)
   : q := by aesop
