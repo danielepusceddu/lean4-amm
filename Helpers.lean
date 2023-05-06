@@ -3,10 +3,20 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic.LibrarySearch
 
+def Finset.in_erase {α: Type} [DecidableEq α]
+  (s: Finset α) (x: α) (y: α)
+  : Prop := y ∈ s.erase x
+
+def Finset.in_erase.decidablePred {α: Type} [DecidableEq α]
+  (s: Finset α) (x: α)
+  : DecidablePred (s.in_erase x) :=
+  λ (y: α) => by unfold Finset.in_erase; infer_instance
+
 def Finset.other {α: Type} [DecidableEq α]
   (s: Finset α) (c: s.card = 2)
   (x: α) (hin: x ∈ s): α :=
-  Finset.choose (λ y => y ∈ s.erase x) s (by
+  @Finset.choose α (s.in_erase x) (in_erase.decidablePred s x) s (by
+  unfold in_erase
   have sing: (s.erase x).card = 1 := by 
     rw [Finset.card_erase_of_mem hin]; simp [c]
   have ⟨y, hy⟩: ∃y, (s.erase x) = {y} := by
@@ -32,9 +42,62 @@ def Finset.other_in {α: Type} [DecidableEq α]
   (s: Finset α) (c: s.card = 2)
   (x: α) (hin: x ∈ s):
   Finset.other s c x hin ∈ s := by
-  unfold other; 
+  unfold other in_erase
   have help := @Finset.choose_mem α
   aesop
+
+theorem Finset.other_diff {α: Type} [DecidableEq α]
+  (s: Finset α) (c: s.card = 2)
+  (x: α) (hin: x ∈ s):
+  Finset.other s c x hin ≠ x := by
+  have otherInErase: (Finset.other s c x hin) ∈ (s.erase x)
+  := @Finset.choose_property _ _ (in_erase.decidablePred s x) _ _
+  exact Finset.ne_of_mem_erase otherInErase
+  
+lemma Finset.pigeon {α: Type} [DecidableEq α]
+  (s: Finset α) (hcard: s.card = 2)
+  (a b c: α) 
+  (ha: a ∈ s) (hb: b ∈ s) (hc: c ∈ s)
+  (hab: a ≠ b) (hbc: b ≠ c): a = c
+  := by
+  apply Decidable.by_contradiction; intro contra
+  
+  have aInErase: a ∈ s.erase c :=
+    Finset.mem_erase_of_ne_of_mem contra ha
+
+  have bInErase: b ∈ s.erase c :=
+    Finset.mem_erase_of_ne_of_mem hbc hb
+
+  have aInEraseErase: a ∈ (s.erase c).erase b :=
+    Finset.mem_erase_of_ne_of_mem hab aInErase
+
+  have cardOfErase: (erase s c).card = 1 :=
+    by simp [hc, hcard]
+
+  have cardOfEraseErase: ((erase s c).erase b).card = 0 :=
+    by rw [Finset.card_erase_of_mem bInErase]
+       rw [cardOfErase];
+
+  have eraseEraseIsSingleton: ((erase s c).erase b) = ∅ := 
+    (Finset.card_eq_zero).mp cardOfEraseErase
+
+  rw [eraseEraseIsSingleton] at aInEraseErase
+  contradiction
+
+/- we have
+   x, other x, other other x
+   we know all are in s
+   we know x ≠ other x
+   therefore we can use Finset.pigeon
+-/
+theorem Finset.other_inv {α: Type} [DecidableEq α]
+  (s: Finset α) (c: s.card = 2)
+  (x: α) (hin: x ∈ s):
+  Finset.other s c (Finset.other s c x hin) (Finset.other_in _ _ _ _)
+  =
+  x := 
+  (Finset.pigeon s c x (Finset.other s c x hin) (Finset.other s c (Finset.other s c x hin) (Finset.other_in _ _ _ _)) hin (Finset.other_in _ _ _ _) (Finset.other_in _ _ _ _) ((Finset.other_diff _ _ _ _).symm) ((Finset.other_diff _ _ _ _).symm)).symm
+  
 
 lemma Or.exclude_left {p q: Prop} (or: p ∨ q) (neg: ¬p)
   : q := by aesop
