@@ -30,6 +30,14 @@ lean_lib Swap {
   -- add any library configuration options here
 }
 
+lean_lib State {
+  -- add any library configuration options here
+}
+
+lean_lib Supply {
+  -- add any library configuration options here
+}
+
 lean_lib Tokens {
   -- add any library configuration options here
 }

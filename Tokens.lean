@@ -1,4 +1,5 @@
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
@@ -9,8 +10,8 @@ abbrev Account := ℕ
 abbrev AtomicTok := ℕ
 
 structure MintedTok where
-  upair: Sym2 AtomicTok
-  hdiff: ¬Sym2.IsDiag upair
+  upair: Finset AtomicTok
+  hcard: upair.card = 2
 
 instance: DecidableEq MintedTok :=
   fun x y => 
@@ -31,7 +32,4 @@ instance : Coe MintedTok Token where
 
 abbrev Wallet       := Token →₀ NNReal
 abbrev AccountSet   := Account →₀ Wallet
-abbrev PriceOracle  := Token → PReal 
-
-def netWorth (o: PriceOracle) (a: Wallet): NNReal :=
-  ∑ t in a.support, (a t) * (o t)
+abbrev AtomicOracle  := AtomicTok → PReal 
