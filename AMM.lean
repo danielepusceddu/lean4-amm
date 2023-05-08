@@ -18,6 +18,19 @@ def AtomicTokOf.other {a: AMM} (t: AtomicTokOf a):
    Finset.other_in a.f.supp a.h t.t t.h
   ⟩
 
+theorem AtomicTokOf.other_inv  {a: AMM} (t: AtomicTokOf a): 
+  t.other.other = t :=
+  by rcases t with ⟨atom,h⟩
+     simp [other]
+     exact Finset.other_inv a.f.supp a.h atom h
+
+lemma AtomicTokOf.other.diff 
+  {a: AMM} (t: AtomicTokOf a)
+  : t.t ≠ t.other.t := by 
+    apply Ne.symm
+    simp [other]
+    exact Finset.other_diff a.f.supp a.h t.t t.h
+
 def AMM.r0 (a: AMM) (t: AtomicTokOf a): ℝ+ :=
   a.f.fh t.t t.h
 
@@ -26,6 +39,11 @@ def AMM.r1 (a: AMM) (t: AtomicTokOf a): ℝ+ :=
 
 lemma AMM.r0_other (a: AMM) (t: AtomicTokOf a):
   a.r0 (t.other) = a.r1 t := by simp [r0,r1]
+
+lemma AMM.r1_other (a: AMM) (t: AtomicTokOf a):
+  a.r1 (t.other) = a.r0 t := by 
+  rw [← AMM.r0_other]
+  rw [AtomicTokOf.other_inv]
 
 def AMM.add 
   (a: AMM) (t: AtomicTokOf a) (val: ℝ+) 
@@ -45,6 +63,102 @@ def AtomicTokOf.ofAdd
   ⟨t.t,
    by rw [a.add_support tadd val]; exact t.h
   ⟩
+
+lemma AtomicTokOf.otherOfAdd
+  {a: AMM} (t: AtomicTokOf a) (tadd: AtomicTokOf a) (val: ℝ+)
+  : (t.ofAdd tadd val).other = t.other.ofAdd tadd val := by
+  simp [other, ofAdd]; 
+  conv in (AMM.add _ _ _).f.supp => rw [AMM.add_support]
+
+/-
+T
+1: a.r0 t = a.r1 t.other
+2: a.r1 t = a.r0 t.other
+
+BASE
+3: (a.add t v).r0 t = a.r0 t + v
+4: (a.add t v).r1 t = a.r1 t
+
+USING T AND BASE
+(a.add t v).r0 t.other = (a.add t v).r1 t   by 2
+(a.add t v).r1 t.other = (a.add t v).r0 t   by 1
+(a.add t.other v).r0 t = (a.add t.other v).r1 t.other
+(a.add t.other v).r1 t = (a.add t.other v).r0 t.other
+-/
+
+def AMM.r0_add_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+)
+  : (a.add t val).r0 (t.ofAdd t val)
+    =
+    a.r0 t + val
+  := by simp [AMM.add, AtomicTokOf.ofAdd, r0, PFun.update, PFun.fh]
+        aesop
+
+-- This proof should become better by
+-- adding simp rules about .t equality
+def AMM.r1_add_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+)
+  : (a.add t val).r1 (t.ofAdd t val)
+    =
+    a.r1 t
+  := by 
+  unfold r1
+  unfold add
+  simp
+  rw [PFun.update_fh_of_diff]
+  . conv in (AtomicTokOf.other _).t => 
+      rw [AtomicTokOf.otherOfAdd]
+      simp [AtomicTokOf.ofAdd]
+  . rw [AtomicTokOf.otherOfAdd]
+    simp [AtomicTokOf.ofAdd]
+    exact AtomicTokOf.other.diff t
+  . simp [AtomicTokOf.otherOfAdd]
+    simp [AtomicTokOf.ofAdd]
+    exact (AtomicTokOf.other t).h
+
+lemma AMM.r0_other_add_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+)
+  : (a.add t val).r0 (t.other.ofAdd t val)
+    =
+    a.r1 t := by
+  rw [← AtomicTokOf.otherOfAdd]
+  rw [AMM.r0_other]
+  rw [AMM.r1_add_self]
+
+lemma AMM.r1_other_add_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+)
+  : (a.add t val).r1 (t.other.ofAdd t val)
+    =
+    a.r0 t + val := by
+  rw [← AtomicTokOf.otherOfAdd]
+  rw [AMM.r1_other]
+  rw [AMM.r0_add_self]
+
+lemma AMM.r0_self_add_other
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+)
+  : (a.add t.other val).r0 (t.ofAdd t.other val)
+    =
+    a.r0 t := by
+  rw [← AMM.r1_other]
+  rw [AtomicTokOf.otherOfAdd]
+  rw [AMM.r1_add_self]
+  rw [AMM.r1_other]
+
+lemma AMM.r1_self_add_other
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+)
+  : (a.add t.other val).r1 (t.ofAdd t.other val)
+    =
+    a.r1 t + val := by
+    rw [← AMM.r0_other]
+    rw [AtomicTokOf.otherOfAdd]
+    rw [AMM.r0_add_self]
+    rw [AMM.r0_other]
 
 def AMM.sub
   (a: AMM) (t: AtomicTokOf a) (sub: ℝ+)
@@ -67,6 +181,85 @@ def AtomicTokOf.ofSub
   ⟨t.t,
    by rw [a.sub_support tsub val]; exact t.h
   ⟩
+
+lemma AtomicTokOf.otherOfSub
+  {a: AMM} (t: AtomicTokOf a) (tsub: AtomicTokOf a) (val: ℝ+)
+  (enough: val < a.r0 tsub)
+  : (@AtomicTokOf.ofSub a t tsub val enough).other = t.other.ofSub := by
+  simp [other, ofAdd]; 
+  conv in (AMM.sub _ _ _ _).f.supp => rw [AMM.sub_support]
+
+lemma AMM.r0_sub_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (sub: ℝ+) (enough: sub < a.r0 t)
+  : (a.sub t sub enough).r0 t.ofSub
+    =
+    (a.r0 t).sub sub enough
+  := by simp [AMM.sub, AtomicTokOf.ofSub, r0, PFun.update, PFun.fh]
+        aesop
+
+lemma AMM.r1_sub_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (sub: ℝ+) (enough: sub < a.r0 t)
+  : (a.sub t sub enough).r1 t.ofSub
+    =
+    a.r1 t
+  := by 
+  unfold r1
+  unfold sub
+  simp
+  rw [PFun.update_fh_of_diff]
+  . conv in (AtomicTokOf.other _).t => 
+      rw [AtomicTokOf.otherOfSub]
+      simp [AtomicTokOf.ofAdd]
+  . rw [AtomicTokOf.otherOfSub]
+    simp [AtomicTokOf.ofSub]
+    exact AtomicTokOf.other.diff t
+  . simp [AtomicTokOf.otherOfSub]
+    simp [AtomicTokOf.ofSub]
+    exact (AtomicTokOf.other t).h
+
+lemma AMM.r0_other_sub_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+) (enough: val < a.r0 t)
+  : (a.sub t val enough).r0 t.other.ofSub
+    =
+    a.r1 t := by
+  rw [← AtomicTokOf.otherOfSub]
+  rw [AMM.r0_other]
+  rw [AMM.r1_sub_self]
+
+lemma AMM.r1_other_sub_self 
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+) (enough: val < a.r0 t)
+  : (a.sub t val enough).r1 t.other.ofSub
+    =
+    (a.r0 t).sub val enough := by
+  rw [← AtomicTokOf.otherOfSub]
+  rw [AMM.r1_other]
+  rw [AMM.r0_sub_self]
+
+lemma AMM.r0_self_sub_other
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+) (enough: val < a.r0 t.other)
+  : (a.sub t.other val enough).r0 t.ofSub
+    =
+    a.r0 t := by
+  rw [← AMM.r1_other]
+  rw [AtomicTokOf.otherOfSub]
+  rw [AMM.r1_sub_self]
+  rw [AMM.r1_other]
+
+lemma AMM.r1_self_sub_other
+  {a: AMM} (t: AtomicTokOf a)
+  (val: ℝ+) (enough: val < a.r0 t.other)
+  : (a.sub t.other val enough).r1 t.ofSub
+    =
+    (a.r1 t).sub val enough := by
+    rw [← AMM.r0_other]
+    rw [AtomicTokOf.otherOfSub]
+    rw [AMM.r0_sub_self]
+    simp_rw [AMM.r0_other]
 
 def AMM.SwapRate {a: AMM} := (AtomicTokOf a) → PReal → PReal
 
