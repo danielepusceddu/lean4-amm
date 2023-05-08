@@ -69,6 +69,12 @@ lemma in_updated {α β: Type} [DecidableEq α]
   : k' ∈ (f.update k v).supp := by
   simp [update]; right; exact hin
 
+lemma in_updated_diff {α β: Type} [DecidableEq α]
+  (f: α ⇀ β) (k: α) (v: β) (k': α) (hneq: k≠k')
+  (hinup: k' ∈ (f.update k v).supp)
+  :  k' ∈ f.supp := by
+  simp [update] at hinup; aesop
+
 lemma update_fh_of_diff {α β: Type} [DecidableEq α]
   (f: α ⇀ β) (k: α) (v: β) (k': α) (hneq: k≠k') (hin: k'∈f.supp)
   : (f.update k v).fh k' (in_updated f k v k' hin) = f.fh k' hin := by 
