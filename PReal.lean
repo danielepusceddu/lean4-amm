@@ -31,3 +31,18 @@ noncomputable instance: Div ℝ+ := ⟨fun (x y:ℝ+) =>
 
 def sub (x y: ℝ+) (h: y < x): ℝ+ :=
   ⟨(x:ℝ)-(y:ℝ), by aesop⟩
+
+theorem eq_iff (x y: ℝ+): 
+  (x.toReal = y.toReal) ↔ (x = y) := Subtype.ext_iff.symm
+
+lemma coe_add (x y: ℝ+):
+  (((x+y): ℝ+): ℝ) = (x:ℝ)+(y:ℝ) := by rfl
+
+lemma coe_mul (x y: ℝ+):
+  (((x*y): ℝ+): ℝ)= (x:ℝ)*(y:ℝ) := by rfl
+
+lemma coe_sub (x y: ℝ+) (gt: y < x):
+  (((x.sub y gt): ℝ+): ℝ) = (x: ℝ) - (y: ℝ) := by rfl
+
+lemma coe_div (x y: ℝ+):
+  (((x/y): ℝ+): ℝ)= (x:ℝ)/(y:ℝ) := by rfl
