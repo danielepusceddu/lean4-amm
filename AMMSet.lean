@@ -16,6 +16,11 @@ structure AMMSet where
   h: ∀(m: MintedTok), (h: (m ∈ map.supp)) → 
       (m.upair = (map.fh m h).f.supp)
 
+def AMMSet.empty: AMMSet := 
+  ⟨PFun.empty, by 
+  intro m h; rewrite [PFun.empty] at h
+  contradiction⟩
+
 def AMMSet.update (a: AMMSet) (v: AMM): AMMSet :=
   ⟨
   a.map.update v.toMint v, by 

@@ -34,6 +34,14 @@ lean_lib State {
   -- add any library configuration options here
 }
 
+lean_lib Trace {
+  -- add any library configuration options here
+}
+
+lean_lib Deposit {
+  -- add any library configuration options here
+}
+
 lean_lib Supply {
   -- add any library configuration options here
 }

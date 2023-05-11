@@ -16,3 +16,7 @@ noncomputable def State.supply (s: State) (t: Token): NNReal
   := match t with
   | Token.Atomic t' => (s.accs.supply t) + (s.amms.supply t')
   | Token.Minted _ => s.accs.supply t
+
+noncomputable def State.redeemrate
+  (s: State) (m: MintedOf s.amms) (t: AtomicOfM m): NNReal
+  := (m.amm.r0 t.ofAMM) / (s.supply m.m)

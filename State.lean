@@ -1,6 +1,14 @@
 import «Tokens»
 import «AMMSet»
 
-abbrev State := AccountSet × AMMSet
-def State.accs (s: State): AccountSet  := s.1
-def State.amms (s: State): AMMSet      := s.2
+-- Config does not change between states.
+-- This is where I would add φ.
+-- The price oracle should be moved to 
+-- State to implement price updates.
+structure Config where
+  sx: {a: AMM} → AtomicOf a → PReal → PReal
+  o: AtomicTok → PReal
+
+structure State where
+  accs: AccountSet
+  amms: AMMSet
