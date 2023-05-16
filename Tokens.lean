@@ -30,6 +30,22 @@ instance : Coe AtomicTok Token where
 instance : Coe MintedTok Token where
   coe := Minted
 
+-- DecidableEq for Tokens
+instance: DecidableEq Token := fun x y => by 
+  rcases x with t1|m1
+  . rcases y with t2|m2
+    . simp; infer_instance
+    . simp; infer_instance
+  . rcases y with t2|m2
+    . simp; infer_instance
+    . simp; infer_instance
+
+-- Wallets are functions defined everywhere,
+-- but they're non-zero only on a finite set of tokens.
 abbrev Wallet       := Token →₀ NNReal
+
+-- DecidableEq for Wallets
+noncomputable instance: DecidableEq Wallet := Finsupp.decidableEq
 abbrev AccountSet   := Account →₀ Wallet
-abbrev AtomicOracle  := AtomicTok → PReal 
+abbrev AtomicOracle  := AtomicTok → PReal
+
