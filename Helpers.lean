@@ -1,7 +1,19 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
+
+lemma Finsupp.update_undo {α β: Type} [e: DecidableEq α] [e2: Zero β]
+  (f: α →₀ β) (k: α) (v: β):
+  (f.update k v).update k (f k) = f := by ext; simp
+
+lemma Finsupp.update_is_zero {α β: Type} [e: DecidableEq α] [e2: Zero β]
+  (f: α →₀ β) (k: α) (v: β) (h2: f.update k v = 0):
+  f = single k (f k) := by
+  rw [← Finsupp.update_undo f k v]
+  rw [h2]
+  simp
 
 def Finset.in_erase {α: Type} [DecidableEq α]
   (s: Finset α) (x: α) (y: α)
