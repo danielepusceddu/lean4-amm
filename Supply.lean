@@ -3,8 +3,13 @@ import «AMMSet»
 import «State»
 open BigOperators
 
+/- It's important to use 'rev' here because
+   mathlib theorems use the form:
+   ∑ x in s, f x
+   So using (as a) t would be bad as a wouldn't be the last parameter.
+-/
 def AccountSet.supply (as: AccountSet) (t: Token): NNReal :=
-  ∑ a in as.support, (as a) t
+  ∑ a in as.support, as.rev t a
 
 noncomputable def AMMSet.supply (amms: AMMSet) (t: AtomicTok): NNReal :=
   amms.map.sum (λ amm => 

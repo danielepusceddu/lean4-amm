@@ -49,3 +49,29 @@ noncomputable instance: DecidableEq Wallet := Finsupp.decidableEq
 abbrev AccountSet   := Account →₀ Wallet
 abbrev AtomicOracle  := AtomicTok → PReal
 
+/- AccountSet as a map from tokens to accounts to balances
+   The different order of the parameters may
+   be useful: see Supply for an example. -/
+def AccountSet.rev (as: AccountSet) (t: Token) (a: Account)
+: NNReal := as a t
+
+/- Given an AccountSet that was just updated,
+   the maps for all other tokens remain the same. -/
+lemma AccountSet.rev_update_diff (as: AccountSet) (t: Token) (a: Account) 
+  (t': Token) (a': Account) (v: NNReal) (hdif: t ≠ t'):
+  AccountSet.rev (as.update a' ((as a').update t' v)) t a = as.rev t a := by 
+  unfold AccountSet.rev
+  apply @Decidable.byCases (a=a')
+  . intro heq
+    simp [heq, hdif]
+  . intro hneq
+    simp [hneq]
+
+/- If an account is not in the AccountSet's, then all of its
+   balances will be zero. -/
+lemma AccountSet.rev_account_not_mem (as: AccountSet) (t: Token) (a: Account):
+  a ∉ as.support → as.rev t a = 0 := by
+  intro h; unfold AccountSet.rev;
+  rw [Finsupp.not_mem_support_iff] at h
+  rw [h]; simp
+  
