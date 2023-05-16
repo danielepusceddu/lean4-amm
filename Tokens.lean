@@ -57,6 +57,15 @@ def AccountSet.rev (as: AccountSet) (t: Token) (a: Account)
 
 /- Given an AccountSet that was just updated,
    the maps for all other tokens remain the same. -/
+/- Informal Proof:
+((as.update a' ((as a').update t' v)).rev t a)
+((as.update a' ((as a').update t' v)) a t)    by rev
+case a'=a:
+  ((as a').update t' v) t by update of self (a' and a)
+  as a' t                 by update of diff (t' and t)
+case a' ≠ a:
+  as a t                  by update of diff (a' and a)
+-/
 lemma AccountSet.rev_update_diff (as: AccountSet) (t: Token) (a: Account) 
   (t': Token) (a': Account) (v: NNReal) (hdif: t ≠ t'):
   AccountSet.rev (as.update a' ((as a').update t' v)) t a = as.rev t a := by 
