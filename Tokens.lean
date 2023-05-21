@@ -3,7 +3,10 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
+import Mathlib.Data.Finsupp.Basic
 import «PReal»
+import «Helpers»
+import «Finsupp2»
 open BigOperators
 
 abbrev Account := ℕ
@@ -49,38 +52,9 @@ noncomputable instance: DecidableEq Wallet := Finsupp.decidableEq
 abbrev AccountSet   := Account →₀ Wallet
 abbrev AtomicOracle  := AtomicTok → PReal
 
-/- AccountSet as a map from tokens to accounts to balances
-   The different order of the parameters may
-   be useful: see Supply for an example. -/
-def AccountSet.rev (as: AccountSet) (t: Token) (a: Account)
-: NNReal := as a t
+noncomputable def AccountSet.addb (as: AccountSet) (a: Account) (t: Token) (v: NNReal)
+  : AccountSet := as.up a t ((as a t) + v)
 
-/- Given an AccountSet that was just updated,
-   the maps for all other tokens remain the same. -/
-/- Informal Proof:
-((as.update a' ((as a').update t' v)).rev t a)
-((as.update a' ((as a').update t' v)) a t)    by rev
-case a'=a:
-  ((as a').update t' v) t by update of self (a' and a)
-  as a' t                 by update of diff (t' and t)
-case a' ≠ a:
-  as a t                  by update of diff (a' and a)
--/
-lemma AccountSet.rev_update_diff (as: AccountSet) (t: Token) (a: Account) 
-  (t': Token) (a': Account) (v: NNReal) (hdif: t ≠ t'):
-  AccountSet.rev (as.update a' ((as a').update t' v)) t a = as.rev t a := by 
-  unfold AccountSet.rev
-  apply @Decidable.byCases (a=a')
-  . intro heq
-    simp [heq, hdif]
-  . intro hneq
-    simp [hneq]
+noncomputable def AccountSet.subb (as: AccountSet) (a: Account) (t: Token) (v: NNReal)
+  : AccountSet := as.up a t ((as a t) - v)
 
-/- If an account is not in the AccountSet's, then all of its
-   balances will be zero. -/
-lemma AccountSet.rev_account_not_mem (as: AccountSet) (t: Token) (a: Account):
-  a ∉ as.support → as.rev t a = 0 := by
-  intro h; unfold AccountSet.rev;
-  rw [Finsupp.not_mem_support_iff] at h
-  rw [h]; simp
-  
