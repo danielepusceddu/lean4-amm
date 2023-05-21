@@ -13,8 +13,15 @@ abbrev Account := ℕ
 abbrev AtomicTok := ℕ
 
 structure MintedTok where
-  upair: Finset AtomicTok
-  hcard: upair.card = 2
+  upair: Sym2 AtomicTok
+  hdiff: ¬Sym2.IsDiag upair
+
+def AtomicTok.toMint
+{t0 t1: AtomicTok} (hdif: t0 ≠ t1): MintedTok :=
+⟨
+  Quotient.mk (Sym2.Rel.setoid AtomicTok) (t0, t1),
+  by simp [hdif]
+⟩
 
 instance: DecidableEq MintedTok :=
   fun x y => 
@@ -22,6 +29,18 @@ instance: DecidableEq MintedTok :=
      rcases y with ⟨p2,h2⟩
      simp
      infer_instance
+
+theorem AtomicTok.toMint_diff 
+{t0 t1 t0' t1': AtomicTok}
+{hdif1: t0 ≠ t1}
+{hdif2: t0' ≠ t1'}
+(hdif3: AtomicTok.toMint hdif1 ≠ AtomicTok.toMint hdif2)
+: (t0 ≠ t0' ∨ t1 ≠ t1') ∧ (t0 ≠ t1' ∨ t1 ≠ t0') := by
+  simp [AtomicTok.toMint, hdif1, hdif2] at hdif3
+  rcases (not_or.mp hdif3) with ⟨left, right⟩
+  have left' := not_and_or.mp left
+  have right' := not_and_or.mp right
+  exact And.intro left' right'
 
 inductive Token where
   | Atomic: AtomicTok → Token
