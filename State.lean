@@ -6,7 +6,7 @@ import «AMMSet»
 -- The price oracle should be moved to 
 -- State to implement price updates.
 structure Config where
-  sx: {a: AMM} → AtomicOf a → PReal → PReal
+  sx: PReal → (PReal × PReal) → PReal
   o: AtomicTok → PReal
 
 structure State where
