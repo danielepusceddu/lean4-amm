@@ -23,6 +23,14 @@ theorem val_eq_coe (n : ℝ+) : n.val = n :=
 
 theorem coe_pos (x: ℝ+): (0:ℝ) < x := x.2
 
+theorem coe_eq (x: ℝ+): ((x: NNReal): ℝ) = (x: ℝ) := by rfl
+
+theorem coe_nnreal_pos (x: ℝ+): (x: NNReal) ≠ 0 := by
+  have h := x.property
+  apply NNReal.ne_iff.mp
+  rw [coe_eq]
+  exact ne_of_gt h
+
 noncomputable instance: Inv ℝ+ := Positive.Subtype.inv
 noncomputable instance: LinearOrderedCancelCommMonoid ℝ+ := Positive.linearOrderedCancelCommMonoid
 

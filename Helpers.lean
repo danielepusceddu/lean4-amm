@@ -1,8 +1,17 @@
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
+
+lemma NNReal.neq_zero_imp_gt {x: NNReal} (h: x ≠ 0)
+: 0 < x := Ne.lt_of_le' h x.property
+
+theorem NNReal.pos_imp_add_pos 
+(x y: NNReal) (h: x ≠ 0): x + y ≠ 0 := by
+field_simp
+intro contra; contradiction
 
 lemma Finsupp.update_undo {α β: Type} [e: DecidableEq α] [e2: Zero β]
   (f: α →₀ β) (k: α) (v: β):
