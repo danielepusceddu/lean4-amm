@@ -50,6 +50,3 @@ lean_lib Tokens {
   -- add any library configuration options here
 }
 
-lean_lib PFun {
-  -- add any library configuration options here
-}
