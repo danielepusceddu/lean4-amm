@@ -15,6 +15,18 @@ lemma Finsupp.update_is_zero {α β: Type} [e: DecidableEq α] [e2: Zero β]
   rw [h2]
   simp
 
+lemma Finsupp.update_is_zero' {α β: Type} [e: DecidableEq α] [e2: Zero β]
+  (f: α →₀ β) (k: α) (v: β) (h2: f.update k v = 0):
+  v = 0 := by sorry
+
+lemma Finsupp.update_same {α β: Type} [e2: Zero β]
+  (f: α →₀ β) (k: α):
+  f.update k (f k) = f := by ext; simp
+
+lemma Finsupp.update_eq_erase {α β: Type} [e2: Zero β]
+  (f: α →₀ β) (k: α):
+  f.update k 0 = f.erase k := by sorry
+
 def Finset.in_erase {α: Type} [DecidableEq α]
   (s: Finset α) (x: α) (y: α)
   : Prop := y ∈ s.erase x

@@ -2,6 +2,15 @@ import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
 
+theorem Finsupp.update_comm {α β: Type} [DecidableEq α] [Zero β]
+(f: α →₀ β) (a a': α) (b b': β) (hdif: a ≠ a'):
+(f.update a b).update a' b' = (f.update a' b').update a b :=
+by
+  ext
+  simp
+  rw [Function.update_comm hdif b b' f]
+  
+
 theorem Finsupp.update_diff {α β: Type} [DecidableEq α] [Zero β]
 (f: α →₀ β) (a': α) (b: β) (a: α) (hdif: a ≠ a'):
   (f.update a' b) a = f a := by
@@ -11,6 +20,13 @@ theorem Finsupp.update_diff {α β: Type} [DecidableEq α] [Zero β]
 noncomputable def Finsupp.up {α β γ: Type} [Zero γ]
 (f: α →₀ β →₀ γ) (a: α) (b: β) (c: γ)
 : α →₀ β →₀ γ := f.update a ((f a).update b c)
+
+theorem Finsupp.up_eq {α β γ: Type} [AddZeroClass γ]
+(f: α →₀ β →₀ γ) (a: α) (b: β) (c: γ)
+: f.up a b c = 
+(Finsupp.erase a f) + (Finsupp.single a ((f a).update b c))
+ := by unfold up
+       rw [Finsupp.update_eq_erase_add_single]
 
 /- New map as an ite with new value and old map -/
 theorem Finsupp.up_apply  
@@ -24,12 +40,32 @@ theorem Finsupp.up_apply
   . intro heqa; simp [heqa, Function.update_apply]
   . intro neqa; simp [neqa]
 
-/- New map equal to old map when key is different -/
-theorem Finsupp.up_diff {α β γ: Type} [DecidableEq α] [Zero γ]
+/- New map equal to old map when key 1 is different -/
+@[simp] theorem Finsupp.up_diff {α β γ: Type} [DecidableEq α] [Zero γ]
 (f: α →₀ β →₀ γ) (a': α) (b: β) (c: γ) 
 (a: α) (hdif: a ≠ a')
 : (f.up a' b c) a = f a := by 
   unfold up; simp [Finsupp.update_diff _ _ _ _ hdif]
+
+/- New map equal to old map when key 2 is different -/
+@[simp] theorem Finsupp.up_diff2 
+{α β γ: Type} [DecidableEq α] [DecidableEq β] [Zero γ]
+(f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ) 
+(a: α) (b: β) (hdif: b ≠ b')
+: (f.up a' b' c) a b = f a b := by 
+  unfold up;
+  apply @Decidable.byCases (a=a') 
+  . intro aeq; simp [aeq]
+    simp [update_diff, hdif]
+  . intro aneq; simp [update_diff, aneq]
+
+/- New map when using the keys that were just updated -/
+@[simp] theorem Finsupp.up_self
+{α β γ: Type} [DecidableEq α] [DecidableEq β] [Zero γ]
+(f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ) 
+: (f.up a' b' c) a' b' = c := by
+  unfold up
+  simp
 
 /- Product swaps as an embedding 
    (which are just a structure containing a function
