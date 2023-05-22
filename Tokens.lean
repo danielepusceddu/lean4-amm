@@ -23,6 +23,36 @@ def AtomicTok.toMint
   by simp [hdif]
 ⟩
 
+noncomputable def MintedTok.choose (m: MintedTok)
+: AtomicTok
+:= (Quotient.out m.upair).fst
+
+theorem MintedTok.choose_in (m: MintedTok)
+: m.choose ∈ m.upair := by
+unfold choose; exact Sym2.out_fst_mem m.upair
+
+noncomputable def MintedTok.other (m: MintedTok)
+: AtomicTok
+:= Sym2.Mem.other (MintedTok.choose_in m)
+
+theorem MintedTok.other_diff (m: MintedTok)
+: m.choose ≠ m.other := by
+unfold other
+exact (Sym2.other_ne m.hdiff m.choose_in).symm
+
+theorem MintedTok.eq_iff 
+(m1: MintedTok) (m2: MintedTok)
+: m1 = m2 ↔ m1.upair = m2.upair := by
+apply Iff.intro
+. intro h; simp [h]
+. intro h; cases m1; cases m2; simp at h; simp [h]
+
+@[simp] theorem MintedTok.choose_eq (m: MintedTok)
+: AtomicTok.toMint (m.other_diff) = m := by
+simp [AtomicTok.toMint]
+apply (MintedTok.eq_iff _ _).mpr
+simp [choose, other]
+
 instance: DecidableEq MintedTok :=
   fun x y => 
   by rcases x with ⟨p1,h1⟩
@@ -77,3 +107,12 @@ noncomputable def AccountSet.addb (as: AccountSet) (a: Account) (t: Token) (v: N
 noncomputable def AccountSet.subb (as: AccountSet) (a: Account) (t: Token) (v: NNReal)
   : AccountSet := as.up a t ((as a t) - v)
 
+
+def Token.isMinted (t: Token) := match t with
+  | Token.Atomic _ => false
+  | Token.Minted _ => true
+
+def Token.getMinted (t: Token) (h: t.isMinted)
+: MintedTok := match t with
+| Token.Atomic _ => nomatch ((by simp [isMinted] at h): False)
+| Token.Minted m => m
