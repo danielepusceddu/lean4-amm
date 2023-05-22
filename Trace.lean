@@ -77,3 +77,26 @@ theorem AMMimpSupplyProp
       have re: reachable c sprev := by
         exists init; exists tail
       exact ih re h'
+
+noncomputable def State.supplympos 
+{c: Config} {s: State} (r: reachable c s)
+{m: MintedTok} (h: s.amms.f m.choose m.other ≠ 0): ℝ+
+:= ⟨s.supply m, by 
+  have h' := AMMimpSupplyProp r h
+  simp at h'
+  exact h'⟩
+
+noncomputable def State.mintedPrice 
+{s: State} {c: Config} (r: reachable c s)
+(m: MintedTok) (h: s.amms.f m.choose m.other ≠ 0)
+: ℝ+ :=
+((s.amms.fp h).fst * (c.o m.choose) + (s.amms.fp h).snd * (c.o m.other)) / (supplympos r h)
+
+noncomputable def State.price 
+  {s: State} {c: Config} (r: reachable c s) (t: Token)
+  (h: if hm: t.isMinted then 
+      s.amms.f (t.getMinted hm).choose (t.getMinted hm).other ≠ 0 else True)
+: PReal :=
+  match t with
+  | Token.Atomic t' => c.o t'
+  | Token.Minted m => mintedPrice r m (by simp [Token.isMinted] at h; exact h)
