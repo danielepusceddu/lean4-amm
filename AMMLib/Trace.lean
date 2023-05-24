@@ -9,11 +9,11 @@ import AMMLib.Price
 inductive Tx (c: Config) (init: State): State → Type where
   | empty: Tx c init init
 
-  | dep0 (s': State) (rs: Tx c init s') (d: Deposit0.Valid s'): 
-      Tx c init (Deposit0.apply d)
+  | dep0 (s': State) (rs: Tx c init s') (d: Deposit0 s'): 
+      Tx c init d.apply
 
-  | swap (s': State) (rs: Tx c init s') (sw: Swap.Valid c s'):
-      Tx c init (Swap.apply sw)
+  | swap (s': State) (rs: Tx c init s') (sw: Swap c s'):
+      Tx c init sw.apply
 
 def reachableInit (s: State): Prop :=
   (s.amms = AMMSet.empty ∧ ∀ (a: Account) (m: MintedTok), s.accs a m = 0)
