@@ -21,6 +21,10 @@ lean_lib PReal {
   -- add any library configuration options here
 }
 
+lean_lib Price {
+  -- add any library configuration options here
+}
+
 @[default_target]
 lean_lib Swap {
   -- add any library configuration options here

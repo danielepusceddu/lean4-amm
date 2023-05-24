@@ -2,6 +2,7 @@ import «Deposit»
 import «State»
 import «Tokens»
 import «Swap»
+import «Price»
 
 /- Tx c init s is the type of all possible sequences of transactions
   that would result in s, starting from state init and using configuration c -/
@@ -78,19 +79,11 @@ theorem AMMimpSupplyProp
         exists init; exists tail
       exact ih re h'
 
-noncomputable def State.supplympos 
-{c: Config} {s: State} (r: reachable c s)
-{m: MintedTok} (h: s.amms.f m.choose m.other ≠ 0): ℝ+
-:= ⟨s.supply m, by 
-  have h' := AMMimpSupplyProp r h
-  simp at h'
-  exact h'⟩
-
 noncomputable def State.mintedPrice 
 {s: State} {c: Config} (r: reachable c s)
 (m: MintedTok) (h: s.amms.f m.choose m.other ≠ 0)
 : ℝ+ :=
-((s.amms.fp h).fst * (c.o m.choose) + (s.amms.fp h).snd * (c.o m.other)) / (supplympos r h)
+s.mintedTokPrice c m h (by have h' := AMMimpSupplyProp r h; simp at h'; exact h')
 
 noncomputable def State.price 
   {s: State} {c: Config} (r: reachable c s) (t: Token)
