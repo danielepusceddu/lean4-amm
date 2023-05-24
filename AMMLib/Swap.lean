@@ -1,7 +1,7 @@
-import «Tokens»
-import «AMMSet»
-import «State»
-import «Supply»
+import AMMLib.Tokens
+import AMMLib.AMMSet
+import AMMLib.State
+import AMMLib.Supply
 
 structure Swap.Valid (c: Config) (s: State) where
   t0: AtomicTok

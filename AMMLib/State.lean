@@ -1,5 +1,5 @@
-import «Tokens»
-import «AMMSet»
+import AMMLib.Tokens
+import AMMLib.AMMSet
 
 -- Config does not change between states.
 -- This is where I would add φ.

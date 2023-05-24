@@ -1,8 +1,8 @@
-import «Deposit»
-import «State»
-import «Tokens»
-import «Swap»
-import «Price»
+import AMMLib.Deposit
+import AMMLib.State
+import AMMLib.Tokens
+import AMMLib.Swap
+import AMMLib.Price
 
 /- Tx c init s is the type of all possible sequences of transactions
   that would result in s, starting from state init and using configuration c -/

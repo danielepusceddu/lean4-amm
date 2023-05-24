@@ -1,5 +1,5 @@
-import «Supply»
-import «Swap»
+import AMMLib.Supply
+import AMMLib.Swap
 
 noncomputable def State.mintedTokPrice_denum
 (s: State) (m: MintedTok)

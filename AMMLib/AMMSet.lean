@@ -1,10 +1,10 @@
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Sym.Sym2
-import «Helpers»
-import «PReal»
-import «Tokens»
-import «Finsupp2»
+import AMMLib.Helpers
+import AMMLib.PReal
+import AMMLib.Tokens
+import AMMLib.Finsupp2
 open BigOperators
 
 structure AMMSet where 

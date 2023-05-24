@@ -4,9 +4,9 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Finsupp.Basic
-import «PReal»
-import «Helpers»
-import «Finsupp2»
+import AMMLib.PReal
+import AMMLib.Helpers
+import AMMLib.Finsupp2
 open BigOperators
 
 abbrev Account := ℕ

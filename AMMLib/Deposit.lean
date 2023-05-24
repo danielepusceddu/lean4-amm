@@ -1,6 +1,6 @@
-import «AMMSet»
-import «State»
-import «Supply»
+import AMMLib.AMMSet
+import AMMLib.State
+import AMMLib.Supply
 
 namespace Deposit0
 
