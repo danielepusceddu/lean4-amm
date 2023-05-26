@@ -9,8 +9,14 @@ import AMMLib.Helpers
 import AMMLib.Finsupp2
 open BigOperators
 
-abbrev Account := ℕ
+structure Account where
+  n: ℕ
+
 abbrev AtomicTok := ℕ
+
+instance: DecidableEq Account := 
+  fun a1 a2 => by 
+  cases a1; cases a2; simp; infer_instance
 
 structure MintedTok where
   upair: Sym2 AtomicTok
@@ -77,6 +83,12 @@ inductive Token where
   | Minted: MintedTok → Token
 open Token
 
+def Token.Atomic_emb: AtomicTok ↪ Token :=
+  ⟨Atomic, by unfold Function.Injective; simp⟩
+
+def Token.Minted_emb: MintedTok ↪ Token :=
+  ⟨Minted, by unfold Function.Injective; simp⟩
+
 instance : Coe AtomicTok Token where
   coe := Atomic
 instance : Coe MintedTok Token where
@@ -98,14 +110,28 @@ abbrev Wallet       := Token →₀ NNReal
 
 -- DecidableEq for Wallets
 noncomputable instance: DecidableEq Wallet := Finsupp.decidableEq
-abbrev AccountSet   := Account →₀ Wallet
+abbrev AtomicWalls := Account →₀ AtomicTok →₀ NNReal
+abbrev MintedWalls := Account →₀ MintedTok →₀ NNReal
+abbrev TokenWalls  := Account →₀ Token →₀ NNReal
 abbrev AtomicOracle  := AtomicTok → PReal
 
-noncomputable def AccountSet.addb (as: AccountSet) (a: Account) (t: Token) (v: NNReal)
-  : AccountSet := as.up a t ((as a t) + v)
+noncomputable def TokenWalls.addb (as: TokenWalls) (a: Account) (t: Token) (v: NNReal)
+  : TokenWalls := as.up a t ((as a t) + v)
 
-noncomputable def AccountSet.subb (as: AccountSet) (a: Account) (t: Token) (v: NNReal)
-  : AccountSet := as.up a t ((as a t) - v)
+noncomputable def TokenWalls.subb (as: TokenWalls) (a: Account) (t: Token) (v: NNReal)
+  : TokenWalls := as.up a t ((as a t) - v)
+
+noncomputable def AtomicWalls.addb (as: AtomicWalls) (a: Account) (t: AtomicTok) (v: NNReal)
+  : AtomicWalls := as.up a t ((as a t) + v)
+
+noncomputable def AtomicWalls.subb (as: AtomicWalls) (a: Account) (t: AtomicTok) (v: NNReal)
+  : AtomicWalls := as.up a t ((as a t) - v)
+
+noncomputable def MintedWalls.addb (as: MintedWalls) (a: Account) (t: MintedTok) (v: NNReal)
+  : MintedWalls := as.up a t ((as a t) + v)
+
+noncomputable def MintedWalls.subb (as: MintedWalls) (a: Account) (t: MintedTok) (v: NNReal)
+  : MintedWalls := as.up a t ((as a t) - v)
 
 
 def Token.isMinted (t: Token) := match t with

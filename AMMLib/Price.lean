@@ -3,7 +3,7 @@ import AMMLib.Swap
 
 noncomputable def State.mintedTokPrice_denum
 (s: State) (m: MintedTok)
-(h2: 0 < s.supply m): ℝ+ := ⟨s.supply m, h2⟩
+(h2: 0 < s.mintsupply m): ℝ+ := ⟨s.mintsupply m, h2⟩
 
 noncomputable def State.mintedTokPrice_num_addend1
 (s: State) (c: Config)

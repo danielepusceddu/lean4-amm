@@ -50,7 +50,7 @@ swap: use IH.
 theorem AMMimpSupplyProp
 {c: Config} {s: State} (r: reachable c s) {t0 t1: AtomicTok}
 (h: s.amms.f t0 t1 ≠ 0)
-: 0 < s.supply (AtomicTok.toMint (AMMSet.exists_imp_dif h)) := by
+: 0 < s.mintsupply (AtomicTok.toMint (AMMSet.exists_imp_dif h)) := by
   have ⟨init, tx, ⟨init_amms, init_accs⟩⟩ := r
   induction tx with
   | empty => 
@@ -60,10 +60,9 @@ theorem AMMimpSupplyProp
   | dep0 sprev tail d ih =>
     apply @Decidable.byCases ((AtomicTok.toMint (AMMSet.exists_imp_dif h))=(AtomicTok.toMint d.hdif))
     . intro eq; rw [eq]
-      simp [Deposit0.apply, State.supply]
-      rw [AccountSet.supply_addb_same (((sprev.accs.subb d.a d.t0 d.r0).subb d.a d.t1 d.r1)) (AtomicTok.toMint d.hdif) d.a d.r0]
-      apply NNReal.neq_zero_imp_gt
-      exact NNReal.pos_imp_add_pos d.r0 _ (d.r0.coe_nnreal_pos)
+      simp [Deposit0.apply, State.mintsupply, eq]
+      left
+      exact d.r0.coe_pos
     
     . intro neq
       simp [neq]

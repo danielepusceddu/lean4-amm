@@ -14,7 +14,8 @@ structure Swap (c: Config) (s: State) where
 
 noncomputable def Swap.apply (sw: Swap c s): State :=
 ⟨
-  (s.accs.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))).subb sw.a sw.t0 sw.v0,
+  (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))).subb sw.a sw.t0 sw.v0,
+  s.mints,
   @AMMSet.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi))) (by sorry)
 ⟩
 
@@ -25,9 +26,9 @@ theorem Swap.amm_in_apply
 : s.amms.f t0 t1 ≠ 0 := by sorry
 
 lemma Swap.mintedSupply (sw: Swap c s) (m: MintedTok):
-  sw.apply.supply (Token.Minted m) = s.supply (Token.Minted m)
+  sw.apply.mintsupply m = s.mintsupply m
   := by
-  simp [State.supply, apply, AccountSet.subb, AccountSet.addb]
+  simp [State.mintsupply, apply, MintedWalls.subb, MintedWalls.addb]
 
 theorem Swap.amm_still_exists
 {c: Config} {s: State} (sw: Swap c s)
@@ -49,4 +50,16 @@ theorem Swap.minted_still_supp
 {m: MintedTok}
 (h1: 0 < s.supply m)
 : 0 < sw.apply.supply m
+:= by sorry
+
+theorem Swap.acc_t0_after_swap (sw: Swap c s)
+: sw.apply.atoms sw.a sw.t0 
+  = 
+  (s.atoms sw.a sw.t0) - sw.v0
+:= by sorry
+
+theorem Swap.acc_t1_after_swap (sw: Swap c s)
+: sw.apply.atoms sw.a sw.t1 
+  = 
+  (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))
 := by sorry
