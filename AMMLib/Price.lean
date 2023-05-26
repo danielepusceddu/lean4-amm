@@ -24,13 +24,13 @@ noncomputable def State.mintedTokPrice_num
 noncomputable def State.mintedTokPrice 
 (s: State) (c: Config)
 (m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
-(h2: 0 < s.supply m)
+(h2: 0 < s.mintsupply m)
 : ℝ+ :=
 (s.mintedTokPrice_num c m h1) / (s.mintedTokPrice_denum m h2)
 
 @[simp] lemma Swap.mintedTokPrice_denum_diff
 {c: Config} {s: State} (sw: Swap c s) 
-(m: MintedTok) (h2: 0 < s.supply m)
+(m: MintedTok) (h2: 0 < s.mintsupply m)
 : sw.apply.mintedTokPrice_denum m ((sw.minted_still_supp h2)) = s.mintedTokPrice_denum m h2
 := by 
 unfold State.mintedTokPrice_denum
@@ -71,7 +71,7 @@ simp [h1, hdif]
 @[simp] theorem Swap.mintedTokPrice_diff 
 (c: Config) (s: State) (sw: Swap c s) 
 (m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
-(h2: 0 < s.supply m)
+(h2: 0 < s.mintsupply m)
 (hdif: m ≠ AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))
 : 
 (sw.apply.mintedTokPrice c m (sw.amm_still_exists h1) (sw.minted_still_supp h2)) 

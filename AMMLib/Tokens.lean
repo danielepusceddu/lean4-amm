@@ -78,48 +78,11 @@ theorem AtomicTok.toMint_diff
   have right' := not_and_or.mp right
   exact And.intro left' right'
 
-inductive Token where
-  | Atomic: AtomicTok → Token
-  | Minted: MintedTok → Token
-open Token
 
-def Token.Atomic_emb: AtomicTok ↪ Token :=
-  ⟨Atomic, by unfold Function.Injective; simp⟩
 
-def Token.Minted_emb: MintedTok ↪ Token :=
-  ⟨Minted, by unfold Function.Injective; simp⟩
-
-instance : Coe AtomicTok Token where
-  coe := Atomic
-instance : Coe MintedTok Token where
-  coe := Minted
-
--- DecidableEq for Tokens
-instance: DecidableEq Token := fun x y => by 
-  rcases x with t1|m1
-  . rcases y with t2|m2
-    . simp; infer_instance
-    . simp; infer_instance
-  . rcases y with t2|m2
-    . simp; infer_instance
-    . simp; infer_instance
-
--- Wallets are functions defined everywhere,
--- but they're non-zero only on a finite set of tokens.
-abbrev Wallet       := Token →₀ NNReal
-
--- DecidableEq for Wallets
-noncomputable instance: DecidableEq Wallet := Finsupp.decidableEq
 abbrev AtomicWalls := Account →₀ AtomicTok →₀ NNReal
 abbrev MintedWalls := Account →₀ MintedTok →₀ NNReal
-abbrev TokenWalls  := Account →₀ Token →₀ NNReal
 abbrev AtomicOracle  := AtomicTok → PReal
-
-noncomputable def TokenWalls.addb (as: TokenWalls) (a: Account) (t: Token) (v: NNReal)
-  : TokenWalls := as.up a t ((as a t) + v)
-
-noncomputable def TokenWalls.subb (as: TokenWalls) (a: Account) (t: Token) (v: NNReal)
-  : TokenWalls := as.up a t ((as a t) - v)
 
 noncomputable def AtomicWalls.addb (as: AtomicWalls) (a: Account) (t: AtomicTok) (v: NNReal)
   : AtomicWalls := as.up a t ((as a t) + v)
@@ -132,13 +95,3 @@ noncomputable def MintedWalls.addb (as: MintedWalls) (a: Account) (t: MintedTok)
 
 noncomputable def MintedWalls.subb (as: MintedWalls) (a: Account) (t: MintedTok) (v: NNReal)
   : MintedWalls := as.up a t ((as a t) - v)
-
-
-def Token.isMinted (t: Token) := match t with
-  | Token.Atomic _ => false
-  | Token.Minted _ => true
-
-def Token.getMinted (t: Token) (h: t.isMinted)
-: MintedTok := match t with
-| Token.Atomic _ => nomatch ((by simp [isMinted] at h): False)
-| Token.Minted m => m

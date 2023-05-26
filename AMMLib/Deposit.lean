@@ -10,12 +10,8 @@ structure Deposit0 (s: State) where
   a: Account
   hdif: t0 ≠ t1
   hnin: s.amms.f t0 t1 = (0,0)
-  hen0: (s.accs a) t0 ≤ r0
-  hen1: (s.accs a) t1 ≤ r1 
-
-noncomputable def Deposit0.wallet 
-{s: State} (v: Deposit0 s): Wallet :=
-  ((s.accs v.a).update v.t0 (((s.accs v.a) v.t0) - v.r0)).update v.t1 (((s.accs v.a) v.t1) - v.r1)
+  hen0: (s.atoms a) t0 ≤ r0
+  hen1: (s.atoms a) t1 ≤ r1 
 
 noncomputable def Deposit0.apply 
 {s: State} (v: Deposit0 s): State :=
@@ -35,5 +31,4 @@ v.apply.mintsupply m = s.mintsupply m := by
 {s: State} (v: Deposit0 s)
 (t0 t1: AtomicTok) (hdif: (t0 ≠ v.t0 ∨ t1 ≠ v.t1) ∧ (t0 ≠ v.t1 ∨ t1 ≠ v.t0)):
 v.apply.amms.f t0 t1 = s.amms.f t0 t1 := by
-  simp [apply, State.supply]
-  simp [hdif]
+  simp [apply, hdif]

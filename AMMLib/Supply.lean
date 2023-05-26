@@ -31,15 +31,6 @@ noncomputable def MintedWalls.supply
   rw [Finsupp.up_swap as a t' v]
   rw [Finsupp.up_diff _ _ _ _ _ hdif]
 
-noncomputable def TokenWalls.supply (as: TokenWalls) (t: Token): NNReal :=
-  (as.curried_swap t).sum pick2
-
-@[simp] lemma TokenWalls.supply_up_diff (as: TokenWalls) (t: Token) (a: Account) (t': Token) (v: NNReal) (hdif: t ≠ t'):
-  supply (as.up a t' v) t = as.supply t := by 
-  unfold supply
-  rw [Finsupp.up_swap as a t' v]
-  rw [Finsupp.up_diff _ _ _ _ _ hdif]
-
 noncomputable def AMMSet.supply (amms: AMMSet) (t: AtomicTok): NNReal := (amms.f t).sum λ _ x => x.fst
 
 noncomputable def State.atomsupply 
@@ -49,11 +40,6 @@ noncomputable def State.atomsupply
 noncomputable def State.mintsupply
 (s: State) (t: MintedTok): NNReal :=
   s.mints.supply t
-
-noncomputable def State.supply (s: State) (t: Token): NNReal
-  := match t with
-  | Token.Atomic a => (s.atoms.supply a) + (s.amms.supply a)
-  | Token.Minted m => s.mints.supply m
 
 @[simp] theorem AtomicWalls.supply_addb_same 
 (as: AtomicWalls) (t: AtomicTok) (a: Account) (x: NNReal)

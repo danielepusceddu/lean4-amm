@@ -16,16 +16,10 @@ inductive Tx (c: Config) (init: State): State → Type where
       Tx c init sw.apply
 
 def reachableInit (s: State): Prop :=
-  (s.amms = AMMSet.empty ∧ ∀ (a: Account) (m: MintedTok), s.accs a m = 0)
+  (s.amms = AMMSet.empty ∧ ∀ (a: Account) (m: MintedTok), s.mints a m = 0)
 
 def reachable (c: Config) (s: State): Prop :=
   ∃ (init: State) (tx: Tx c init s), reachableInit init
-
-structure Reachable (c: Config) (s: State) where
-  init: State
-  tx: Tx c init s
-  init_amms: init.amms = AMMSet.empty
-  init_accs: ∀ (a: Account) (m: MintedTok), init.accs a m = 0
 
 def concat {c: Config} {init s' s'': State} 
 (t1: Tx c init s') (t2: Tx c s' s''): Tx c init s'' := match t2 with
@@ -84,11 +78,3 @@ noncomputable def State.mintedPrice
 : ℝ+ :=
 s.mintedTokPrice c m h (by have h' := AMMimpSupplyProp r h; simp at h'; exact h')
 
-noncomputable def State.price 
-  {s: State} {c: Config} (r: reachable c s) (t: Token)
-  (h: if hm: t.isMinted then 
-      s.amms.f (t.getMinted hm).choose (t.getMinted hm).other ≠ 0 else True)
-: PReal :=
-  match t with
-  | Token.Atomic t' => c.o t'
-  | Token.Minted m => mintedPrice r m (by simp [Token.isMinted] at h; exact h)

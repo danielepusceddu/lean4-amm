@@ -8,7 +8,7 @@ structure Swap (c: Config) (s: State) where
   t1: AtomicTok
   a: Account
   v0: ℝ+
-  enough: v0 ≤ s.accs a t0
+  enough: v0 ≤ s.atoms a t0
   exi:    s.amms.f t0 t1 ≠ 0
   nodrain: v0*(c.sx v0 (s.amms.fp exi)) < (s.amms.f t0 t1).snd
 
@@ -48,8 +48,8 @@ s.amms.fp exi := by sorry
 theorem Swap.minted_still_supp
 {c: Config} {s: State} (sw: Swap c s)
 {m: MintedTok}
-(h1: 0 < s.supply m)
-: 0 < sw.apply.supply m
+(h1: 0 < s.mintsupply m)
+: 0 < sw.apply.mintsupply m
 := by sorry
 
 theorem Swap.acc_t0_after_swap (sw: Swap c s)
