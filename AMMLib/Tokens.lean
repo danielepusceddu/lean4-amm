@@ -12,9 +12,14 @@ open BigOperators
 structure Account where
   n: ℕ
 
-abbrev AtomicTok := ℕ
+structure AtomicTok where
+  n: ℕ
 
 instance: DecidableEq Account := 
+  fun a1 a2 => by 
+  cases a1; cases a2; simp; infer_instance
+
+instance: DecidableEq AtomicTok := 
   fun a1 a2 => by 
   cases a1; cases a2; simp; infer_instance
 
