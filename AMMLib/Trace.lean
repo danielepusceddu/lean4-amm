@@ -78,3 +78,38 @@ noncomputable def State.mintedPrice
 : ℝ+ :=
 s.mintedTokPrice c m h (by have h' := AMMimpSupplyProp r h; simp at h'; exact h')
 
+def atomicworth 
+(o: AtomicTok → PReal) (t: AtomicTok) (x: NNReal)
+: NNReal := (o t)*x
+
+noncomputable def AtomicWall.networth
+(w: AtomicTok →₀ NNReal) (o: AtomicTok → PReal): NNReal :=
+w.sum (atomicworth o)
+
+noncomputable def mintedworth
+(s: State) (o: AtomicTok → PReal) (t: MintedTok) (x: NNReal)
+: NNReal := (s.mintedTokPricez o t)*x
+
+noncomputable def MintedWall.networth
+(w: MintedTok →₀ NNReal) (s: State) (o: AtomicTok → PReal): NNReal :=
+w.sum (mintedworth s o)
+
+noncomputable def State.networth
+(s: State) (a: Account) (o: AtomicTok → PReal): NNReal
+:=
+(AtomicWall.networth (s.atoms a) o)
++
+(MintedWall.networth (s.mints a) s o)
+
+noncomputable def Account.gain
+{c: Config} {s s': State} (a: Account) (_: Tx c s s')
+: ℝ
+:= ((s'.networth a c.o): ℝ) - ((s.networth a c.o): ℝ)
+
+theorem lemma32_same
+{c: Config} {s: State} (sw: Swap c s)
+: 
+(sw.apply.networth sw.a c.o)
+=
+sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a (AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi)))/(s.mints.supply (AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))))
+:= by sorry

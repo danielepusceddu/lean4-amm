@@ -80,3 +80,27 @@ simp [h1, hdif]
 := by 
 unfold State.mintedTokPrice
 simp [h1, h2, hdif]
+
+noncomputable def State.mintedTokPrice_denumz
+(s: State) (m: MintedTok): NNReal := s.mintsupply m
+
+noncomputable def State.mintedTokPrice_num_addend1z
+(s: State) (o: AtomicTok → PReal)
+(m: MintedTok)
+: NNReal := (s.amms.f m.choose m.other).fst * (o m.choose)
+
+noncomputable def State.mintedTokPrice_num_addend2z
+(s: State) (o: AtomicTok → PReal)
+(m: MintedTok)
+: NNReal := (s.amms.f m.choose m.other).snd * (o m.other)
+
+noncomputable def State.mintedTokPrice_numz
+(s: State) (o: AtomicTok → PReal)
+(m: MintedTok)
+: NNReal :=
+(s.mintedTokPrice_num_addend1z o m) + (s.mintedTokPrice_num_addend2z o m)
+
+noncomputable def State.mintedTokPricez
+(s: State) (o: AtomicTok → PReal)
+(m: MintedTok): NNReal :=
+(s.mintedTokPrice_numz o m) / (s.mintedTokPrice_denumz m)
