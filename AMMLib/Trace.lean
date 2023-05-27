@@ -107,9 +107,9 @@ noncomputable def Account.gain
 := ((s'.networth a c.o): ℝ) - ((s.networth a c.o): ℝ)
 
 theorem lemma32_same
-{c: Config} {s: State} (sw: Swap c s)
+{c: Config} {s: State} {sw: Swap c s} (tx: Tx c s (sw.apply))
 : 
-(sw.apply.networth sw.a c.o)
+(sw.a.gain tx)
 =
 sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a (AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi)))/(s.mints.supply (AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))))
 := by sorry
