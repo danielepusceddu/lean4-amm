@@ -8,10 +8,10 @@ import AMMLib.Finsupp2
 open BigOperators
 
 structure AMMSet where 
-  f: AtomicTok →₀ AtomicTok →₀ (NNReal × NNReal)
-  h1: ∀ (t0 t1: AtomicTok), f t0 t1 = (f t1 t0).swap
-  h2: ∀ (t: AtomicTok), f t t = (0,0)
-  h3: ∀ (t0 t1: AtomicTok), (f t0 t1).fst ≠ 0 ↔ (f t0 t1).snd ≠ 0
+  f: 𝕋₀ →₀ 𝕋₀ →₀ (NNReal × NNReal)
+  h1: ∀ (t0 t1: 𝕋₀), f t0 t1 = (f t1 t0).swap
+  h2: ∀ (t: 𝕋₀), f t t = (0,0)
+  h3: ∀ (t0 t1: 𝕋₀), (f t0 t1).fst ≠ 0 ↔ (f t0 t1).snd ≠ 0
 
 def AMMSet.empty: AMMSet :=
 ⟨ 
@@ -48,7 +48,7 @@ theorem Prod.neq_zero_imp_or
   contradiction
 
 theorem AMMSet.exists_imp_fst 
-{amms: AMMSet} {t0 t1: AtomicTok} (h: amms.f t0 t1 ≠ 0)
+{amms: AMMSet} {t0 t1: 𝕋₀} (h: amms.f t0 t1 ≠ 0)
 : ((amms.f t0 t1).fst ≠ 0) := by
   have h' := Prod.neq_zero_imp_or h
   rcases h' with left|right
@@ -56,7 +56,7 @@ theorem AMMSet.exists_imp_fst
   . exact (amms.h3 t0 t1).mpr right
 
 theorem AMMSet.exists_imp_snd
-{amms: AMMSet} {t0 t1: AtomicTok} (h: amms.f t0 t1 ≠ 0)
+{amms: AMMSet} {t0 t1: 𝕋₀} (h: amms.f t0 t1 ≠ 0)
 : ((amms.f t0 t1).snd ≠ 0) := by
   have h' := Prod.neq_zero_imp_or h
   rcases h' with left|right
@@ -64,14 +64,14 @@ theorem AMMSet.exists_imp_snd
   . exact right
 
 theorem AMMSet.exists_imp_dif 
-{amms: AMMSet} {t0 t1: AtomicTok} (h: amms.f t0 t1 ≠ 0)
+{amms: AMMSet} {t0 t1: 𝕋₀} (h: amms.f t0 t1 ≠ 0)
 : t0 ≠ t1 := by
   by_contra contra
   rw [contra] at h
   rw [amms.h2] at h
   contradiction
 
-def AMMSet.fp (amms: AMMSet) {t0 t1: AtomicTok}
+def AMMSet.fp (amms: AMMSet) {t0 t1: 𝕋₀}
 (exi: amms.f t0 t1 ≠ 0): ℝ+ × ℝ+ :=
 (
   ⟨(amms.f t0 t1).fst.val,
@@ -83,8 +83,8 @@ def AMMSet.fp (amms: AMMSet) {t0 t1: AtomicTok}
 )
 
 lemma AMMSet.up_h1' (amms: AMMSet) 
-(t0' t1': AtomicTok) (x: NNReal × NNReal) (hdif: t0' ≠ t1')
-(t0 t1: AtomicTok)
+(t0' t1': 𝕋₀) (x: NNReal × NNReal) (hdif: t0' ≠ t1')
+(t0 t1: 𝕋₀)
 : ((amms.f.up t0' t1' x).up t1' t0' x.swap) t0 t1 = (((amms.f.up t0' t1' x).up t1' t0' x.swap) t1 t0).swap := by
 
   apply @Decidable.byCases (t1'=t0)
@@ -120,8 +120,8 @@ lemma AMMSet.up_h1' (amms: AMMSet)
       exact amms.h1 t0 t1
 
 lemma AMMSet.up_h2' (amms: AMMSet) 
-(t0 t1: AtomicTok) (x: NNReal × NNReal) (hdif: t0 ≠ t1)
-(t: AtomicTok): ((amms.f.up t0 t1 x).up t1 t0 x.swap) t t = (0,0) := by
+(t0 t1: 𝕋₀) (x: NNReal × NNReal) (hdif: t0 ≠ t1)
+(t: 𝕋₀): ((amms.f.up t0 t1 x).up t1 t0 x.swap) t t = (0,0) := by
 
   apply @Decidable.byCases (t=t1)
   . intro tt1
@@ -136,8 +136,8 @@ lemma AMMSet.up_h2' (amms: AMMSet)
     exact amms.h2 t
 
 lemma AMMSet.up_h3' (amms: AMMSet) 
-(t0' t1': AtomicTok) (x: NNReal × NNReal) (hdif: t0' ≠ t1')
-(h3: x.fst ≠ 0 ↔ x.snd ≠ 0) (t0 t1: AtomicTok)
+(t0' t1': 𝕋₀) (x: NNReal × NNReal) (hdif: t0' ≠ t1')
+(h3: x.fst ≠ 0 ↔ x.snd ≠ 0) (t0 t1: 𝕋₀)
 : (((amms.f.up t0' t1' x).up t1' t0' x.swap) t0 t1).fst ≠ 0 ↔ (((amms.f.up t0' t1' x).up t1' t0' x.swap) t0 t1).snd ≠ 0 := by
   apply @Decidable.byCases (t1'=t0)
   . intro t1pt0
@@ -172,7 +172,7 @@ lemma AMMSet.up_h3' (amms: AMMSet)
       exact amms.h3 t0 t1
 
 noncomputable def AMMSet.up (amms: AMMSet) 
-(t0 t1: AtomicTok) (x: NNReal × NNReal) (hdif: t0 ≠ t1)
+(t0 t1: 𝕋₀) (x: NNReal × NNReal) (hdif: t0 ≠ t1)
 (h3: x.fst ≠ 0 ↔ x.snd ≠ 0)
 : AMMSet := 
 ⟨
@@ -184,17 +184,17 @@ noncomputable def AMMSet.up (amms: AMMSet)
 
 /- When passing only one of the arguments, we need it to be different to both updated tokens. -/
 @[simp] theorem AMMSet.up_diff1 (amms: AMMSet)
-(t0' t1': AtomicTok) (x: NNReal × NNReal) 
+(t0' t1': 𝕋₀) (x: NNReal × NNReal) 
 (hdif: t0' ≠ t1') (h3: x.fst ≠ 0 ↔ x.snd ≠ 0)
-(t0: AtomicTok) (h1: t0 ≠ t0') (h2: t0 ≠ t1')
+(t0: 𝕋₀) (h1: t0 ≠ t0') (h2: t0 ≠ t1')
 : (amms.up t0' t1' x hdif h3).f t0 = amms.f t0 := by
   simp [up, h2, h1]
 
 /- When passing two arguments, we need to know {t0,t1} ≠ {t0',t1'} -/
 @[simp] theorem AMMSet.up_diff2 (amms: AMMSet)
-(t0' t1': AtomicTok) (x: NNReal × NNReal) 
+(t0' t1': 𝕋₀) (x: NNReal × NNReal) 
 (hdif: t0' ≠ t1') (h3: x.fst ≠ 0 ↔ x.snd ≠ 0)
-(t0 t1: AtomicTok) (h1: (t0 ≠ t0' ∨ t1 ≠ t1') ∧ (t0 ≠ t1' ∨ t1 ≠ t0'))
+(t0 t1: 𝕋₀) (h1: (t0 ≠ t0' ∨ t1 ≠ t1') ∧ (t0 ≠ t1' ∨ t1 ≠ t0'))
 : (amms.up t0' t1' x hdif h3).f t0 t1 = amms.f t0 t1 := by
 
   rcases h1 with ⟨left|left', right|right'⟩
@@ -204,7 +204,7 @@ noncomputable def AMMSet.up (amms: AMMSet)
   . simp [up, left', right']
 
 noncomputable def AMMSet.add_r0 (amms: AMMSet)
-{t0 t1: AtomicTok} (x: NNReal) 
+{t0 t1: 𝕋₀} (x: NNReal) 
 (exi: amms.f t0 t1 ≠ 0): AMMSet
 := amms.up t0 t1 ((amms.f t0 t1) + (x,0)) (exists_imp_dif exi) 
    (by apply Iff.intro
@@ -217,7 +217,7 @@ noncomputable def AMMSet.add_r0 (amms: AMMSet)
          contradiction)
 
 noncomputable def AMMSet.add_r1 (amms: AMMSet)
-{t0 t1: AtomicTok} (x: NNReal) 
+{t0 t1: 𝕋₀} (x: NNReal) 
 (exi: amms.f t0 t1 ≠ 0): AMMSet
 := amms.up t0 t1 ((amms.f t0 t1) + (0,x)) (exists_imp_dif exi) 
    (by apply Iff.intro
@@ -232,11 +232,11 @@ noncomputable def AMMSet.add_r1 (amms: AMMSet)
          contradiction)
 
 noncomputable def AMMSet.sub_r0 (amms: AMMSet)
-{t0 t1: AtomicTok} (x: NNReal) 
+{t0 t1: 𝕋₀} (x: NNReal) 
 (nodrain: x < (amms.f t0 t1).fst): AMMSet
 := amms.up t0 t1 ((amms.f t0 t1) - (x,0)) (by sorry) (by sorry)
 
 noncomputable def AMMSet.sub_r1 (amms: AMMSet)
-{t0 t1: AtomicTok} (x: NNReal)
+{t0 t1: 𝕋₀} (x: NNReal)
 (nodrain: x < (amms.f t0 t1).snd): AMMSet
 := amms.up t0 t1 ((amms.f t0 t1) - (0,x)) (by sorry) (by sorry)

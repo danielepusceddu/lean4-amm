@@ -13,36 +13,36 @@ theorem pick2_add {α β: Type} [AddZeroClass β]
 : ∀ (a: α) (b1 b2: β),
 pick2 a (b1+b2) = (pick2 a b1) + (pick2 a b2) := by simp [pick2]
 
-noncomputable def AtomicWalls.supply 
-(ws: AtomicWalls) (t: AtomicTok)
+noncomputable def Wall0.supply 
+(ws: Wall0) (t: 𝕋₀)
 : NNReal :=
   (ws.curried_swap t).sum pick2
 
-noncomputable def MintedWalls.supply 
-(ws: MintedWalls) (t: MintedTok)
+noncomputable def Wall1.supply 
+(ws: Wall1) (t: 𝕋₁)
 : NNReal :=
   (ws.curried_swap t).sum pick2
 
-@[simp] lemma MintedWalls.supply_up_diff 
-(as: MintedWalls) (t: MintedTok) (a: Account) (t': MintedTok) 
+@[simp] lemma Wall1.supply_up_diff 
+(as: Wall1) (t: 𝕋₁) (a: Account) (t': 𝕋₁) 
 (v: NNReal) (hdif: t ≠ t'):
   supply (as.up a t' v) t = as.supply t := by 
   unfold supply
   rw [Finsupp.up_swap as a t' v]
   rw [Finsupp.up_diff _ _ _ _ _ hdif]
 
-noncomputable def AMMSet.supply (amms: AMMSet) (t: AtomicTok): NNReal := (amms.f t).sum λ _ x => x.fst
+noncomputable def AMMSet.supply (amms: AMMSet) (t: 𝕋₀): NNReal := (amms.f t).sum λ _ x => x.fst
 
-noncomputable def State.atomsupply 
-(s: State) (t: AtomicTok): NNReal :=
+noncomputable def Γ.atomsupply 
+(s: Γ) (t: 𝕋₀): NNReal :=
   (s.atoms.supply t) + (s.amms.supply t)
 
-noncomputable def State.mintsupply
-(s: State) (t: MintedTok): NNReal :=
+noncomputable def Γ.mintsupply
+(s: Γ) (t: 𝕋₁): NNReal :=
   s.mints.supply t
 
-@[simp] theorem AtomicWalls.supply_addb_same 
-(as: AtomicWalls) (t: AtomicTok) (a: Account) (x: NNReal)
+@[simp] theorem Wall0.supply_addb_same 
+(as: Wall0) (t: 𝕋₀) (a: Account) (x: NNReal)
 : (as.addb a t x).supply t = x + (as.supply t) := by
 
   simp [supply, addb, Finsupp.up_swap]
@@ -59,8 +59,8 @@ noncomputable def State.mintsupply
   . simp [pick2]
   . exact pick2_zero
 
-@[simp] theorem MintedWalls.supply_addb_same 
-(as: MintedWalls) (t: MintedTok) (a: Account) (x: NNReal)
+@[simp] theorem Wall1.supply_addb_same 
+(as: Wall1) (t: 𝕋₁) (a: Account) (x: NNReal)
 : (as.addb a t x).supply t = x + (as.supply t) := by
 
   simp [supply, addb, Finsupp.up_swap]

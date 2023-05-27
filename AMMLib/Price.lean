@@ -1,106 +1,106 @@
 import AMMLib.Supply
 import AMMLib.Swap
 
-noncomputable def State.mintedTokPrice_denum
-(s: State) (m: MintedTok)
+noncomputable def Γ.𝕋₁Price_denum
+(s: Γ) (m: 𝕋₁)
 (h2: 0 < s.mintsupply m): ℝ+ := ⟨s.mintsupply m, h2⟩
 
-noncomputable def State.mintedTokPrice_num_addend1
-(s: State) (c: Config)
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
+noncomputable def Γ.𝕋₁Price_num_addend1
+(s: Γ) (c: Cfg)
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
 : ℝ+ := (s.amms.fp h1).fst * (c.o m.choose)
 
-noncomputable def State.mintedTokPrice_num_addend2
-(s: State) (c: Config)
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
+noncomputable def Γ.𝕋₁Price_num_addend2
+(s: Γ) (c: Cfg)
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
 : ℝ+ := (s.amms.fp h1).snd * (c.o m.other)
 
-noncomputable def State.mintedTokPrice_num
-(s: State) (c: Config)
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
+noncomputable def Γ.𝕋₁Price_num
+(s: Γ) (c: Cfg)
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
 : ℝ+ :=
-(s.mintedTokPrice_num_addend1 c m h1) + (s.mintedTokPrice_num_addend2 c m h1)
+(s.𝕋₁Price_num_addend1 c m h1) + (s.𝕋₁Price_num_addend2 c m h1)
 
-noncomputable def State.mintedTokPrice 
-(s: State) (c: Config)
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
+noncomputable def Γ.𝕋₁Price 
+(s: Γ) (c: Cfg)
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
 (h2: 0 < s.mintsupply m)
 : ℝ+ :=
-(s.mintedTokPrice_num c m h1) / (s.mintedTokPrice_denum m h2)
+(s.𝕋₁Price_num c m h1) / (s.𝕋₁Price_denum m h2)
 
-@[simp] lemma Swap.mintedTokPrice_denum_diff
-{c: Config} {s: State} (sw: Swap c s) 
-(m: MintedTok) (h2: 0 < s.mintsupply m)
-: sw.apply.mintedTokPrice_denum m ((sw.minted_still_supp h2)) = s.mintedTokPrice_denum m h2
+@[simp] lemma Swap.𝕋₁Price_denum_diff
+{c: Cfg} {s: Γ} (sw: Swap c s) 
+(m: 𝕋₁) (h2: 0 < s.mintsupply m)
+: sw.apply.𝕋₁Price_denum m ((sw.minted_still_supp h2)) = s.𝕋₁Price_denum m h2
 := by 
-unfold State.mintedTokPrice_denum
+unfold Γ.𝕋₁Price_denum
 apply Subtype.eq; simp
 simp [Swap.mintedSupply]
 
-@[simp] lemma Swap.mintedTokPrice_num_addend1_diff
-{c: Config} {s: State} (sw: Swap c s) 
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
-(hdif: m ≠ AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))
-: sw.apply.mintedTokPrice_num_addend1 c m (sw.amm_still_exists h1) = s.mintedTokPrice_num_addend1 c m h1
+@[simp] lemma Swap.𝕋₁Price_num_addend1_diff
+{c: Cfg} {s: Γ} (sw: Swap c s) 
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
+(hdif: m ≠ 𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi))
+: sw.apply.𝕋₁Price_num_addend1 c m (sw.amm_still_exists h1) = s.𝕋₁Price_num_addend1 c m h1
 := by 
-unfold State.mintedTokPrice_num_addend1
-rw [← MintedTok.choose_eq m] at hdif
-have hdif' := AtomicTok.toMint_diff hdif
+unfold Γ.𝕋₁Price_num_addend1
+rw [← 𝕋₁.choose_eq m] at hdif
+have hdif' := 𝕋₀.toMint_diff hdif
 simp [h1, hdif', Swap.amm_fp_diff]
 
-@[simp] lemma Swap.mintedTokPrice_num_addend2_diff
-{c: Config} {s: State} (sw: Swap c s) 
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
-(hdif: m ≠ AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))
-: sw.apply.mintedTokPrice_num_addend2 c m (sw.amm_still_exists h1) = s.mintedTokPrice_num_addend2 c m h1
+@[simp] lemma Swap.𝕋₁Price_num_addend2_diff
+{c: Cfg} {s: Γ} (sw: Swap c s) 
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
+(hdif: m ≠ 𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi))
+: sw.apply.𝕋₁Price_num_addend2 c m (sw.amm_still_exists h1) = s.𝕋₁Price_num_addend2 c m h1
 := by 
-unfold State.mintedTokPrice_num_addend2
-rw [← MintedTok.choose_eq m] at hdif
-have hdif' := AtomicTok.toMint_diff hdif
+unfold Γ.𝕋₁Price_num_addend2
+rw [← 𝕋₁.choose_eq m] at hdif
+have hdif' := 𝕋₀.toMint_diff hdif
 simp [h1, hdif', Swap.amm_fp_diff]
 
-@[simp] lemma Swap.mintedTokPrice_num_diff
-{c: Config} {s: State} (sw: Swap c s) 
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
-(hdif: m ≠ AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))
-: sw.apply.mintedTokPrice_num c m (sw.amm_still_exists h1) = s.mintedTokPrice_num c m h1
+@[simp] lemma Swap.𝕋₁Price_num_diff
+{c: Cfg} {s: Γ} (sw: Swap c s) 
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
+(hdif: m ≠ 𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi))
+: sw.apply.𝕋₁Price_num c m (sw.amm_still_exists h1) = s.𝕋₁Price_num c m h1
 := by 
-unfold State.mintedTokPrice_num
+unfold Γ.𝕋₁Price_num
 simp [h1, hdif]
 
-@[simp] theorem Swap.mintedTokPrice_diff 
-(c: Config) (s: State) (sw: Swap c s) 
-(m: MintedTok) (h1: s.amms.f m.choose m.other ≠ 0)
+@[simp] theorem Swap.𝕋₁Price_diff 
+(c: Cfg) (s: Γ) (sw: Swap c s) 
+(m: 𝕋₁) (h1: s.amms.f m.choose m.other ≠ 0)
 (h2: 0 < s.mintsupply m)
-(hdif: m ≠ AtomicTok.toMint (AMMSet.exists_imp_dif sw.exi))
+(hdif: m ≠ 𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi))
 : 
-(sw.apply.mintedTokPrice c m (sw.amm_still_exists h1) (sw.minted_still_supp h2)) 
+(sw.apply.𝕋₁Price c m (sw.amm_still_exists h1) (sw.minted_still_supp h2)) 
 =
-(s.mintedTokPrice c m h1 h2)
+(s.𝕋₁Price c m h1 h2)
 := by 
-unfold State.mintedTokPrice
+unfold Γ.𝕋₁Price
 simp [h1, h2, hdif]
 
-noncomputable def State.mintedTokPrice_denumz
-(s: State) (m: MintedTok): NNReal := s.mintsupply m
+noncomputable def Γ.𝕋₁Price_denumz
+(s: Γ) (m: 𝕋₁): NNReal := s.mintsupply m
 
-noncomputable def State.mintedTokPrice_num_addend1z
-(s: State) (o: AtomicTok → PReal)
-(m: MintedTok)
+noncomputable def Γ.𝕋₁Price_num_addend1z
+(s: Γ) (o: 𝕋₀ → PReal)
+(m: 𝕋₁)
 : NNReal := (s.amms.f m.choose m.other).fst * (o m.choose)
 
-noncomputable def State.mintedTokPrice_num_addend2z
-(s: State) (o: AtomicTok → PReal)
-(m: MintedTok)
+noncomputable def Γ.𝕋₁Price_num_addend2z
+(s: Γ) (o: 𝕋₀ → PReal)
+(m: 𝕋₁)
 : NNReal := (s.amms.f m.choose m.other).snd * (o m.other)
 
-noncomputable def State.mintedTokPrice_numz
-(s: State) (o: AtomicTok → PReal)
-(m: MintedTok)
+noncomputable def Γ.𝕋₁Price_numz
+(s: Γ) (o: 𝕋₀ → PReal)
+(m: 𝕋₁)
 : NNReal :=
-(s.mintedTokPrice_num_addend1z o m) + (s.mintedTokPrice_num_addend2z o m)
+(s.𝕋₁Price_num_addend1z o m) + (s.𝕋₁Price_num_addend2z o m)
 
-noncomputable def State.mintedTokPricez
-(s: State) (o: AtomicTok → PReal)
-(m: MintedTok): NNReal :=
-(s.mintedTokPrice_numz o m) / (s.mintedTokPrice_denumz m)
+noncomputable def Γ.𝕋₁Pricez
+(s: Γ) (o: 𝕋₀ → PReal)
+(m: 𝕋₁): NNReal :=
+(s.𝕋₁Price_numz o m) / (s.𝕋₁Price_denumz m)

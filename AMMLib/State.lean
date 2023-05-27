@@ -5,11 +5,12 @@ import AMMLib.AMMSet
 -- This is where I would add φ.
 -- The price oracle should be moved to 
 -- State to implement price updates.
-structure Config where
+structure Cfg where
   sx: PReal → (PReal × PReal) → PReal
-  o: AtomicTok → PReal
+  o: 𝕋₀ → PReal
 
-structure State where
-  atoms: AtomicWalls
-  mints: MintedWalls
+-- State
+structure Γ where
+  atoms: Wall0
+  mints: Wall1
   amms: AMMSet
