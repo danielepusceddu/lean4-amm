@@ -72,11 +72,6 @@ theorem AMMimpSupplyProp
         exists init; exists tail
       exact ih re h'
 
-noncomputable def Γ.mintedPrice 
-{s: Γ} {c: Cfg} (r: reachable c s)
-(m: 𝕋₁) (h: s.amms.f m.choose m.other ≠ 0)
-: ℝ+ :=
-s.𝕋₁Price c m h (by have h' := AMMimpSupplyProp r h; simp at h'; exact h')
 
 def atomicworth 
 (o: 𝕋₀ → PReal) (t: 𝕋₀) (x: NNReal)

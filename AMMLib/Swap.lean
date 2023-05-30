@@ -2,6 +2,7 @@ import AMMLib.Tokens
 import AMMLib.AMMSet
 import AMMLib.State
 import AMMLib.Supply
+import AMMLib.Price
 
 structure Swap (c: Cfg) (s: Γ) where
   t0: 𝕋₀
@@ -63,3 +64,85 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
   = 
   (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))
 := by sorry
+
+@[simp] theorem Swap.acc_r0_after_swap (sw: Swap c s)
+: (sw.apply.amms.f sw.t0 sw.t1).fst
+  = 
+  (s.amms.f sw.t0 sw.t1).fst + sw.v0
+:= by sorry
+
+@[simp] theorem Swap.acc_r1_after_swap (sw: Swap c s)
+: (sw.apply.amms.f sw.t0 sw.t1).snd
+  = 
+  (s.amms.f sw.t0 sw.t1).snd - sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi))
+:= by sorry
+
+@[simp] theorem Swap.erase_atoms_same 
+(sw: Swap c s) (a: Account)
+: Finsupp.erase sw.t1 (Finsupp.erase sw.t0 (sw.apply.atoms a))
+  =
+  Finsupp.erase sw.t1 (Finsupp.erase sw.t0 (s.atoms a))
+:= by
+  ext t
+  simp [apply]
+  apply @Decidable.byCases (t=sw.t1)
+  . intro teqt1
+    simp [teqt1]
+  . intro tneqt1
+    apply @Decidable.byCases (t=sw.t0)
+    . intro teqt0
+      simp [tneqt1, teqt0, (AMMSet.exists_imp_dif sw.exi)]
+    . intro tneqt0
+      simp [tneqt1, tneqt0, Wall0.subb, Wall0.addb]
+
+@[simp] theorem Γ.mintsupply_swap 
+{c: Cfg} {s: Γ} {sw: Swap c s}
+(m: 𝕋₁)
+: sw.apply.mintsupply m = s.mintsupply m := by
+simp [Swap.apply, mintsupply]
+
+@[simp] theorem swap_price_mint_denumz
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(m: 𝕋₁)
+: sw.apply.𝕋₁Price_denumz m = s.𝕋₁Price_denumz m := by
+simp [Γ.𝕋₁Price_denumz]
+
+@[simp] theorem swap_price_mint_diff_num_addend1z
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(m: 𝕋₁) (hdif: m ≠ sw.mint)
+: sw.apply.𝕋₁Price_num_addend1z c.o m = s.𝕋₁Price_num_addend1z c.o m := by
+  simp [Γ.𝕋₁Price_num_addend1z]; left
+  simp [Swap.apply, hdif]
+  rw [← 𝕋₁.choose_eq m] at hdif
+  unfold Swap.mint at hdif
+  have hdif' := 𝕋₀.toMint_diff hdif
+  simp [AMMSet.sub_r1, hdif']
+  simp [AMMSet.add_r0, hdif']
+
+@[simp] theorem swap_price_mint_diff_num_addend2z
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(m: 𝕋₁) (hdif: m ≠ sw.mint)
+: sw.apply.𝕋₁Price_num_addend2z c.o m = s.𝕋₁Price_num_addend2z c.o m := by
+  simp [Γ.𝕋₁Price_num_addend2z]; left;
+  simp [Swap.apply, hdif]
+  rw [← 𝕋₁.choose_eq m] at hdif
+  unfold Swap.mint at hdif
+  have hdif' := 𝕋₀.toMint_diff hdif
+  simp [AMMSet.sub_r1, hdif']
+  simp [AMMSet.add_r0, hdif']
+
+
+@[simp] theorem swap_price_mint_diff_numz
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(m: 𝕋₁) (hdif: m ≠ sw.mint)
+: sw.apply.𝕋₁Price_numz c.o m = s.𝕋₁Price_numz c.o m := by
+simp [Γ.𝕋₁Price_numz]
+simp [hdif]
+
+@[simp] theorem swap_price_mint_diff
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(m: 𝕋₁) (hdif: m ≠ sw.mint)
+: sw.apply.𝕋₁Pricez c.o m = s.𝕋₁Pricez c.o m := by
+  simp [Γ.𝕋₁Pricez]
+  simp [hdif]
+
