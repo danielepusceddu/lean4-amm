@@ -13,6 +13,16 @@ structure AMMSet where
   h2: ∀ (t: 𝕋₀), f t t = (0,0)
   h3: ∀ (t0 t1: 𝕋₀), (f t0 t1).fst ≠ 0 ↔ (f t0 t1).snd ≠ 0
 
+theorem AMMSet.reorder_fst
+(a: AMMSet) (t1 t0: 𝕋₀):
+(a.f t1 t0).fst = (a.f t0 t1).snd := by
+  simp [a.h1 t1 t0]
+
+theorem AMMSet.reorder_snd
+(a: AMMSet) (t1 t0: 𝕋₀):
+(a.f t1 t0).snd = (a.f t0 t1).fst := by
+  simp [a.h1 t1 t0]
+
 def AMMSet.empty: AMMSet :=
 ⟨ 
   0,
