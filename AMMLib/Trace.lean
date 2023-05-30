@@ -81,13 +81,38 @@ noncomputable def AtomicWall.networth
 (w: 𝕋₀ →₀ NNReal) (o: 𝕋₀ → PReal): NNReal :=
 w.sum (atomicworth o)
 
+theorem atomicworth_zero (o: 𝕋₀ → PReal)
+: ∀ (t: 𝕋₀), (atomicworth o) t 0 = 0 := by
+intro t; simp [atomicworth]
+
+theorem AtomicWall.networth_destruct
+(w: 𝕋₀ →₀ NNReal) (o: 𝕋₀ → PReal)
+(t: 𝕋₀)
+: (AtomicWall.networth w o) = (o t)*(w t) + (AtomicWall.networth (Finsupp.erase t w) o) := by 
+unfold networth
+rw [← Finsupp.add_sum_erase' w t (atomicworth o) (atomicworth_zero o)]
+simp [atomicworth]
+
 noncomputable def mintedworth
 (s: Γ) (o: 𝕋₀ → PReal) (t: 𝕋₁) (x: NNReal)
 : NNReal := (s.𝕋₁Pricez o t)*x
 
+theorem mintedworth_zero 
+(s: Γ) (o: 𝕋₀ → PReal)
+: ∀ (t: 𝕋₁), (mintedworth s o) t 0 = 0 := by
+intro t; simp [mintedworth]
+
 noncomputable def MintedWall.networth
 (w: 𝕋₁ →₀ NNReal) (s: Γ) (o: 𝕋₀ → PReal): NNReal :=
 w.sum (mintedworth s o)
+
+theorem MintedWall.networth_destruct
+(w: 𝕋₁ →₀ NNReal) (s: Γ) (o: 𝕋₀ → PReal)
+(t: 𝕋₁)
+: (MintedWall.networth w s o) = (s.𝕋₁Pricez o t)*(w t) + (MintedWall.networth (Finsupp.erase t w) s o) := by 
+unfold networth
+rw [← Finsupp.add_sum_erase' w t (mintedworth s o) (mintedworth_zero s o)]
+simp [mintedworth]
 
 noncomputable def Γ.networth
 (s: Γ) (a: Account) (o: 𝕋₀ → PReal): NNReal
@@ -101,10 +126,78 @@ noncomputable def Account.gain
 : ℝ
 := ((s'.networth a c.o): ℝ) - ((s.networth a c.o): ℝ)
 
+/-
+I must prove
+MintedWall.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (sw.apply.mints sw.a)) (Swap.apply sw) c.o
+
+is equal to
+
+MintedWall.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (s sw.a)) (Swap.apply sw) c.o
+-/
+
+theorem bruh
+{c: Cfg} {s: Γ} (sw: Swap c s) (a: Account):
+∀ (m: 𝕋₁), m ∈ (Finsupp.erase sw.mint (sw.apply.mints a)).support → (mintedworth sw.apply c.o) m ((Finsupp.erase sw.mint (sw.apply.mints a)) m) = (mintedworth s c.o) m ((Finsupp.erase sw.mint (sw.apply.mints a)) m)
+:= by
+  intro m hin
+  simp at hin
+  have hdif := hin.1
+  simp [mintedworth, hdif]
+
+@[simp] theorem networth_erase
+{c: Cfg} {s: Γ} (sw: Swap c s) (a: Account):
+MintedWall.networth (Finsupp.erase sw.mint (sw.apply.mints a)) sw.apply c.o
+=
+MintedWall.networth (Finsupp.erase sw.mint (s.mints a)) s c.o
+:= by
+  simp [MintedWall.networth]
+  rw [@Finsupp.sum_congr 𝕋₁ NNReal NNReal _ _ _ (mintedworth (sw.apply) c.o) (mintedworth s c.o) (bruh sw a)]
+  simp [Swap.apply]
+
+@[simp] theorem Swap.apply_mints
+{c: Cfg} {s: Γ} (sw: Swap c s):
+sw.apply.mints = s.mints := by
+simp [apply]
+
+@[simp] theorem networth_erase'
+{c: Cfg} {s: Γ} (sw: Swap c s) (a: Account):
+MintedWall.networth (Finsupp.erase sw.mint (s.mints a)) sw.apply c.o
+=
+MintedWall.networth (Finsupp.erase sw.mint (s.mints a)) s c.o
+:= by
+  have h := networth_erase sw a
+  simp only [Swap.apply_mints] at h
+  exact h
+
 theorem lemma32_same
 {c: Cfg} {s: Γ} {sw: Swap c s} (tx: Tx c s (sw.apply))
 : 
 (sw.a.gain tx)
 =
-sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a (𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi)))/(s.mints.supply (𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi))))
-:= by sorry
+sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a sw.mint)/(s.mints.supply sw.mint))
+:= by
+  unfold Account.gain
+  unfold Γ.networth
+  rw [AtomicWall.networth_destruct _ c.o sw.t0]
+  rw [AtomicWall.networth_destruct _ c.o sw.t1]
+  rw [AtomicWall.networth_destruct (s.atoms sw.a) c.o sw.t0]
+  rw [AtomicWall.networth_destruct (Finsupp.erase sw.t0 (s.atoms sw.a)) c.o sw.t1]
+  simp only [Swap.acc_t0_after_swap]
+  rw [Finsupp.erase_ne (AMMSet.exists_imp_dif sw.exi).symm]
+  rw [Finsupp.erase_ne (AMMSet.exists_imp_dif sw.exi).symm]
+  simp only [Swap.acc_t1_after_swap]
+  rw [MintedWall.networth_destruct _ (sw.apply) c.o sw.mint]
+  rw [MintedWall.networth_destruct _ s c.o sw.mint]
+  simp [Γ.𝕋₁Pricez, Γ.𝕋₁Price_numz, Γ.𝕋₁Price_denumz, Γ.𝕋₁Price_num_addend1z, Γ.𝕋₁Price_num_addend2z]
+
+  unfold Swap.mint
+  cases (𝕋₀.toMint_t0_cases (AMMSet.exists_imp_dif sw.exi)) 
+  with
+  | inl chooseEq
+  | inr chooseEq =>
+      simp [chooseEq]
+      simp [Γ.mintsupply, sw.enough, le_of_lt sw.nodrain,
+            AMMSet.reorder_fst _ sw.t1 sw.t0,
+            AMMSet.reorder_snd _ sw.t1 sw.t0]
+      field_simp
+      ring_nf
