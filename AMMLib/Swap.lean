@@ -13,6 +13,9 @@ structure Swap (c: Cfg) (s: Γ) where
   exi:    s.amms.f t0 t1 ≠ 0
   nodrain: v0*(c.sx v0 (s.amms.fp exi)) < (s.amms.f t0 t1).snd
 
+def Swap.mint (sw: Swap c s)
+: 𝕋₁ := 𝕋₀.toMint (AMMSet.exists_imp_dif sw.exi)
+
 noncomputable def Swap.apply (sw: Swap c s): Γ :=
 ⟨
   (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))).subb sw.a sw.t0 sw.v0,
