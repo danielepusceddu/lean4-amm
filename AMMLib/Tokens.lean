@@ -46,6 +46,10 @@ noncomputable def 𝕋₁.other (m: 𝕋₁)
 : 𝕋₀
 := Sym2.Mem.other (𝕋₁.choose_in m)
 
+theorem 𝕋₁.other_in (m: 𝕋₁)
+: m.other ∈ m.upair := by
+unfold other; exact Sym2.other_mem (m.choose_in)
+
 theorem 𝕋₁.other_diff (m: 𝕋₁)
 : m.choose ≠ m.other := by
 unfold other
@@ -83,7 +87,60 @@ theorem 𝕋₀.toMint_diff
   have right' := not_and_or.mp right
   exact And.intro left' right'
 
+theorem 𝕋₁.diff 
+{m0 m1: 𝕋₁}
+(hdif: m0 ≠ m1)
+: (m0.choose ≠ m1.choose ∨ m0.other ≠ m1.other) ∧ (m0.choose ≠ m1.other ∨ m0.other ≠ m1.choose) := by
+  rw [← 𝕋₁.choose_eq m0] at hdif
+  rw [← 𝕋₁.choose_eq m1] at hdif
+  have hdif' := 𝕋₀.toMint_diff hdif
+  simp_rw [hdif']
 
+theorem 𝕋₀.toMint_t0_cases
+{t0 t1: 𝕋₀} (hdif: t0 ≠ t1):
+(𝕋₀.toMint hdif).choose = t0 ∨ (𝕋₀.toMint hdif).choose = t1
+:= by 
+  unfold 𝕋₁.choose
+  have hin:
+   (Quotient.out (toMint hdif).upair).fst ∈ (toMint hdif).upair 
+   := Sym2.out_fst_mem _
+  simp only [𝕋₀.toMint]
+  simp only [𝕋₀.toMint] at hin
+  exact Sym2.mem_iff.mp hin
+
+@[simp] theorem 𝕋₀.toMint_choose_t0_imp
+{t0 t1: 𝕋₀} {hdif: t0 ≠ t1}
+(hchoose: (𝕋₀.toMint hdif).choose = t0):
+(𝕋₀.toMint hdif).other = t1
+:= by 
+  have hin1  := 𝕋₁.choose_in (𝕋₀.toMint hdif)
+  have hin2  := 𝕋₁.other_in (𝕋₀.toMint hdif)
+  have hdif' := (𝕋₀.toMint hdif).other_diff
+  have hbruh := (Sym2.mem_and_mem_iff hdif').mp (And.intro hin1 hin2)
+  simp [toMint] at hbruh
+  rcases hbruh with ⟨_,left2⟩|⟨right1,right2⟩
+  . simp [toMint]; symm; exact left2; 
+  . simp [toMint] at hdif'
+    simp [toMint] at hchoose
+    conv at hchoose => rhs; rw [right1]
+    contradiction
+
+@[simp] theorem 𝕋₀.toMint_choose_t1_imp
+(t0 t1: 𝕋₀) (hdif: t0 ≠ t1)
+(hchoose: (𝕋₀.toMint hdif).choose = t1):
+(𝕋₀.toMint hdif).other = t0
+:= by 
+  have hin1  := 𝕋₁.choose_in (𝕋₀.toMint hdif)
+  have hin2  := 𝕋₁.other_in (𝕋₀.toMint hdif)
+  have hdif' := (𝕋₀.toMint hdif).other_diff
+  have hbruh := (Sym2.mem_and_mem_iff hdif').mp (And.intro hin1 hin2)
+  simp [toMint] at hbruh
+  rcases hbruh with ⟨left1,left2⟩|⟨right1,_⟩
+  . simp [toMint] at hdif'
+    simp [toMint] at hchoose
+    conv at hchoose => rhs; rw [left2]
+    contradiction
+  . simp [toMint]; symm; exact right1; 
 
 abbrev Wall0 := Account →₀ 𝕋₀ →₀ NNReal
 abbrev Wall1 := Account →₀ 𝕋₁ →₀ NNReal
