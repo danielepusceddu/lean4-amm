@@ -213,6 +213,20 @@ noncomputable def AMMSet.up (amms: AMMSet)
   . simp [up, left', right]
   . simp [up, left', right']
 
+@[simp] theorem AMMSet.up_diff2_pos (amms: AMMSet)
+(t0' t1': 𝕋₀) (x: NNReal × NNReal) 
+(hdif: t0' ≠ t1') (h3: x.fst ≠ 0 ↔ x.snd ≠ 0)
+(t0 t1: 𝕋₀) 
+(hpos: amms.f t0 t1 ≠ 0)
+(h1: (t0 ≠ t0' ∨ t1 ≠ t1') ∧ (t0 ≠ t1' ∨ t1 ≠ t0'))
+: @AMMSet.fp (amms.up t0' t1' x hdif h3) t0 t1 (by simp [h1, hpos]) = amms.fp hpos := by
+  unfold fp
+  simp only [Prod.eq_iff_fst_eq_snd_eq]
+  apply And.intro
+  <;>
+  (apply Subtype.eq
+   simp [h1])
+
 @[simp] theorem AMMSet.up_same (amms: AMMSet)
 (t0' t1': 𝕋₀) (x: NNReal × NNReal)
 (hdif: t0' ≠ t1') 

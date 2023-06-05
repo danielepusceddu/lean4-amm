@@ -110,7 +110,12 @@ theorem Swap.amm_fp_diff (sw: Swap c s)
 (hdif: (t0 ≠ sw.t0 ∨ t1 ≠ sw.t1) ∧ (t0 ≠ sw.t1 ∨ t1 ≠ sw.t0))
 : sw.apply.amms.fp (sw.amm_still_exists exi)
 = 
-s.amms.fp exi := by sorry
+s.amms.fp exi := by
+  simp [apply, AMMSet.sub_r1, AMMSet.add_r0, hdif]
+  rw [AMMSet.up_diff2_pos]
+  . rw [AMMSet.up_diff2_pos]
+    exact hdif
+  . simp [hdif, exi]
 
 theorem Swap.minted_still_supp
 {c: Cfg} {s: Γ} (sw: Swap c s)
