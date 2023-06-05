@@ -5,6 +5,13 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
 
+theorem Prod.neq_zero_iff
+{α β: Type} [Zero α] [Zero β] (p: α×β):
+p ≠ 0 ↔ p.fst ≠ 0 ∨ p.snd ≠ 0 := by
+  have bruh := (@Prod.mk_eq_zero _ _ _ _ p.fst p.snd).not
+  simp only [not_and_or] at bruh
+  exact bruh
+
 @[simp] theorem Prod.swap_eq_zero
 {α β: Type} [Zero α] [Zero β] (p: α×β):
 p.swap = (0: β×α) ↔ p = (0: α×β) := by

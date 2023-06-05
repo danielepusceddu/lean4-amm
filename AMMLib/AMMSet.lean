@@ -244,9 +244,41 @@ noncomputable def AMMSet.add_r1 (amms: AMMSet)
 noncomputable def AMMSet.sub_r0 (amms: AMMSet)
 {t0 t1: 𝕋₀} (x: NNReal) 
 (nodrain: x < (amms.f t0 t1).fst): AMMSet
-:= amms.up t0 t1 ((amms.f t0 t1) - (x,0)) (by sorry) (by sorry)
+:= amms.up t0 t1 ((amms.f t0 t1) - (x,0)) 
+  (by have fstne: (amms.f t0 t1).fst ≠ 0 := by
+        exact ne_bot_of_gt nodrain
+      have exi: amms.f t0 t1 ≠ 0 := by
+        simp only [Prod.neq_zero_iff]
+        left
+        exact fstne
+      exact AMMSet.exists_imp_dif exi)
+
+  (by have fstne: (amms.f t0 t1).fst ≠ 0 := by
+        exact ne_bot_of_gt nodrain
+      have sndne := (amms.h3 t0 t1).mp fstne
+      apply Iff.intro
+      . intro _
+        simp; exact sndne
+      . intro _;
+        simp; exact nodrain)
 
 noncomputable def AMMSet.sub_r1 (amms: AMMSet)
 {t0 t1: 𝕋₀} (x: NNReal)
 (nodrain: x < (amms.f t0 t1).snd): AMMSet
-:= amms.up t0 t1 ((amms.f t0 t1) - (0,x)) (by sorry) (by sorry)
+:= amms.up t0 t1 ((amms.f t0 t1) - (0,x))
+  (by have sndne: (amms.f t0 t1).snd ≠ 0 := by
+        exact ne_bot_of_gt nodrain
+      have exi: amms.f t0 t1 ≠ 0 := by
+        simp only [Prod.neq_zero_iff]
+        right
+        exact sndne
+      exact AMMSet.exists_imp_dif exi)
+      
+  (by have sndne: (amms.f t0 t1).snd ≠ 0 := by
+        exact ne_bot_of_gt nodrain
+      have fstne := (amms.h3 t0 t1).mpr sndne
+      apply Iff.intro
+      . intro _
+        simp; exact nodrain
+      . intro _;
+        simp; exact fstne)
