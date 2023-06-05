@@ -44,7 +44,7 @@ theorem Swap.amm_in_apply
   have swhdif := AMMSet.exists_imp_dif sw.exi
   apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
   . intro minteq
-    simp at minteq
+    simp only [𝕋₀.toMint_eq] at minteq
     rcases minteq with ⟨t0eq,t1eq⟩|⟨t0eq,t1eq⟩
     . rw [t0eq,t1eq]
       exact sw.exi
@@ -83,7 +83,7 @@ theorem Swap.amm_still_exists
   apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
 
   . intro minteq
-    simp at minteq
+    simp only [𝕋₀.toMint_eq] at minteq
     rcases minteq with ⟨t0eq,t1eq⟩|⟨t0eq,t1eq⟩
     . simp [apply, AMMSet.sub_r1, AMMSet.add_r0, t0eq, t1eq]
       simp only [Prod.neq_zero_iff]

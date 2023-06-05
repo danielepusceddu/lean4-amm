@@ -87,7 +87,7 @@ theorem 𝕋₀.toMint_diff
   have right' := not_and_or.mp right
   exact And.intro left' right'
 
-@[simp] theorem 𝕋₀.toMint_eq
+theorem 𝕋₀.toMint_eq
 {t0 t1 t0' t1': 𝕋₀}
 {hdif1: t0 ≠ t1}
 {hdif2: t0' ≠ t1'}
