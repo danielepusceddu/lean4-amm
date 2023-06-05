@@ -213,6 +213,20 @@ noncomputable def AMMSet.up (amms: AMMSet)
   . simp [up, left', right]
   . simp [up, left', right']
 
+@[simp] theorem AMMSet.up_same (amms: AMMSet)
+(t0' t1': 𝕋₀) (x: NNReal × NNReal)
+(hdif: t0' ≠ t1') 
+(h3: x.fst ≠ 0 ↔ x.snd ≠ 0)
+: (amms.up t0' t1' x hdif h3).f t0' t1' = x := by
+  simp [up, hdif]
+
+@[simp] theorem AMMSet.up_same' (amms: AMMSet)
+(t0' t1': 𝕋₀) (x: NNReal × NNReal)
+(hdif: t0' ≠ t1') 
+(h3: x.fst ≠ 0 ↔ x.snd ≠ 0)
+: (amms.up t0' t1' x hdif h3).f t1' t0' = x.swap := by
+  simp [up, hdif]
+
 noncomputable def AMMSet.add_r0 (amms: AMMSet)
 {t0 t1: 𝕋₀} (x: NNReal) 
 (exi: amms.f t0 t1 ≠ 0): AMMSet

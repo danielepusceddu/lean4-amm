@@ -63,12 +63,46 @@ lemma Swap.mintedSupply (sw: Swap c s) (m: 𝕋₁):
   := by
   simp [Γ.mintsupply, apply, Wall1.subb, Wall1.addb]
 
+
+/- If an AMM existed before the swap, 
+   then it exists after too. 
+Sketch Proof:
+by cases on {t0,t1} = {sw.t0,sw.t1}
+if true,  then trivial by addition of PReal
+                   and by sw.nodrain
+if false, then trivial by hypothesis and
+                       by same after swap -/
 theorem Swap.amm_still_exists
 {c: Cfg} {s: Γ} (sw: Swap c s)
 {t0 t1: 𝕋₀}
 (h1: s.amms.f t0 t1 ≠ 0)
 : sw.apply.amms.f t0 t1 ≠ 0
-:= by sorry
+:= by
+  have hdif := AMMSet.exists_imp_dif h1
+  have swhdif := AMMSet.exists_imp_dif sw.exi
+  apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
+
+  . intro minteq
+    simp at minteq
+    rcases minteq with ⟨t0eq,t1eq⟩|⟨t0eq,t1eq⟩
+    . simp [apply, AMMSet.sub_r1, AMMSet.add_r0, t0eq, t1eq]
+      simp only [Prod.neq_zero_iff]
+      left
+      simp
+      simp only [t0eq, t1eq] at h1
+      intro contr
+      have contr' := AMMSet.exists_imp_fst h1
+      contradiction
+    . simp [apply, AMMSet.sub_r1, AMMSet.add_r0, t0eq, t1eq]
+      simp only [Prod.neq_zero_iff]
+      left
+      simp [Prod.swap_ne_zero]
+      exact sw.nodrain
+  . intro mintneq
+    rcases 𝕋₀.toMint_diff mintneq with ⟨left|left, right|right⟩
+    <;>
+    (simp [apply, AMMSet.sub_r1, AMMSet.add_r0, left, right]
+     exact h1)
 
 theorem Swap.amm_fp_diff (sw: Swap c s)
 (t0 t1: 𝕋₀)
