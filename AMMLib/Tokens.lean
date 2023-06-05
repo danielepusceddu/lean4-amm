@@ -87,6 +87,20 @@ theorem 𝕋₀.toMint_diff
   have right' := not_and_or.mp right
   exact And.intro left' right'
 
+@[simp] theorem 𝕋₀.toMint_eq
+{t0 t1 t0' t1': 𝕋₀}
+{hdif1: t0 ≠ t1}
+{hdif2: t0' ≠ t1'}
+: 𝕋₀.toMint hdif1 = 𝕋₀.toMint hdif2 ↔ (t0 = t0' ∧ t1 = t1') ∨  (t0 = t1' ∧ t1 = t0') := by
+  apply Iff.intro
+  . intro minteq
+    simp [𝕋₀.toMint, hdif1, hdif2] at minteq
+    exact minteq
+  
+  . intro teq
+    rcases teq with ⟨left,right⟩|⟨left,right⟩
+    <;> simp [toMint, left, right]
+
 theorem 𝕋₁.diff 
 {m0 m1: 𝕋₁}
 (hdif: m0 ≠ m1)

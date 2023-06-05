@@ -23,11 +23,35 @@ noncomputable def Swap.apply (sw: Swap c s): Γ :=
   @AMMSet.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi))) (by sorry)
 ⟩
 
--- If an AMM is in the swap, then it was there before too.
+/-
+If an AMM is in the swap, then it was there before too.
+Sketch Proof:
+by cases on {t0,t1} = {sw.t0,sw.t1}
+if true then trivial by Swap.exi
+if false then trivial by hypothesis 
+              (swap did not change this amm) 
+-/
 theorem Swap.amm_in_apply 
 {sw: Swap c s} {t0 t1: 𝕋₀}
 (h1: sw.apply.amms.f t0 t1 ≠ 0)
-: s.amms.f t0 t1 ≠ 0 := by sorry
+: s.amms.f t0 t1 ≠ 0 := by
+  have hdif := AMMSet.exists_imp_dif h1
+  have swhdif := AMMSet.exists_imp_dif sw.exi
+  apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
+  . intro minteq
+    simp at minteq
+    rcases minteq with ⟨t0eq,t1eq⟩|⟨t0eq,t1eq⟩
+    . rw [t0eq,t1eq]
+      exact sw.exi
+    . rw [t0eq, t1eq]
+      rw [s.amms.h1 sw.t1 sw.t0]
+      simp
+      exact sw.exi
+
+  . intro mintneq
+    rcases 𝕋₀.toMint_diff mintneq with ⟨left|left, right|right⟩
+    <;>
+    (simp [apply, AMMSet.sub_r1, AMMSet.add_r0, left, right] at h1; exact h1)
 
 lemma Swap.mintedSupply (sw: Swap c s) (m: 𝕋₁):
   sw.apply.mintsupply m = s.mintsupply m

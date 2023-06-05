@@ -5,6 +5,23 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
 
+@[simp] theorem Prod.swap_eq_zero
+{α β: Type} [Zero α] [Zero β] (p: α×β):
+p.swap = (0: β×α) ↔ p = (0: α×β) := by
+  apply Iff.intro
+  . intro swap0
+    rw [← Prod.swap_swap p]
+    simp [swap0]
+  . intro p0
+    simp [p0]
+
+@[simp] theorem Prod.swap_ne_zero
+{α β: Type} [Zero α] [Zero β] (p: α×β):
+p.swap ≠ (0: β×α) ↔ p ≠ (0: α×β) := by
+  apply Iff.intro
+  . simp
+  . simp
+
 lemma NNReal.neq_zero_imp_gt {x: NNReal} (h: x ≠ 0)
 : 0 < x := Ne.lt_of_le' h x.property
 
