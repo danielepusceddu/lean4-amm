@@ -20,7 +20,12 @@ noncomputable def Swap.apply (sw: Swap c s): Γ :=
 ⟨
   (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))).subb sw.a sw.t0 sw.v0,
   s.mints,
-  @AMMSet.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi))) (by sorry)
+  @AMMSet.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))
+
+  -- Prove sw.nodrain still holds even after the add_r0
+  (by simp [AMMSet.add_r0, AMMSet.exists_imp_dif sw.exi, 
+            AMMSet.up]; 
+      exact sw.nodrain)
 ⟩
 
 /-
