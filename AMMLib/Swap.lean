@@ -122,31 +122,40 @@ theorem Swap.minted_still_supp
 {m: 𝕋₁}
 (h1: 0 < s.mintsupply m)
 : 0 < sw.apply.mintsupply m
-:= by sorry
+:= by 
+  unfold Γ.mintsupply at h1 ⊢
+  simp [h1, apply]
 
 theorem Swap.acc_t0_after_swap (sw: Swap c s)
 : sw.apply.atoms sw.a sw.t0 
   = 
   (s.atoms sw.a sw.t0) - sw.v0
-:= by sorry
+:= by simp [apply, Wall0.subb, Wall0.addb,
+            AMMSet.exists_imp_dif sw.exi]
 
 theorem Swap.acc_t1_after_swap (sw: Swap c s)
 : sw.apply.atoms sw.a sw.t1 
   = 
   (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))
-:= by sorry
+:= by 
+  simp [apply, Wall0.subb, Wall0.addb,
+        (AMMSet.exists_imp_dif sw.exi).symm]
 
 @[simp] theorem Swap.acc_r0_after_swap (sw: Swap c s)
 : (sw.apply.amms.f sw.t0 sw.t1).fst
   = 
   (s.amms.f sw.t0 sw.t1).fst + sw.v0
-:= by sorry
+:= by
+  simp [apply, AMMSet.sub_r1, AMMSet.add_r0,
+      (AMMSet.exists_imp_dif sw.exi).symm]
 
 @[simp] theorem Swap.acc_r1_after_swap (sw: Swap c s)
 : (sw.apply.amms.f sw.t0 sw.t1).snd
   = 
   (s.amms.f sw.t0 sw.t1).snd - sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi))
-:= by sorry
+:= by
+  simp [apply, AMMSet.sub_r1, AMMSet.add_r0,
+      (AMMSet.exists_imp_dif sw.exi).symm]
 
 @[simp] theorem Swap.erase_atoms_same 
 (sw: Swap c s) (a: Account)
