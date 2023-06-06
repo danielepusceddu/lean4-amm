@@ -58,12 +58,6 @@ theorem Swap.amm_in_apply
     <;>
     (simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0, left, right] at h1; exact h1)
 
-lemma Swap.mintedSupply (sw: Swap c s) (m: 𝕋₁):
-  sw.apply.mintsupply m = s.mintsupply m
-  := by
-  simp [Γ.mintsupply, apply, 𝕊₁.subb, 𝕊₁.addb]
-
-
 /- If an AMM existed before the swap, 
    then it exists after too. 
 Sketch Proof:
@@ -103,6 +97,12 @@ theorem Swap.amm_still_exists
     <;>
     (simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0, left, right]
      exact h1)
+
+
+lemma Swap.mintedSupply (sw: Swap c s) (m: 𝕋₁):
+  sw.apply.mintsupply m = s.mintsupply m
+  := by
+  simp [Γ.mintsupply, apply, 𝕊₁.subb, 𝕊₁.addb]
 
 theorem Swap.amm_fp_diff (sw: Swap c s)
 (t0 t1: 𝕋₀)
@@ -192,49 +192,3 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
 (m: 𝕋₁)
 : sw.apply.mintsupply m = s.mintsupply m := by
 simp [Swap.apply, mintsupply]
-
-@[simp] theorem swap_price_mint_denumz
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(m: 𝕋₁)
-: sw.apply.𝕋₁Price_denumz m = s.𝕋₁Price_denumz m := by
-simp [Γ.𝕋₁Price_denumz]
-
-@[simp] theorem swap_price_mint_diff_num_addend1z
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Price_num_addend1z c.o m = s.𝕋₁Price_num_addend1z c.o m := by
-  simp [Γ.𝕋₁Price_num_addend1z]; left
-  simp [Swap.apply, hdif]
-  rw [← 𝕋₁.choose_eq m] at hdif
-  unfold Swap.mint at hdif
-  have hdif' := 𝕋₀.toMint_diff hdif
-  simp [𝕊ₐ.sub_r1, hdif']
-  simp [𝕊ₐ.add_r0, hdif']
-
-@[simp] theorem swap_price_mint_diff_num_addend2z
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Price_num_addend2z c.o m = s.𝕋₁Price_num_addend2z c.o m := by
-  simp [Γ.𝕋₁Price_num_addend2z]; left;
-  simp [Swap.apply, hdif]
-  rw [← 𝕋₁.choose_eq m] at hdif
-  unfold Swap.mint at hdif
-  have hdif' := 𝕋₀.toMint_diff hdif
-  simp [𝕊ₐ.sub_r1, hdif']
-  simp [𝕊ₐ.add_r0, hdif']
-
-
-@[simp] theorem swap_price_mint_diff_numz
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Price_numz c.o m = s.𝕋₁Price_numz c.o m := by
-simp [Γ.𝕋₁Price_numz]
-simp [hdif]
-
-@[simp] theorem swap_price_mint_diff
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Pricez c.o m = s.𝕋₁Pricez c.o m := by
-  simp [Γ.𝕋₁Pricez]
-  simp [hdif]
-

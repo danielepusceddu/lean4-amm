@@ -4,7 +4,8 @@ import AMMLib.Networth
 import AMMLib.Price
 import AMMLib.State
 import AMMLib.Supply
-import AMMLib.Swap
+import AMMLib.Swap.Basic
+import AMMLib.Swap.Networth
 import AMMLib.Tokens
 import AMMLib.Trace
 import AMMLib.Wallets
