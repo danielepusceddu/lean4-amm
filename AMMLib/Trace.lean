@@ -201,3 +201,37 @@ sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints 
             AMMSet.reorder_snd _ sw.t1 sw.t0]
       field_simp
       ring_nf
+
+theorem lemma32_diff
+{c: Cfg} {s: Γ} {sw: Swap c s} (tx: Tx c s (sw.apply))
+(a: Account) (adif: a ≠ sw.a)
+: 
+(a.gain tx)
+=
+-sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*((s.mints a sw.mint)/(s.mints.supply sw.mint))
+:= by
+  unfold Account.gain
+  unfold Γ.networth
+  rw [AtomicWall.networth_destruct _ c.o sw.t0]
+  rw [AtomicWall.networth_destruct _ c.o sw.t1]
+  rw [AtomicWall.networth_destruct (s.atoms a) c.o sw.t0]
+  rw [AtomicWall.networth_destruct (Finsupp.erase sw.t0 (s.atoms a)) c.o sw.t1]
+  rw [Finsupp.erase_ne (AMMSet.exists_imp_dif sw.exi).symm]
+  rw [Finsupp.erase_ne (AMMSet.exists_imp_dif sw.exi).symm]
+  simp only [Swap.acc_diff_t1]
+  rw [MintedWall.networth_destruct _ (sw.apply) c.o sw.mint]
+  rw [MintedWall.networth_destruct _ s c.o sw.mint]
+  simp [Γ.𝕋₁Pricez, Γ.𝕋₁Price_numz, Γ.𝕋₁Price_denumz, Γ.𝕋₁Price_num_addend1z, Γ.𝕋₁Price_num_addend2z]
+  rw [Swap.acc_diff_t0 sw a adif]
+
+  unfold Swap.mint
+  cases (𝕋₀.toMint_t0_cases (AMMSet.exists_imp_dif sw.exi)) 
+  with
+  | inl chooseEq
+  | inr chooseEq =>
+      simp [chooseEq]
+      simp [Γ.mintsupply, sw.enough, le_of_lt sw.nodrain,
+            AMMSet.reorder_fst _ sw.t1 sw.t0,
+            AMMSet.reorder_snd _ sw.t1 sw.t0]
+      field_simp
+      ring_nf

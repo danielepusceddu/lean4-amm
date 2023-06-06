@@ -133,6 +133,18 @@ theorem Swap.acc_t0_after_swap (sw: Swap c s)
 := by simp [apply, Wall0.subb, Wall0.addb,
             AMMSet.exists_imp_dif sw.exi]
 
+@[simp] theorem Swap.acc_diff_t0 
+(sw: Swap c s) (a: Account) (hdif: a ≠ sw.a):
+sw.apply.atoms a = s.atoms a := by
+  ext t
+  simp [apply, Wall0.subb, Wall0.addb, hdif]
+
+@[simp] theorem Swap.acc_diff_t1
+(sw: Swap c s) (a: Account) (hdif: a ≠ sw.a):
+sw.apply.mints a = s.mints a := by
+  ext t
+  simp [apply, Wall0.subb, Wall0.addb, hdif]
+
 theorem Swap.acc_t1_after_swap (sw: Swap c s)
 : sw.apply.atoms sw.a sw.t1 
   = 
