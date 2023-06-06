@@ -1,5 +1,6 @@
 import AMMLib.AMMSet
 import AMMLib.Deposit
+import AMMLib.Networth
 import AMMLib.Price
 import AMMLib.State
 import AMMLib.Supply
