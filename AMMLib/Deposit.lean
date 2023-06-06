@@ -7,7 +7,7 @@ structure Deposit0 (s: Γ) where
   t1: 𝕋₀
   r0: ℝ+
   r1: ℝ+
-  a: Account
+  a: 𝔸
   hdif: t0 ≠ t1
   hnin: s.amms.f t0 t1 = (0,0)
   hen0: (s.atoms a) t0 ≤ r0
@@ -18,7 +18,7 @@ noncomputable def Deposit0.apply
   ⟨
   (s.atoms.subb v.a v.t0 v.r0).subb v.a v.t1 v.r1,
   s.mints.addb v.a (𝕋₀.toMint v.hdif) v.r0,
-  
+
   s.amms.up v.t0 v.t1 (v.r0, v.r1) v.hdif 
   (by simp; apply Iff.intro;
       . intro _
@@ -32,7 +32,7 @@ noncomputable def Deposit0.apply
 {s: Γ} (v: Deposit0 s)
 (m: 𝕋₁) (hdif: m ≠ (𝕋₀.toMint v.hdif)):
 v.apply.mintsupply m = s.mintsupply m := by
-  simp [apply, Γ.mintsupply, Wall1.addb, hdif]
+  simp [apply, Γ.mintsupply, 𝕊₁.addb, hdif]
 
 @[simp] theorem Deposit0.diff_same 
 {s: Γ} (v: Deposit0 s)

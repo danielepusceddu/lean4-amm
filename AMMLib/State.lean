@@ -1,5 +1,6 @@
 import AMMLib.Tokens
 import AMMLib.AMMSet
+import AMMLib.Wallets
 
 -- Config does not change between states.
 -- This is where I would add φ.
@@ -11,6 +12,6 @@ structure Cfg where
 
 -- State
 structure Γ where
-  atoms: Wall0
-  mints: Wall1
-  amms: AMMSet
+  atoms: 𝕊₀
+  mints: 𝕊₁
+  amms: 𝕊ₐ

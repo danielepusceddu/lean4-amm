@@ -8,13 +8,13 @@ import HelpersLib.PReal
 import HelpersLib.Finsupp2
 open BigOperators
 
-structure Account where
+structure 𝔸 where
   n: ℕ
 
 structure 𝕋₀ where
   n: ℕ
 
-instance: DecidableEq Account := 
+instance: DecidableEq 𝔸 := 
   fun a1 a2 => by 
   cases a1; cases a2; simp; infer_instance
 
@@ -155,18 +155,4 @@ theorem 𝕋₀.toMint_t0_cases
     contradiction
   . simp [toMint]; symm; exact right1; 
 
-abbrev Wall0 := Account →₀ 𝕋₀ →₀ NNReal
-abbrev Wall1 := Account →₀ 𝕋₁ →₀ NNReal
 abbrev AtomicOracle  := 𝕋₀ → PReal
-
-noncomputable def Wall0.addb (as: Wall0) (a: Account) (t: 𝕋₀) (v: NNReal)
-  : Wall0 := as.up a t ((as a t) + v)
-
-noncomputable def Wall0.subb (as: Wall0) (a: Account) (t: 𝕋₀) (v: NNReal)
-  : Wall0 := as.up a t ((as a t) - v)
-
-noncomputable def Wall1.addb (as: Wall1) (a: Account) (t: 𝕋₁) (v: NNReal)
-  : Wall1 := as.up a t ((as a t) + v)
-
-noncomputable def Wall1.subb (as: Wall1) (a: Account) (t: 𝕋₁) (v: NNReal)
-  : Wall1 := as.up a t ((as a t) - v)
