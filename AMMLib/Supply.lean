@@ -1,7 +1,7 @@
+import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import AMMLib.AMMSet
 import AMMLib.State
-import AMMLib.Finsupp2
 open BigOperators
 
 def pick2 {α β: Type} (_: α) (x: β) := x

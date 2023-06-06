@@ -1,11 +1,11 @@
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Sym.Sym2
-import AMMLib.Helpers
-import AMMLib.PReal
+import HelpersLib.NNReal
+import HelpersLib.Prod
+import HelpersLib.PReal
+import HelpersLib.Finsupp2
 import AMMLib.Tokens
-import AMMLib.Finsupp2
-open BigOperators
 
 structure AMMSet where 
   f: 𝕋₀ →₀ 𝕋₀ →₀ (NNReal × NNReal)

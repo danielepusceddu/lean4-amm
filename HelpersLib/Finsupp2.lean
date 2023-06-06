@@ -1,6 +1,7 @@
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
+import HelpersLib.Prod
 
 theorem Finsupp.update_comm {α β: Type} [DecidableEq α] [Zero β]
 (f: α →₀ β) (a a': α) (b b': β) (hdif: a ≠ a'):
@@ -66,17 +67,6 @@ theorem Finsupp.up_apply
 : (f.up a' b' c) a' b' = c := by
   unfold up
   simp
-
-/- Product swaps as an embedding 
-   (which are just a structure containing a function
-    and a proof that it is injective)-/
-def Prod.swap_emb {α β: Type}: α × β ↪ β × α :=
-  ⟨Prod.swap, Prod.swap_injective⟩
-
-/- Prod.swap_emb coerced to a function is the same as Prod -/
-lemma Prod.swap_emb_coe {α β: Type}
-: (Prod.swap_emb: (α × β → β × α)) = Prod.swap := by
-  unfold swap_emb; simp
 
 /- The finsupp same as f except the input pair is swapped -/
 def Finsupp.uncurried_swap {α β M: Type} [e: AddCommMonoid M] 

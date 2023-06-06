@@ -4,9 +4,8 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Finsupp.Basic
-import AMMLib.PReal
-import AMMLib.Helpers
-import AMMLib.Finsupp2
+import HelpersLib.PReal
+import HelpersLib.Finsupp2
 open BigOperators
 
 structure Account where
