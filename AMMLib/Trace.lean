@@ -122,7 +122,7 @@ noncomputable def Γ.networth
 (MintedWall.networth (s.mints a) s o)
 
 noncomputable def 𝔸.gain
-{c: Cfg} {s s': Γ} (a: 𝔸) (_: Tx c s s')
+(a: 𝔸) (c: Cfg) (s s': Γ)
 : ℝ
 := ((s'.networth a c.o): ℝ) - ((s.networth a c.o): ℝ)
 
@@ -170,9 +170,9 @@ MintedWall.networth (Finsupp.erase sw.mint (s.mints a)) s c.o
   exact h
 
 theorem lemma32_same
-{c: Cfg} {s: Γ} {sw: Swap c s} (tx: Tx c s (sw.apply))
+{c: Cfg} {s: Γ} (sw: Swap c s)
 : 
-(sw.a.gain tx)
+(sw.a.gain c s sw.apply)
 =
 sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a sw.mint)/(s.mints.supply sw.mint))
 := by
@@ -203,10 +203,10 @@ sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints 
       ring_nf
 
 theorem lemma32_diff
-{c: Cfg} {s: Γ} {sw: Swap c s} (tx: Tx c s (sw.apply))
+{c: Cfg} {s: Γ} (sw: Swap c s)
 (a: 𝔸) (adif: a ≠ sw.a)
 : 
-(a.gain tx)
+(a.gain c s sw.apply)
 =
 -sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*((s.mints a sw.mint)/(s.mints.supply sw.mint))
 := by
