@@ -11,16 +11,16 @@ structure Swap (c: Cfg) (s: Γ) where
   v0: ℝ+
   enough: v0 ≤ s.atoms a t0
   exi:    s.amms.f t0 t1 ≠ 0
-  nodrain: v0*(c.sx v0 (s.amms.fp exi)) < (s.amms.f t0 t1).snd
+  nodrain: v0*(c.sx v0 (s.amms.fp exi).fst (s.amms.fp exi).snd) < (s.amms.f t0 t1).snd
 
 def Swap.mint (sw: Swap c s)
 : 𝕋₁ := 𝕋₀.toMint (𝕊ₐ.exists_imp_dif sw.exi)
 
 noncomputable def Swap.apply (sw: Swap c s): Γ :=
 ⟨
-  (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))).subb sw.a sw.t0 sw.v0,
+  (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))).subb sw.a sw.t0 sw.v0,
   s.mints,
-  @𝕊ₐ.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))
+  @𝕊ₐ.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 
   -- Prove sw.nodrain still holds even after the add_r0
   (by simp [𝕊ₐ.add_r0, 𝕊ₐ.exists_imp_dif sw.exi, 
@@ -148,7 +148,7 @@ sw.apply.mints a = s.mints a := by
 theorem Swap.acc_t1_after_swap (sw: Swap c s)
 : sw.apply.atoms sw.a sw.t1 
   = 
-  (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi)))
+  (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by 
   simp [apply, 𝕊₀.subb, 𝕊₀.addb,
         (𝕊ₐ.exists_imp_dif sw.exi).symm]
@@ -164,7 +164,7 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
 @[simp] theorem Swap.acc_r1_after_swap (sw: Swap c s)
 : (sw.apply.amms.f sw.t0 sw.t1).snd
   = 
-  (s.amms.f sw.t0 sw.t1).snd - sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi))
+  (s.amms.f sw.t0 sw.t1).snd - (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by
   simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0,
       (𝕊ₐ.exists_imp_dif sw.exi).symm]

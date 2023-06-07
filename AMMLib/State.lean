@@ -6,8 +6,9 @@ import AMMLib.Wallets
 -- This is where I would add φ.
 -- The price oracle should be moved to 
 -- State to implement price updates.
+abbrev SX := PReal → PReal → PReal → PReal
 structure Cfg where
-  sx: PReal → (PReal × PReal) → PReal
+  sx: SX
   o: 𝕋₀ → PReal
 
 -- State

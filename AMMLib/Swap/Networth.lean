@@ -93,7 +93,7 @@ theorem lemma32_same
 : 
 (sw.a.gain c s sw.apply)
 =
-sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a sw.mint)/(s.mints.supply sw.mint))
+sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a sw.mint)/(s.mints.supply sw.mint))
 := by
   unfold 𝔸.gain
   unfold Γ.networth
@@ -127,7 +127,7 @@ theorem lemma32_diff
 : 
 (a.gain c s sw.apply)
 =
--sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi))*(c.o sw.t1) - (c.o sw.t0))*((s.mints a sw.mint)/(s.mints.supply sw.mint))
+-sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(c.o sw.t1) - (c.o sw.t0))*((s.mints a sw.mint)/(s.mints.supply sw.mint))
 := by
   unfold 𝔸.gain
   unfold Γ.networth
@@ -160,11 +160,11 @@ theorem lemma33
 (hzero: s.mints sw.a sw.mint = 0):
 cmp (sw.a.gain c s sw.apply) 0
 =
-cmp ((c.sx sw.v0 (s.amms.fp sw.exi)): ℝ) ((c.o sw.t0) / (c.o sw.t1))
+cmp ((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd): ℝ) ((c.o sw.t0) / (c.o sw.t1))
 := by 
   simp [lemma32_same, hzero, PReal.coe_div]
 
-  generalize c.sx sw.v0 (s.amms.fp sw.exi) = y at *
+  generalize c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd = y at *
   generalize (c.o sw.t0) = p0 at *
   generalize (c.o sw.t1) = p1 at *
   generalize sw.v0 = x at *
