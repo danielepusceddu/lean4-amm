@@ -23,6 +23,9 @@ theorem val_eq_coe (n : ℝ+) : n.val = n :=
 
 theorem coe_pos (x: ℝ+): (0:ℝ) < x := x.2
 
+theorem coe_ne_zero (x: ℝ+)
+: (x: ℝ) ≠ 0 := (ne_of_lt x.coe_pos).symm
+
 @[simp] theorem coe_eq (x: ℝ+): ((x: NNReal): ℝ) = (x: ℝ) := by rfl
 
 theorem coe_nnreal_pos (x: ℝ+): (x: NNReal) ≠ 0 := by

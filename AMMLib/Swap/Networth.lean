@@ -154,3 +154,25 @@ theorem lemma32_diff
             𝕊ₐ.reorder_snd _ sw.t1 sw.t0]
       field_simp
       ring_nf
+
+theorem lemma33
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(hzero: s.mints sw.a sw.mint = 0):
+cmp (sw.a.gain c s sw.apply) 0
+=
+cmp ((c.sx sw.v0 (s.amms.fp sw.exi)): ℝ) ((c.o sw.t0) / (c.o sw.t1))
+:= by 
+  simp [lemma32_same, hzero, PReal.coe_div]
+
+  generalize c.sx sw.v0 (s.amms.fp sw.exi) = y at *
+  generalize (c.o sw.t0) = p0 at *
+  generalize (c.o sw.t1) = p1 at *
+  generalize sw.v0 = x at *
+
+  rw [← (mul_zero (x: ℝ))]
+  rw [cmp_mul_pos_left x.coe_pos (y*p1 - p0) 0]
+  rw [← cmp_add_right ((y: ℝ)*p1 - p0) 0 p0]
+  rw [zero_add, sub_add, sub_self, sub_zero]
+  rw [div_eq_mul_inv (p0: ℝ) p1]
+  rw [← cmp_mul_pos_right (inv_pos_of_pos p1.coe_pos) (y*p1) p0]
+  rw [mul_inv_cancel_right₀ p1.coe_ne_zero y]
