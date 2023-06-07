@@ -13,8 +13,11 @@ structure Swap (c: Cfg) (s: Γ) where
   exi:    s.amms.f t0 t1 ≠ 0
   nodrain: v0*(c.sx v0 (s.amms.fp exi).fst (s.amms.fp exi).snd) < (s.amms.f t0 t1).snd
 
+def Swap.hdif (sw: Swap c s):
+sw.t0 ≠ sw.t1 := 𝕊ₐ.exists_imp_dif sw.exi
+
 def Swap.mint (sw: Swap c s)
-: 𝕋₁ := 𝕋₀.toMint (𝕊ₐ.exists_imp_dif sw.exi)
+: 𝕋₁ := 𝕋₀.toMint sw.hdif
 
 noncomputable def Swap.apply (sw: Swap c s): Γ :=
 ⟨
@@ -23,7 +26,7 @@ noncomputable def Swap.apply (sw: Swap c s): Γ :=
   @𝕊ₐ.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 
   -- Prove sw.nodrain still holds even after the add_r0
-  (by simp [𝕊ₐ.add_r0, 𝕊ₐ.exists_imp_dif sw.exi, 
+  (by simp [𝕊ₐ.add_r0, sw.hdif, 
             𝕊ₐ.up]; 
       exact sw.nodrain)
 ⟩
@@ -41,7 +44,7 @@ theorem Swap.amm_in_apply
 (h1: sw.apply.amms.f t0 t1 ≠ 0)
 : s.amms.f t0 t1 ≠ 0 := by
   have hdif := 𝕊ₐ.exists_imp_dif h1
-  have swhdif := 𝕊ₐ.exists_imp_dif sw.exi
+  have swhdif := sw.hdif
   apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
   . intro minteq
     simp only [𝕋₀.toMint_eq] at minteq
@@ -73,7 +76,7 @@ theorem Swap.amm_still_exists
 : sw.apply.amms.f t0 t1 ≠ 0
 := by
   have hdif := 𝕊ₐ.exists_imp_dif h1
-  have swhdif := 𝕊ₐ.exists_imp_dif sw.exi
+  have swhdif := sw.hdif
   apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
 
   . intro minteq
@@ -131,7 +134,7 @@ theorem Swap.acc_t0_after_swap (sw: Swap c s)
   = 
   (s.atoms sw.a sw.t0) - sw.v0
 := by simp [apply, 𝕊₀.subb, 𝕊₀.addb,
-            𝕊ₐ.exists_imp_dif sw.exi]
+            sw.hdif]
 
 @[simp] theorem Swap.acc_diff_t0 
 (sw: Swap c s) (a: 𝔸) (hdif: a ≠ sw.a):
@@ -151,7 +154,7 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
   (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by 
   simp [apply, 𝕊₀.subb, 𝕊₀.addb,
-        (𝕊ₐ.exists_imp_dif sw.exi).symm]
+        sw.hdif.symm]
 
 @[simp] theorem Swap.acc_r0_after_swap (sw: Swap c s)
 : (sw.apply.amms.f sw.t0 sw.t1).fst
@@ -159,7 +162,7 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
   (s.amms.f sw.t0 sw.t1).fst + sw.v0
 := by
   simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0,
-      (𝕊ₐ.exists_imp_dif sw.exi).symm]
+      sw.hdif.symm]
 
 @[simp] theorem Swap.acc_r1_after_swap (sw: Swap c s)
 : (sw.apply.amms.f sw.t0 sw.t1).snd
@@ -167,7 +170,7 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
   (s.amms.f sw.t0 sw.t1).snd - (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by
   simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0,
-      (𝕊ₐ.exists_imp_dif sw.exi).symm]
+      sw.hdif.symm]
 
 @[simp] theorem Swap.erase_atoms_same 
 (sw: Swap c s) (a: 𝔸)
@@ -183,7 +186,7 @@ theorem Swap.acc_t1_after_swap (sw: Swap c s)
   . intro tneqt1
     apply @Decidable.byCases (t=sw.t0)
     . intro teqt0
-      simp [tneqt1, teqt0, (𝕊ₐ.exists_imp_dif sw.exi)]
+      simp [tneqt1, teqt0, sw.hdif]
     . intro tneqt0
       simp [tneqt1, tneqt0, 𝕊₀.subb, 𝕊₀.addb]
 

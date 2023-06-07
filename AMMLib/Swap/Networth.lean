@@ -102,15 +102,15 @@ sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(c.o sw.t1) - 
   rw [𝕎₀.networth_destruct (s.atoms sw.a) c.o sw.t0]
   rw [𝕎₀.networth_destruct (Finsupp.erase sw.t0 (s.atoms sw.a)) c.o sw.t1]
   simp only [Swap.acc_t0_after_swap]
-  rw [Finsupp.erase_ne (𝕊ₐ.exists_imp_dif sw.exi).symm]
-  rw [Finsupp.erase_ne (𝕊ₐ.exists_imp_dif sw.exi).symm]
+  rw [Finsupp.erase_ne sw.hdif.symm]
+  rw [Finsupp.erase_ne sw.hdif.symm]
   simp only [Swap.acc_t1_after_swap]
   rw [𝕎₁.networth_destruct _ (sw.apply) c.o sw.mint]
   rw [𝕎₁.networth_destruct _ s c.o sw.mint]
   simp [Γ.𝕋₁Pricez, Γ.𝕋₁Price_numz, Γ.𝕋₁Price_denumz, Γ.𝕋₁Price_num_addend1z, Γ.𝕋₁Price_num_addend2z]
 
   unfold Swap.mint
-  cases (𝕋₀.toMint_t0_cases (𝕊ₐ.exists_imp_dif sw.exi)) 
+  cases (𝕋₀.toMint_t0_cases sw.hdif) 
   with
   | inl chooseEq
   | inr chooseEq =>
@@ -135,8 +135,8 @@ theorem lemma32_diff
   rw [𝕎₀.networth_destruct _ c.o sw.t1]
   rw [𝕎₀.networth_destruct (s.atoms a) c.o sw.t0]
   rw [𝕎₀.networth_destruct (Finsupp.erase sw.t0 (s.atoms a)) c.o sw.t1]
-  rw [Finsupp.erase_ne (𝕊ₐ.exists_imp_dif sw.exi).symm]
-  rw [Finsupp.erase_ne (𝕊ₐ.exists_imp_dif sw.exi).symm]
+  rw [Finsupp.erase_ne sw.hdif.symm]
+  rw [Finsupp.erase_ne sw.hdif.symm]
   simp only [Swap.acc_diff_t1]
   rw [𝕎₁.networth_destruct _ (sw.apply) c.o sw.mint]
   rw [𝕎₁.networth_destruct _ s c.o sw.mint]
@@ -144,7 +144,7 @@ theorem lemma32_diff
   rw [Swap.acc_diff_t0 sw a adif]
 
   unfold Swap.mint
-  cases (𝕋₀.toMint_t0_cases (𝕊ₐ.exists_imp_dif sw.exi)) 
+  cases (𝕋₀.toMint_t0_cases sw.hdif) 
   with
   | inl chooseEq
   | inr chooseEq =>
