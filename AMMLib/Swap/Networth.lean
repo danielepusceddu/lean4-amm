@@ -2,15 +2,15 @@ import AMMLib.Swap.Basic
 import AMMLib.Networth
 
 @[simp] theorem swap_price_mint_denumz
-{c: Cfg} {s: Γ} (sw: Swap c s)
+(sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁)
 : sw.apply.𝕋₁Price_denumz m = s.𝕋₁Price_denumz m := by
 simp [Γ.𝕋₁Price_denumz]
 
 @[simp] theorem swap_price_mint_diff_num_addend1z
-{c: Cfg} {s: Γ} (sw: Swap c s)
+(sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Price_num_addend1z c.o m = s.𝕋₁Price_num_addend1z c.o m := by
+: sw.apply.𝕋₁Price_num_addend1z o m = s.𝕋₁Price_num_addend1z o m := by
   simp [Γ.𝕋₁Price_num_addend1z]; left
   simp [Swap.apply, hdif]
   rw [← 𝕋₁.choose_eq m] at hdif
@@ -20,9 +20,9 @@ simp [Γ.𝕋₁Price_denumz]
   simp [𝕊ₐ.add_r0, hdif']
 
 @[simp] theorem swap_price_mint_diff_num_addend2z
-{c: Cfg} {s: Γ} (sw: Swap c s)
+(sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Price_num_addend2z c.o m = s.𝕋₁Price_num_addend2z c.o m := by
+: sw.apply.𝕋₁Price_num_addend2z o m = s.𝕋₁Price_num_addend2z o m := by
   simp [Γ.𝕋₁Price_num_addend2z]; left;
   simp [Swap.apply, hdif]
   rw [← 𝕋₁.choose_eq m] at hdif
@@ -32,16 +32,16 @@ simp [Γ.𝕋₁Price_denumz]
   simp [𝕊ₐ.add_r0, hdif']
 
 @[simp] theorem swap_price_mint_diff_numz
-{c: Cfg} {s: Γ} (sw: Swap c s)
+(sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Price_numz c.o m = s.𝕋₁Price_numz c.o m := by
+: sw.apply.𝕋₁Price_numz o m = s.𝕋₁Price_numz o m := by
 simp [Γ.𝕋₁Price_numz]
 simp [hdif]
 
 @[simp] theorem swap_price_mint_diff
-{c: Cfg} {s: Γ} (sw: Swap c s)
+(sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Pricez c.o m = s.𝕋₁Pricez c.o m := by
+: sw.apply.𝕋₁Pricez o m = s.𝕋₁Pricez o m := by
   simp [Γ.𝕋₁Pricez]
   simp [hdif]
 
@@ -55,8 +55,8 @@ is equal to
 -/
 
 theorem bruh
-{c: Cfg} {s: Γ} (sw: Swap c s) (a: 𝔸):
-∀ (m: 𝕋₁), m ∈ (Finsupp.erase sw.mint (sw.apply.mints a)).support → (mintedworth sw.apply c.o) m ((Finsupp.erase sw.mint (sw.apply.mints a)) m) = (mintedworth s c.o) m ((Finsupp.erase sw.mint (sw.apply.mints a)) m)
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
+∀ (m: 𝕋₁), m ∈ (Finsupp.erase sw.mint (sw.apply.mints a')).support → (mintedworth sw.apply o) m ((Finsupp.erase sw.mint (sw.apply.mints a')) m) = (mintedworth s o) m ((Finsupp.erase sw.mint (sw.apply.mints a')) m)
 := by
   intro m hin
   simp at hin
@@ -64,49 +64,49 @@ theorem bruh
   simp [mintedworth, hdif]
 
 @[simp] theorem networth_erase
-{c: Cfg} {s: Γ} (sw: Swap c s) (a: 𝔸):
-𝕎₁.networth (Finsupp.erase sw.mint (sw.apply.mints a)) sw.apply c.o
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
+𝕎₁.networth (Finsupp.erase sw.mint (sw.apply.mints a')) sw.apply o
 =
-𝕎₁.networth (Finsupp.erase sw.mint (s.mints a)) s c.o
+𝕎₁.networth (Finsupp.erase sw.mint (s.mints a')) s o
 := by
   simp [𝕎₁.networth]
-  rw [@Finsupp.sum_congr 𝕋₁ NNReal NNReal _ _ _ (mintedworth (sw.apply) c.o) (mintedworth s c.o) (bruh sw a)]
+  rw [@Finsupp.sum_congr 𝕋₁ NNReal NNReal _ _ _ (mintedworth (sw.apply) o) (mintedworth s o) (bruh sw a')]
   simp [Swap.apply]
 
 @[simp] theorem Swap.apply_mints
-{c: Cfg} {s: Γ} (sw: Swap c s):
+(sw: Swap sx o s a t0 t1 v0):
 sw.apply.mints = s.mints := by
 simp [apply]
 
 @[simp] theorem networth_erase'
-{c: Cfg} {s: Γ} (sw: Swap c s) (a: 𝔸):
-𝕎₁.networth (Finsupp.erase sw.mint (s.mints a)) sw.apply c.o
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
+𝕎₁.networth (Finsupp.erase sw.mint (s.mints a')) sw.apply o
 =
-𝕎₁.networth (Finsupp.erase sw.mint (s.mints a)) s c.o
+𝕎₁.networth (Finsupp.erase sw.mint (s.mints a')) s o
 := by
-  have h := networth_erase sw a
+  have h := networth_erase sw a'
   simp only [Swap.apply_mints] at h
   exact h
 
 theorem lemma32_same
-{c: Cfg} {s: Γ} (sw: Swap c s)
+(sw: Swap sx o s a t0 t1 v0)
 : 
-(sw.a.gain c s sw.apply)
+(a.gain ⟨sx,o⟩ s sw.apply)
 =
-sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(c.o sw.t1) - (c.o sw.t0))*(1 - (s.mints sw.a sw.mint)/(s.mints.supply sw.mint))
+v0*((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(o t1) - (o t0))*(1 - (s.mints a sw.mint)/(s.mints.supply sw.mint))
 := by
   unfold 𝔸.gain
   unfold Γ.networth
-  rw [𝕎₀.networth_destruct _ c.o sw.t0]
-  rw [𝕎₀.networth_destruct _ c.o sw.t1]
-  rw [𝕎₀.networth_destruct (s.atoms sw.a) c.o sw.t0]
-  rw [𝕎₀.networth_destruct (Finsupp.erase sw.t0 (s.atoms sw.a)) c.o sw.t1]
+  rw [𝕎₀.networth_destruct _ o t0]
+  rw [𝕎₀.networth_destruct _ o t1]
+  rw [𝕎₀.networth_destruct (s.atoms a) o t0]
+  rw [𝕎₀.networth_destruct (Finsupp.erase t0 (s.atoms a)) o t1]
   simp only [Swap.acc_t0_after_swap]
   rw [Finsupp.erase_ne sw.hdif.symm]
   rw [Finsupp.erase_ne sw.hdif.symm]
   simp only [Swap.acc_t1_after_swap]
-  rw [𝕎₁.networth_destruct _ (sw.apply) c.o sw.mint]
-  rw [𝕎₁.networth_destruct _ s c.o sw.mint]
+  rw [𝕎₁.networth_destruct _ (sw.apply) o sw.mint]
+  rw [𝕎₁.networth_destruct _ s o sw.mint]
   simp [Γ.𝕋₁Pricez, Γ.𝕋₁Price_numz, Γ.𝕋₁Price_denumz, Γ.𝕋₁Price_num_addend1z, Γ.𝕋₁Price_num_addend2z]
 
   unfold Swap.mint
@@ -116,32 +116,32 @@ sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(c.o sw.t1) - 
   | inr chooseEq =>
       simp [chooseEq]
       simp [Γ.mintsupply, sw.enough, le_of_lt sw.nodrain,
-            𝕊ₐ.reorder_fst _ sw.t1 sw.t0,
-            𝕊ₐ.reorder_snd _ sw.t1 sw.t0]
+            𝕊ₐ.reorder_fst _ t1 t0,
+            𝕊ₐ.reorder_snd _ t1 t0]
       field_simp
       ring_nf
 
 theorem lemma32_diff
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(a: 𝔸) (adif: a ≠ sw.a)
+(sw: Swap sx o s a t0 t1 v0)
+(a': 𝔸) (adif: a' ≠ a)
 : 
-(a.gain c s sw.apply)
+(a'.gain ⟨sx,o⟩ s sw.apply)
 =
--sw.v0*((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(c.o sw.t1) - (c.o sw.t0))*((s.mints a sw.mint)/(s.mints.supply sw.mint))
+-v0*((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(o t1) - (o t0))*((s.mints a' sw.mint)/(s.mints.supply sw.mint))
 := by
   unfold 𝔸.gain
   unfold Γ.networth
-  rw [𝕎₀.networth_destruct _ c.o sw.t0]
-  rw [𝕎₀.networth_destruct _ c.o sw.t1]
-  rw [𝕎₀.networth_destruct (s.atoms a) c.o sw.t0]
-  rw [𝕎₀.networth_destruct (Finsupp.erase sw.t0 (s.atoms a)) c.o sw.t1]
+  rw [𝕎₀.networth_destruct _ o t0]
+  rw [𝕎₀.networth_destruct _ o t1]
+  rw [𝕎₀.networth_destruct (s.atoms a') o t0]
+  rw [𝕎₀.networth_destruct (Finsupp.erase t0 (s.atoms a')) o t1]
   rw [Finsupp.erase_ne sw.hdif.symm]
   rw [Finsupp.erase_ne sw.hdif.symm]
   simp only [Swap.acc_diff_t1]
-  rw [𝕎₁.networth_destruct _ (sw.apply) c.o sw.mint]
-  rw [𝕎₁.networth_destruct _ s c.o sw.mint]
+  rw [𝕎₁.networth_destruct _ (sw.apply) o sw.mint]
+  rw [𝕎₁.networth_destruct _ s o sw.mint]
   simp [Γ.𝕋₁Pricez, Γ.𝕋₁Price_numz, Γ.𝕋₁Price_denumz, Γ.𝕋₁Price_num_addend1z, Γ.𝕋₁Price_num_addend2z]
-  rw [Swap.acc_diff_t0 sw a adif]
+  rw [Swap.acc_diff_t0 sw a' adif]
 
   unfold Swap.mint
   cases (𝕋₀.toMint_t0_cases sw.hdif) 
@@ -150,24 +150,24 @@ theorem lemma32_diff
   | inr chooseEq =>
       simp [chooseEq]
       simp [Γ.mintsupply, sw.enough, le_of_lt sw.nodrain,
-            𝕊ₐ.reorder_fst _ sw.t1 sw.t0,
-            𝕊ₐ.reorder_snd _ sw.t1 sw.t0]
+            𝕊ₐ.reorder_fst _ t1 t0,
+            𝕊ₐ.reorder_snd _ t1 t0]
       field_simp
       ring_nf
 
 theorem lemma33
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(hzero: s.mints sw.a sw.mint = 0):
-cmp (sw.a.gain c s sw.apply) 0
+(sw: Swap sx o s a t0 t1 v0)
+(hzero: s.mints a sw.mint = 0):
+cmp (a.gain ⟨sx,o⟩ s sw.apply) 0
 =
-cmp ((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) ((c.o sw.t0) / (c.o sw.t1))
+cmp ((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) ((o t0) / (o t1))
 := by 
   simp [lemma32_same, hzero, PReal.coe_div]
 
-  generalize c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd = y at *
-  generalize (c.o sw.t0) = p0 at *
-  generalize (c.o sw.t1) = p1 at *
-  generalize sw.v0 = x at *
+  generalize sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd = y at *
+  generalize (o t0) = p0 at *
+  generalize (o t1) = p1 at *
+  generalize v0 = x at *
 
   rw [← (mul_zero (x: ℝ))]
   rw [cmp_mul_pos_left x.coe_pos (y*p1 - p0) 0]
@@ -180,38 +180,34 @@ cmp ((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) ((c.o sw.t0) / 
   exact PReal.coe_cmp y (p0*p1⁻¹)
 
 theorem lemma33_lt
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(hzero: s.mints sw.a sw.mint = 0):
-(sw.a.gain c s sw.apply) < 0
+(sw: Swap sx o s a t0 t1 v0)
+(hzero: s.mints a sw.mint = 0):
+(a.gain ⟨sx,o⟩ s sw.apply) < 0
 ↔
-((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) <  (c.o sw.t0) / (c.o sw.t1)
+((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) <  (o t0) / (o t1)
 := by 
   rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff]
   rw [lemma33 sw hzero]
 
 theorem lemma33_gt
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(hzero: s.mints sw.a sw.mint = 0):
-0 < (sw.a.gain c s sw.apply)
+(sw: Swap sx o s a t0 t1 v0)
+(hzero: s.mints a sw.mint = 0):
+0 < (a.gain ⟨sx,o⟩ s sw.apply)
 ↔
-(c.o sw.t0) / (c.o sw.t1) < ((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
+(o t0) / (o t1) < ((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by 
   rw [← cmp_eq_gt_iff, ← cmp_eq_gt_iff]
   rw [lemma33 sw hzero]
 
 def Swap.swappedtoks
-{c: Cfg} {s: Γ} (sw: Swap c s)
-{x: ℝ+} (henough: x ≤ s.atoms sw.a sw.t1)
-(nodrain: x*(c.sx x (s.amms.fp sw.exi_swap).fst (s.amms.fp sw.exi_swap).snd) < (s.amms.f sw.t1 sw.t0).snd): Swap c s := 
+(sw: Swap sx o s a t0 t1 v0)
+{x: ℝ+} (henough: x ≤ s.atoms a t1)
+(nodrain: x*(sx x (s.amms.fp sw.exi_swap).fst (s.amms.fp sw.exi_swap).snd) < (s.amms.f t1 t0).snd): Swap sx o s a t1 t0 x := 
 ⟨
-  sw.t1,
-  sw.t0,
-  sw.a,
-  x,
   henough,
   𝕊ₐ.exists_swap sw.exi,
   nodrain
-⟩  
+⟩
 
 /-
 Lemma 6.2: Unique direction for swap gains
@@ -231,29 +227,24 @@ Goal:
   Qed by h1
 -/
 theorem Swap.lemma62_constprod
-{c: Cfg} {s: Γ} (sw: Swap c s)
-(cons: c.sx = SX.constprod)
-(hzero: s.mints sw.a sw.mint = 0)
-(y: ℝ+) (hy: y ≤ s.atoms sw.a sw.t1)
-(nodrain: y*(c.sx y (s.amms.fp sw.exi_swap).fst (s.amms.fp sw.exi_swap).snd) < (s.amms.f sw.t1 sw.t0).snd)
-(hgain: 0 < sw.a.gain c s sw.apply):
-sw.a.gain c s (sw.swappedtoks hy nodrain).apply < 0 :=
+(sw: Swap SX.constprod o s a t0 t1 v0)
+(hzero: s.mints a sw.mint = 0)
+(y: ℝ+) (hy: y ≤ s.atoms a t1)
+(nodrain: y*(SX.constprod y (s.amms.fp sw.exi_swap).fst (s.amms.fp sw.exi_swap).snd) < (s.amms.f t1 t0).snd)
+(hgain: 0 < a.gain ⟨sx,o⟩ s sw.apply):
+a.gain ⟨sx,o⟩ s (sw.swappedtoks hy nodrain).apply < 0 :=
   by
-  have hswa: sw.a = (sw.swappedtoks hy nodrain).a := 
-    by simp [swappedtoks]
   have hmin: sw.mint = (sw.swappedtoks hy nodrain).mint := 
     by simp [swappedtoks, mint, 𝕋₀.toMint]
-  rw [hswa]
 
   have h1' := (lemma33_gt sw hzero).mp hgain
 
-  simp_rw [lemma33_lt (sw.swappedtoks hy nodrain) (by rw [hmin, hswa] at hzero; exact hzero)]
+  apply (lemma33_lt (sw.swappedtoks hy nodrain) (by rw [hmin] at hzero; exact hzero)).mpr
 
-  simp_rw [cons] at h1'
-  simp_rw [cons]
-  apply SX.lemma61_constprod sw.v0
+  apply SX.lemma61_constprod v0
   simp only [swappedtoks]
-  rw [𝕊ₐ.reorder_fstp s.amms sw.t1 sw.t0,
-      𝕊ₐ.reorder_sndp s.amms sw.t1 sw.t0]
+  rw [𝕊ₐ.reorder_fstp s.amms t1 t0,
+      𝕊ₐ.reorder_sndp s.amms t1 t0]
   exact le_of_lt h1'
+
 

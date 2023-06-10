@@ -13,7 +13,8 @@ inductive Tx (c: Cfg) (init: Γ): Γ → Type where
   | dep0 (s': Γ) (rs: Tx c init s') (d: Deposit0 s'): 
       Tx c init d.apply
 
-  | swap (s': Γ) (rs: Tx c init s') (sw: Swap c s'):
+  | swap (s': Γ) (rs: Tx c init s') 
+         (sw: Swap c.sx c.o s' a t0 t1 v0):
       Tx c init sw.apply
 
 def reachableInit (s: Γ): Prop :=

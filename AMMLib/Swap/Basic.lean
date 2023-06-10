@@ -4,31 +4,28 @@ import AMMLib.State
 import AMMLib.Supply
 import AMMLib.Price
 
-structure Swap (c: Cfg) (s: Γ) where
-  t0: 𝕋₀
-  t1: 𝕋₀
-  a: 𝔸
-  v0: ℝ+
+structure Swap 
+  (sx: SX) (o: 𝕆) (s: Γ) (a: 𝔸) (t0 t1: 𝕋₀) (v0: ℝ+) 
+  where
   enough: v0 ≤ s.atoms a t0
   exi:    s.amms.f t0 t1 ≠ 0
-  nodrain: v0*(c.sx v0 (s.amms.fp exi).fst (s.amms.fp exi).snd) < (s.amms.f t0 t1).snd
+  nodrain: v0*(sx v0 (s.amms.fp exi).fst (s.amms.fp exi).snd) < (s.amms.f t0 t1).snd
 
-def Swap.hdif (sw: Swap c s):
-sw.t0 ≠ sw.t1 := 𝕊ₐ.exists_imp_dif sw.exi
+def Swap.hdif (sw: Swap sx o s a t0 t1 v0):
+t0 ≠ t1 := 𝕊ₐ.exists_imp_dif sw.exi
 
-def Swap.mint (sw: Swap c s)
+def Swap.mint (sw: Swap sx o s a t0 t1 v0)
 : 𝕋₁ := 𝕋₀.toMint sw.hdif
 
-def Swap.exi_swap
-{c: Cfg} {s: Γ} (sw: Swap c s):
-  s.amms.f sw.t1 sw.t0 ≠ 0 :=
+def Swap.exi_swap (sw: Swap sx o s a t0 t1 v0):
+  s.amms.f t1 t0 ≠ 0 :=
     𝕊ₐ.exists_swap sw.exi
 
-noncomputable def Swap.apply (sw: Swap c s): Γ :=
+noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 ⟨
-  (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))).subb sw.a sw.t0 sw.v0,
+  (s.atoms.addb a t1 (v0*(sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))).subb a t0 v0,
   s.mints,
-  @𝕊ₐ.sub_r1 (s.amms.add_r0 sw.v0 sw.exi) sw.t0 sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
+  @𝕊ₐ.sub_r1 (s.amms.add_r0 v0 sw.exi) t0 t1 (v0*(sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 
   -- Prove sw.nodrain still holds even after the add_r0
   (by simp [𝕊ₐ.add_r0, sw.hdif, 
@@ -45,9 +42,9 @@ if false then trivial by hypothesis
               (swap did not change this amm) 
 -/
 theorem Swap.amm_in_apply 
-{sw: Swap c s} {t0 t1: 𝕋₀}
-(h1: sw.apply.amms.f t0 t1 ≠ 0)
-: s.amms.f t0 t1 ≠ 0 := by
+{sw: Swap sx o s a t0 t1 v0} {t0' t1': 𝕋₀}
+(h1: sw.apply.amms.f t0' t1' ≠ 0)
+: s.amms.f t0' t1' ≠ 0 := by
   have hdif := 𝕊ₐ.exists_imp_dif h1
   have swhdif := sw.hdif
   apply @Decidable.byCases (𝕋₀.toMint hdif = 𝕋₀.toMint swhdif)
@@ -57,7 +54,7 @@ theorem Swap.amm_in_apply
     . rw [t0eq,t1eq]
       exact sw.exi
     . rw [t0eq, t1eq]
-      rw [s.amms.h1 sw.t1 sw.t0]
+      rw [s.amms.h1 t1 t0]
       simp
       exact sw.exi
 
@@ -75,10 +72,10 @@ if true,  then trivial by addition of PReal
 if false, then trivial by hypothesis and
                        by same after swap -/
 theorem Swap.amm_still_exists
-{c: Cfg} {s: Γ} (sw: Swap c s)
-{t0 t1: 𝕋₀}
-(h1: s.amms.f t0 t1 ≠ 0)
-: sw.apply.amms.f t0 t1 ≠ 0
+(sw: Swap sx o s a t0 t1 v0)
+{t0' t1': 𝕋₀}
+(h1: s.amms.f t0' t1' ≠ 0)
+: sw.apply.amms.f t0' t1' ≠ 0
 := by
   have hdif := 𝕊ₐ.exists_imp_dif h1
   have swhdif := sw.hdif
@@ -107,15 +104,15 @@ theorem Swap.amm_still_exists
      exact h1)
 
 
-lemma Swap.mintedSupply (sw: Swap c s) (m: 𝕋₁):
+lemma Swap.mintedSupply (sw: Swap sx o s a t0 t1 v0) (m: 𝕋₁):
   sw.apply.mintsupply m = s.mintsupply m
   := by
   simp [Γ.mintsupply, apply, 𝕊₁.subb, 𝕊₁.addb]
 
-theorem Swap.amm_fp_diff (sw: Swap c s)
-(t0 t1: 𝕋₀)
-(exi: s.amms.f t0 t1 ≠ 0)
-(hdif: (t0 ≠ sw.t0 ∨ t1 ≠ sw.t1) ∧ (t0 ≠ sw.t1 ∨ t1 ≠ sw.t0))
+theorem Swap.amm_fp_diff (sw: Swap sx o s a t0 t1 v0)
+(t0' t1': 𝕋₀)
+(exi: s.amms.f t0' t1' ≠ 0)
+(hdif: (t0' ≠ t0 ∨ t1' ≠ t1) ∧ (t0' ≠ t1 ∨ t1' ≠ t0))
 : sw.apply.amms.fp (sw.amm_still_exists exi)
 = 
 s.amms.fp exi := by
@@ -126,7 +123,7 @@ s.amms.fp exi := by
   . simp [hdif, exi]
 
 theorem Swap.minted_still_supp
-{c: Cfg} {s: Γ} (sw: Swap c s)
+{c: Cfg} {s: Γ} (sw: Swap sx o s a t0 t1 v0)
 {m: 𝕋₁}
 (h1: 0 < s.mintsupply m)
 : 0 < sw.apply.mintsupply m
@@ -134,69 +131,69 @@ theorem Swap.minted_still_supp
   unfold Γ.mintsupply at h1 ⊢
   simp [h1, apply]
 
-theorem Swap.acc_t0_after_swap (sw: Swap c s)
-: sw.apply.atoms sw.a sw.t0 
+theorem Swap.acc_t0_after_swap (sw: Swap sx o s a t0 t1 v0)
+: sw.apply.atoms a t0 
   = 
-  (s.atoms sw.a sw.t0) - sw.v0
+  (s.atoms a t0) - v0
 := by simp [apply, 𝕊₀.subb, 𝕊₀.addb,
             sw.hdif]
 
 @[simp] theorem Swap.acc_diff_t0 
-(sw: Swap c s) (a: 𝔸) (hdif: a ≠ sw.a):
-sw.apply.atoms a = s.atoms a := by
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸) (hdif: a' ≠ a):
+sw.apply.atoms a' = s.atoms a' := by
   ext t
   simp [apply, 𝕊₀.subb, 𝕊₀.addb, hdif]
 
 @[simp] theorem Swap.acc_diff_t1
-(sw: Swap c s) (a: 𝔸) (hdif: a ≠ sw.a):
-sw.apply.mints a = s.mints a := by
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸) (hdif: a' ≠ a):
+sw.apply.mints a' = s.mints a' := by
   ext t
   simp [apply, 𝕊₀.subb, 𝕊₀.addb, hdif]
 
-theorem Swap.acc_t1_after_swap (sw: Swap c s)
-: sw.apply.atoms sw.a sw.t1 
+theorem Swap.acc_t1_after_swap (sw: Swap sx o s a t0 t1 v0)
+: sw.apply.atoms a t1 
   = 
-  (s.atoms sw.a sw.t1) + (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
+  (s.atoms a t1) + (v0*(sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by 
   simp [apply, 𝕊₀.subb, 𝕊₀.addb,
         sw.hdif.symm]
 
-@[simp] theorem Swap.acc_r0_after_swap (sw: Swap c s)
-: (sw.apply.amms.f sw.t0 sw.t1).fst
+@[simp] theorem Swap.acc_r0_after_swap (sw: Swap sx o s a t0 t1 v0)
+: (sw.apply.amms.f t0 t1).fst
   = 
-  (s.amms.f sw.t0 sw.t1).fst + sw.v0
+  (s.amms.f t0 t1).fst + v0
 := by
   simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0,
       sw.hdif.symm]
 
-@[simp] theorem Swap.acc_r1_after_swap (sw: Swap c s)
-: (sw.apply.amms.f sw.t0 sw.t1).snd
+@[simp] theorem Swap.acc_r1_after_swap (sw: Swap sx o s a t0 t1 v0)
+: (sw.apply.amms.f t0 t1).snd
   = 
-  (s.amms.f sw.t0 sw.t1).snd - (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
+  (s.amms.f t0 t1).snd - (v0*(sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
 := by
   simp [apply, 𝕊ₐ.sub_r1, 𝕊ₐ.add_r0,
       sw.hdif.symm]
 
 @[simp] theorem Swap.erase_atoms_same 
-(sw: Swap c s) (a: 𝔸)
-: Finsupp.erase sw.t1 (Finsupp.erase sw.t0 (sw.apply.atoms a))
+(sw: Swap sx o s a t0 t1 v0) (a: 𝔸)
+: Finsupp.erase t1 (Finsupp.erase t0 (sw.apply.atoms a))
   =
-  Finsupp.erase sw.t1 (Finsupp.erase sw.t0 (s.atoms a))
+  Finsupp.erase t1 (Finsupp.erase t0 (s.atoms a))
 := by
   ext t
   simp [apply]
-  apply @Decidable.byCases (t=sw.t1)
+  apply @Decidable.byCases (t=t1)
   . intro teqt1
     simp [teqt1]
   . intro tneqt1
-    apply @Decidable.byCases (t=sw.t0)
+    apply @Decidable.byCases (t=t0)
     . intro teqt0
       simp [tneqt1, teqt0, sw.hdif]
     . intro tneqt0
       simp [tneqt1, tneqt0, 𝕊₀.subb, 𝕊₀.addb]
 
 @[simp] theorem Γ.mintsupply_swap 
-{c: Cfg} {s: Γ} {sw: Swap c s}
+(sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁)
 : sw.apply.mintsupply m = s.mintsupply m := by
 simp [Swap.apply, mintsupply]
