@@ -19,6 +19,11 @@ sw.t0 ≠ sw.t1 := 𝕊ₐ.exists_imp_dif sw.exi
 def Swap.mint (sw: Swap c s)
 : 𝕋₁ := 𝕋₀.toMint sw.hdif
 
+def Swap.exi_swap
+{c: Cfg} {s: Γ} (sw: Swap c s):
+  s.amms.f sw.t1 sw.t0 ≠ 0 :=
+    𝕊ₐ.exists_swap sw.exi
+
 noncomputable def Swap.apply (sw: Swap c s): Γ :=
 ⟨
   (s.atoms.addb sw.a sw.t1 (sw.v0*(c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))).subb sw.a sw.t0 sw.v0,

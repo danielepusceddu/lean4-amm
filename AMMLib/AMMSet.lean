@@ -81,6 +81,12 @@ theorem 𝕊ₐ.exists_imp_dif
   rw [amms.h2] at h
   contradiction
 
+theorem 𝕊ₐ.exists_swap
+{amms: 𝕊ₐ} {t0 t1: 𝕋₀} (h: amms.f t0 t1 ≠ 0):
+amms.f t1 t0 ≠ 0 := by
+  rw [amms.h1]
+  simp [h]
+
 def 𝕊ₐ.fp (amms: 𝕊ₐ) {t0 t1: 𝕋₀}
 (exi: amms.f t0 t1 ≠ 0): ℝ+ × ℝ+ :=
 (
@@ -91,6 +97,18 @@ def 𝕊ₐ.fp (amms: 𝕊ₐ) {t0 t1: 𝕋₀}
    NNReal.neq_zero_imp_gt (𝕊ₐ.exists_imp_snd exi)
   ⟩
 )
+
+theorem 𝕊ₐ.reorder_fstp
+(a: 𝕊ₐ) (t1 t0: 𝕋₀)
+(exi: a.f t1 t0 ≠ 0):
+(a.fp exi).fst = (a.fp (𝕊ₐ.exists_swap exi)).snd := by
+  simp [fp, a.h1 t1 t0]
+
+theorem 𝕊ₐ.reorder_sndp
+(a: 𝕊ₐ) (t1 t0: 𝕋₀)
+(exi: a.f t1 t0 ≠ 0):
+(a.fp exi).snd = (a.fp (𝕊ₐ.exists_swap exi)).fst := by
+  simp [fp, a.h1 t1 t0]
 
 lemma 𝕊ₐ.up_h1' (amms: 𝕊ₐ) 
 (t0' t1': 𝕋₀) (x: NNReal × NNReal) (hdif: t0' ≠ t1')

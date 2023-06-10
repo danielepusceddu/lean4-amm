@@ -179,3 +179,81 @@ cmp ((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) ((c.o sw.t0) / 
   rw [← PReal.coe_inv, ← PReal.coe_mul]
   exact PReal.coe_cmp y (p0*p1⁻¹)
 
+theorem lemma33_lt
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(hzero: s.mints sw.a sw.mint = 0):
+(sw.a.gain c s sw.apply) < 0
+↔
+((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) <  (c.o sw.t0) / (c.o sw.t1)
+:= by 
+  rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff]
+  rw [lemma33 sw hzero]
+
+theorem lemma33_gt
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(hzero: s.mints sw.a sw.mint = 0):
+0 < (sw.a.gain c s sw.apply)
+↔
+(c.o sw.t0) / (c.o sw.t1) < ((c.sx sw.v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd))
+:= by 
+  rw [← cmp_eq_gt_iff, ← cmp_eq_gt_iff]
+  rw [lemma33 sw hzero]
+
+def Swap.swappedtoks
+{c: Cfg} {s: Γ} (sw: Swap c s)
+{x: ℝ+} (henough: x ≤ s.atoms sw.a sw.t1)
+(nodrain: x*(c.sx x (s.amms.fp sw.exi_swap).fst (s.amms.fp sw.exi_swap).snd) < (s.amms.f sw.t1 sw.t0).snd): Swap c s := 
+⟨
+  sw.t1,
+  sw.t0,
+  sw.a,
+  x,
+  henough,
+  𝕊ₐ.exists_swap sw.exi,
+  nodrain
+⟩  
+
+/-
+Lemma 6.2: Unique direction for swap gains
+
+Sketch Proof
+With sw1,sw2,sx1,sx2 for original and swapped
+
+h0: We know mintedb = 0
+h1: We know gain sw1 > 0
+            0 < gain sw1
+            sx1 > p0/p1    by lemma 3.3 with h0
+
+Goal:
+  gain sw2 < 0
+  sx2 < p1/p0   by lemma 3.3 with h0
+  p0/p1 ≤ sx x r0 r1 by applying lemma 6.1
+  Qed by h1
+-/
+theorem Swap.lemma62_constprod
+{c: Cfg} {s: Γ} (sw: Swap c s)
+(cons: c.sx = SX.constprod)
+(hzero: s.mints sw.a sw.mint = 0)
+(y: ℝ+) (hy: y ≤ s.atoms sw.a sw.t1)
+(nodrain: y*(c.sx y (s.amms.fp sw.exi_swap).fst (s.amms.fp sw.exi_swap).snd) < (s.amms.f sw.t1 sw.t0).snd)
+(hgain: 0 < sw.a.gain c s sw.apply):
+sw.a.gain c s (sw.swappedtoks hy nodrain).apply < 0 :=
+  by
+  have hswa: sw.a = (sw.swappedtoks hy nodrain).a := 
+    by simp [swappedtoks]
+  have hmin: sw.mint = (sw.swappedtoks hy nodrain).mint := 
+    by simp [swappedtoks, mint, 𝕋₀.toMint]
+  rw [hswa]
+
+  have h1' := (lemma33_gt sw hzero).mp hgain
+
+  simp_rw [lemma33_lt (sw.swappedtoks hy nodrain) (by rw [hmin, hswa] at hzero; exact hzero)]
+
+  simp_rw [cons] at h1'
+  simp_rw [cons]
+  apply SX.lemma61_constprod sw.v0
+  simp only [swappedtoks]
+  rw [𝕊ₐ.reorder_fstp s.amms sw.t1 sw.t0,
+      𝕊ₐ.reorder_sndp s.amms sw.t1 sw.t0]
+  exact le_of_lt h1'
+
