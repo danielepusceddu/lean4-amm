@@ -80,6 +80,9 @@ lemma coe_eq' (x y: ℝ+):
     simp at heq
     simp [heq]
 
+lemma coe_cmp (x y: ℝ+):
+  cmp (x: ℝ) (y: ℝ) = cmp x y := by rfl
+
 noncomputable instance: Group ℝ+ where
   mul_left_inv := by 
     intro x
