@@ -5,9 +5,10 @@ import Mathlib.Algebra.Order.Positive.Ring
 
 /- This code is mostly copied and adapted from NNReal. -/
 
-def PReal := { r : ℝ // 0 < r} deriving One, Add, Mul
+abbrev PReal := { r : ℝ // 0 < r}
 
 notation "ℝ+" => PReal
+
 namespace PReal
 
 @[coe] def toReal : ℝ+ → ℝ := Subtype.val
@@ -33,12 +34,6 @@ theorem coe_nnreal_pos (x: ℝ+): (x: NNReal) ≠ 0 := by
   apply NNReal.ne_iff.mp
   rw [coe_eq]
   exact ne_of_gt h
-
-noncomputable instance: Inv ℝ+ := Positive.Subtype.inv
-noncomputable instance: LinearOrderedCancelCommMonoid ℝ+ := Positive.linearOrderedCancelCommMonoid
-
-noncomputable instance: Div ℝ+ := ⟨fun (x y:ℝ+) => 
-  ⟨x/y, div_pos x.2 y.2⟩⟩
 
 def sub (x y: ℝ+) (h: y < x): ℝ+ :=
   ⟨(x:ℝ)-(y:ℝ), by aesop⟩
@@ -68,7 +63,7 @@ lemma coe_lt' (x y: ℝ+):
   x < y ↔ (x: NNReal) < (y: NNReal) := by rfl
 
 lemma coe_inv (x: ℝ+):
-  ((x⁻¹): ℝ+) = (x: ℝ)⁻¹ := by rfl
+  ((x⁻¹): ℝ+) = (x: ℝ)⁻¹ := Positive.coe_inv x
 
 lemma coe_eq' (x y: ℝ+):
   x = y ↔ (x: ℝ) = (y: ℝ) := by 
@@ -86,43 +81,29 @@ lemma coe_eq' (x y: ℝ+):
 lemma coe_cmp (x y: ℝ+):
   cmp (x: ℝ) (y: ℝ) = cmp x y := by rfl
 
-noncomputable instance: Group ℝ+ where
-  mul_left_inv := by 
-    intro x
-    simp [coe_eq', coe_mul, coe_inv, x.coe_ne_zero]
-    rfl
-
-noncomputable instance: CommGroup ℝ+ where
-  mul_comm := by
-    intro x y
-    simp [PReal.coe_eq', coe_mul, mul_comm]
-
-instance: RightDistribClass ℝ+ where
-  right_distrib := by
-    intro x y z
-    simp only [coe_eq', coe_mul, coe_add]
-    exact right_distrib (x: ℝ) y z
-
-noncomputable instance: OrderedCommGroup ℝ+ where
-  mul_le_mul_left := by 
-    intro a b
-    intro hle
-    intro c
-    rw [mul_le_mul_iff_left]
-    exact hle
-
 theorem add_div'' {α: Type} 
   [DivInvMonoid α] [Add α] [RightDistribClass α] 
   (a b c: α):
   (a + b) / c = a/c + b/c := 
     by simp_rw [div_eq_mul_inv, add_mul]
 
+
+/-
+CovariantClass { x // 0 < x } { x // 0 < x } (fun x x_1 => x + x_1) fun x x_1 => x < x_1
+
+if x < x1, then y+x < y+x1
+-/
 theorem lt_add_right (x y: ℝ+):
   x < x+y := by
   simp only [coe_lt, coe_add]
   conv => lhs; rw [← zero_add (x: ℝ)]; rfl
   rw [add_comm (x: ℝ)]
   exact add_lt_add_right y.coe_pos x
+
+theorem lt_add_left (x y: ℝ+):
+  x < y+x := by
+  rw [add_comm y x]
+  exact lt_add_right x y
 
 theorem gt_add_right (x y: ℝ+):
   x+y > x := by
@@ -134,3 +115,10 @@ theorem div_lt_add_denum (x y z: ℝ+):
   simp only [div_eq_mul_inv, mul_lt_mul_iff_left]
   apply inv_lt_inv'
   exact lt_add_right y z
+
+theorem lt_iff_exists_add
+{x y: ℝ+} (h: x < y):
+∃ (z: ℝ+), y = x+z := by
+  exists (y.sub x h)
+  rw [coe_eq', coe_add, coe_sub]
+  simp

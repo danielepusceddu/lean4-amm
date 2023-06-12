@@ -172,7 +172,7 @@ cmp ((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)) ((o t0) / (o t1))
   generalize (o t1) = p1 at *
   generalize v0 = x at *
 
-  rw [← (mul_zero (x: ℝ))]
+  conv => lhs; congr; rfl; rw [← (mul_zero (x: ℝ))]
   rw [cmp_mul_pos_left x.coe_pos (y*p1 - p0) 0]
   rw [← cmp_add_right ((y: ℝ)*p1 - p0) 0 p0]
   rw [zero_add, sub_add, sub_self, sub_zero]
