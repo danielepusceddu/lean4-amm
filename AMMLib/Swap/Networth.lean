@@ -1,5 +1,6 @@
 import AMMLib.Swap.Basic
 import AMMLib.Networth
+import AMMLib.Swap.Rate
 
 @[simp] theorem swap_price_mint_denumz
 (sw: Swap sx o s a t0 t1 v0)

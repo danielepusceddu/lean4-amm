@@ -3,6 +3,7 @@ import AMMLib.AMMSet
 import AMMLib.State
 import AMMLib.Supply
 import AMMLib.Price
+import AMMLib.Swap.Rate
 
 structure Swap 
   (sx: SX) (o: 𝕆) (s: Γ) (a: 𝔸) (t0 t1: 𝕋₀) (v0: ℝ+) 

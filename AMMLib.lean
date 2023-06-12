@@ -6,6 +6,7 @@ import AMMLib.State
 import AMMLib.Supply
 import AMMLib.Swap.Basic
 import AMMLib.Swap.Networth
+import AMMLib.Swap.Rate
 import AMMLib.Tokens
 import AMMLib.Trace
 import AMMLib.Wallets
