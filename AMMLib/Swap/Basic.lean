@@ -9,7 +9,14 @@ structure Swap
   where
   enough: v0 ≤ s.atoms a t0
   exi:    s.amms.f t0 t1 ≠ 0
-  nodrain: v0*(sx v0 (s.amms.fp exi).fst (s.amms.fp exi).snd) < (s.amms.f t0 t1).snd
+  nodrain: v0*(sx v0 (s.amms.fp exi).fst (s.amms.fp exi).snd) < (s.amms.fp exi).snd
+
+def Swap.nodrain' (sw: Swap sx o s a t0 t1 v0):
+v0*(sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd) < (s.amms.f t0 t1).snd := by 
+  have h := sw.nodrain
+  rw [PReal.coe_lt'] at h
+  rw [𝕊ₐ.sndp_coe_eq] at h
+  exact h
 
 def Swap.hdif (sw: Swap sx o s a t0 t1 v0):
 t0 ≠ t1 := 𝕊ₐ.exists_imp_dif sw.exi

@@ -115,7 +115,8 @@ v0*((sx v0 (s.amms.fp sw.exi).fst (s.amms.fp sw.exi).snd)*(o t1) - (o t0))*(1 - 
   | inl chooseEq
   | inr chooseEq =>
       simp [chooseEq]
-      simp [Γ.mintsupply, sw.enough, le_of_lt sw.nodrain,
+      simp [Γ.mintsupply, sw.enough, 
+            le_of_lt sw.nodrain',
             𝕊ₐ.reorder_fst _ t1 t0,
             𝕊ₐ.reorder_snd _ t1 t0]
       field_simp
@@ -149,7 +150,8 @@ theorem lemma32_diff
   | inl chooseEq
   | inr chooseEq =>
       simp [chooseEq]
-      simp [Γ.mintsupply, sw.enough, le_of_lt sw.nodrain,
+      simp [Γ.mintsupply, sw.enough, 
+            le_of_lt sw.nodrain',
             𝕊ₐ.reorder_fst _ t1 t0,
             𝕊ₐ.reorder_snd _ t1 t0]
       field_simp

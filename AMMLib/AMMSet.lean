@@ -110,6 +110,18 @@ theorem 𝕊ₐ.reorder_sndp
 (a.fp exi).snd = (a.fp (𝕊ₐ.exists_swap exi)).fst := by
   simp [fp, a.h1 t1 t0]
 
+theorem 𝕊ₐ.fstp_coe_eq
+{a: 𝕊ₐ} {t0 t1: 𝕋₀}
+(exi: a.f t0 t1 ≠ 0):
+((a.fp exi).fst: NNReal) = (a.f t0 t1).fst := by
+  rfl
+
+theorem 𝕊ₐ.sndp_coe_eq
+{a: 𝕊ₐ} {t0 t1: 𝕋₀}
+(exi: a.f t0 t1 ≠ 0):
+((a.fp exi).snd: NNReal) = (a.f t0 t1).snd := by
+  rfl
+
 lemma 𝕊ₐ.up_h1' (amms: 𝕊ₐ) 
 (t0' t1': 𝕋₀) (x: NNReal × NNReal) (hdif: t0' ≠ t1')
 (t0 t1: 𝕋₀)

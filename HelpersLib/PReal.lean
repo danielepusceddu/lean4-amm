@@ -64,6 +64,9 @@ lemma coe_le (x y: ℝ+):
 lemma coe_lt (x y: ℝ+):
   x < y ↔ (x: ℝ) < (y: ℝ) := by rfl
 
+lemma coe_lt' (x y: ℝ+):
+  x < y ↔ (x: NNReal) < (y: NNReal) := by rfl
+
 lemma coe_inv (x: ℝ+):
   ((x⁻¹): ℝ+) = (x: ℝ)⁻¹ := by rfl
 
