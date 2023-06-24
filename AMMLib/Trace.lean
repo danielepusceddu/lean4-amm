@@ -42,19 +42,18 @@ dep0: trivial by cases on the deposited tokens:
 swap: use IH. 
       swaps don't change minted token supplies
 -/
-
 theorem AMMimpSupplyProp
 {c: Cfg} {s: Γ} (r: reachable c s) {t0 t1: 𝕋₀}
-(h: s.amms.f t0 t1 ≠ 0)
-: 0 < s.mintsupply (𝕋₀.toMint (𝕊ₐ.exists_imp_dif h)) := by
+(h: s.amms.init t0 t1)
+: 0 < s.mintsupply (𝕋₀.toMint h.dif) := by
   have ⟨init, tx, ⟨init_amms, init_accs⟩⟩ := r
   induction tx with
   | empty => 
       exfalso
-      simp [init_amms, 𝕊ₐ.empty] at h
+      simp [𝕊ₐ.init, 𝕊ₐ.empty, init_amms] at h
 
   | dep0 sprev tail d ih =>
-    apply @Decidable.byCases ((𝕋₀.toMint (𝕊ₐ.exists_imp_dif h))=(𝕋₀.toMint d.hdif))
+    apply @Decidable.byCases ((𝕋₀.toMint h.dif)=(𝕋₀.toMint d.hdif))
     . intro eq; rw [eq]
       simp [Deposit0.apply, Γ.mintsupply, eq]
       left
@@ -63,13 +62,17 @@ theorem AMMimpSupplyProp
     . intro neq
       simp [neq]
       simp [𝕋₀.toMint_diff neq] at h
+      have neq' := (Deposit0.init_diff_iff d t0 t1 neq).mp h
+      have re: reachable c sprev := by
+        exists init; exists tail
+      exact ih re neq'
+  
+  | swap sprev tail sw ih =>
+      rw [sw.mintsupply]
+      simp at h
       have re: reachable c sprev := by
         exists init; exists tail
       exact ih re h
-  
-  | swap sprev tail sw ih =>
-      rw [Swap.mintedSupply]
-      have h' := Swap.amm_in_apply h
-      have re: reachable c sprev := by
-        exists init; exists tail
-      exact ih re h'
+
+
+-------

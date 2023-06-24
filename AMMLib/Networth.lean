@@ -51,6 +51,6 @@ noncomputable def Γ.networth
 (𝕎₁.networth (s.mints a) s o)
 
 noncomputable def 𝔸.gain
-(a: 𝔸) (c: Cfg) (s s': Γ)
+(a: 𝔸) (o: 𝕋₀ → PReal) (s s': Γ)
 : ℝ
-:= ((s'.networth a c.o): ℝ) - ((s.networth a c.o): ℝ)
+:= ((s'.networth a o): ℝ) - ((s.networth a o): ℝ)

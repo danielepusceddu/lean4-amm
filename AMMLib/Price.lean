@@ -23,3 +23,8 @@ noncomputable def Γ.𝕋₁Pricez
 (s: Γ) (o: 𝕋₀ → PReal)
 (m: 𝕋₁): NNReal :=
 (s.𝕋₁Price_numz o m) / (s.𝕋₁Price_denumz m)
+
+noncomputable def Γ.𝕋₁Pricez'
+(s: Γ) (o: 𝕋₀ → PReal)
+(t0 t1: 𝕋₀) (h: s.amms.init t0 t1): NNReal :=
+  ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mintsupply h.mint)
