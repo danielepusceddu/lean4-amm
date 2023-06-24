@@ -2,17 +2,171 @@ import AMMLib.Swap.Basic
 import AMMLib.Networth
 import AMMLib.Swap.Rate
 
+@[simp] theorem swap_price_mint_diff
+(sw: Swap sx o s a t0 t1 v0)
+(t0' t1': 𝕋₀) (hdif: m ≠ sw.exi.mint)
+: sw.apply.𝕋₁Pricez' o t0' t1' = s.𝕋₁Pricez' o t0' t1' := by
+  simp [Γ.𝕋₁Pricez']
+  simp [Γ.𝕋₁Price_numz, Γ.𝕋₁Price_denumz, 
+        Γ.𝕋₁Price_num_addend1z, Γ.𝕋₁Price_num_addend2z]
+  simp [hdif]
+
+/-
+I must prove
+𝕎₁.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (sw.apply.mints sw.a)) (Swap.apply sw) c.o
+
+is equal to
+
+𝕎₁.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (s sw.a)) (Swap.apply sw) c.o
+-/
+
+theorem bruh
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
+∀ (m: 𝕋₁), m ∈ (Finsupp.erase sw.exi.mint (sw.apply.mints a')).support → (mintedworth sw.apply o) m ((Finsupp.erase sw.exi.mint (sw.apply.mints a')) m) = (mintedworth s o) m ((Finsupp.erase sw.exi.mint (sw.apply.mints a')) m)
+:= by
+  intro m hin
+  simp at hin
+  have hdif := hin.1
+  simp [mintedworth, hdif]
+  left
+
+@[simp] theorem networth_erase
+(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
+𝕎₁.networth (Finsupp.erase sw.mint (sw.apply.mints a')) sw.apply o
+=
+𝕎₁.networth (Finsupp.erase sw.mint (s.mints a')) s o
+:= by
+  simp [𝕎₁.networth]
+  rw [@Finsupp.sum_congr 𝕋₁ NNReal NNReal _ _ _ (mintedworth (sw.apply) o) (mintedworth s o) (bruh sw a')]
+  simp [Swap.apply]
+
+theorem lemma32_same'
+(sw: Swap sx o s a t0 t1 v0)
+: 
+(a.gain o s sw.apply)
+=
+v0*((sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi))*(o t1) - (o t0))*(1 - (s.mints a sw.exi.mint)/(s.mints.supply sw.exi.mint))
+:= by 
+  unfold 𝔸.gain
+  unfold Γ.networth
+
+  rw [𝕎₀.networth_destruct _ o t0]
+  rw [𝕎₀.networth_destruct _ o t1]
+  rw [𝕎₀.networth_destruct (s.atoms a) o t0]
+  rw [𝕎₀.networth_destruct (Finsupp.erase t0 (s.atoms a)) o t1]
+
+  rw [Finsupp.erase_ne sw.exi.dif.symm]
+  rw [Finsupp.erase_ne sw.exi.dif.symm]
+
+  rw [𝕎₁.networth_destruct _ (sw.apply) o sw.exi.mint]
+  rw [𝕎₁.networth_destruct _ s o sw.exi.mint]
+
+  /-
+  sx : SX
+  o : 𝕆
+  s : Γ
+  a : 𝔸
+  t0 t1 : 𝕋₀
+  v0 : ℝ+
+  sw : Swap sx o s a t0 t1 v0
+  ⊢ ↑(o t0) * ↑(↑(↑s.atoms a) t0 - ↑v0) +
+          (↑(o t1) * (↑(Swap.y sw) + ↑(↑(↑s.atoms a) t1)) +
+            ↑(𝕎₀.networth (Finsupp.erase t1 (Finsupp.erase t0 (↑(Swap.apply sw).atoms a))) o)) +
+        (↑(Γ.𝕋₁Pricez (Swap.apply sw) o (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))) *
+            ↑(↑(↑(Swap.apply sw).mints a) (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))) +
+          ↑(𝕎₁.networth (Finsupp.erase (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) (↑(Swap.apply sw).mints a))
+              (Swap.apply sw) o)) -
+      (↑(o t0) * ↑(↑(↑s.atoms a) t0) +
+          (↑(o t1) * ↑(↑(↑s.atoms a) t1) + ↑(𝕎₀.networth (Finsupp.erase t1 (Finsupp.erase t0 (↑s.atoms a))) o)) +
+        (↑(Γ.𝕋₁Pricez s o (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))) *
+            ↑(↑(↑s.mints a) (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))) +
+          ↑(𝕎₁.networth (Finsupp.erase (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) (↑s.mints a)) s o))) =
+    ↑v0 *
+        (↑(sx v0 (𝕊ₐ.r0 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) (𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1))) *
+            ↑(o t1) -
+          ↑(o t0)) *
+      (1 -
+        ↑(↑(↑s.mints a) (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))) /
+          ↑(𝕊₁.supply s.mints (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))))
+  -/
+
+  /-
+  sx : SX
+  o : 𝕆
+  s : Γ
+  a : 𝔸
+  t0 t1 : 𝕋₀
+  v0 : ℝ+
+  sw : Swap sx o s a t0 t1 v0
+  ⊢ ↑(↑(o t0) * (↑(↑s.atoms a) t0 - ↑v0) +
+            (↑(o t1) * (↑(Swap.y sw) + ↑(↑s.atoms a) t1) +
+              𝕎₀.networth (Finsupp.erase t1 (Finsupp.erase t0 (↑(Swap.apply sw).atoms a))) o) +
+          (Γ.𝕋₁Pricez (Swap.apply sw) o (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) *
+              ↑(↑(Swap.apply sw).mints a) (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) +
+            𝕎₁.networth (Finsupp.erase (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) (↑(Swap.apply sw).mints a))
+              (Swap.apply sw) o)) -
+      ↑(↑(o t0) * ↑(↑s.atoms a) t0 +
+            (↑(o t1) * ↑(↑s.atoms a) t1 + 𝕎₀.networth (Finsupp.erase t1 (Finsupp.erase t0 (↑s.atoms a))) o) +
+          (Γ.𝕋₁Pricez s o (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) *
+              ↑(↑s.mints a) (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) +
+            𝕎₁.networth (Finsupp.erase (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1)) (↑s.mints a)) s o)) =
+    ↑v0 *
+        (↑(sx v0 (𝕊ₐ.r0 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) (𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1))) *
+            ↑(o t1) -
+          ↑(o t0)) *
+      (1 -
+        ↑(↑(↑s.mints a) (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))) /
+          ↑(𝕊₁.supply s.mints (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))))
+  -/
+  rw [Swap.b0_self, Swap.b1_self]
+  unfold Swap.y
+  simp
+  sorry
+
 @[simp] theorem swap_price_mint_denumz
 (sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁)
 : sw.apply.𝕋₁Price_denumz m = s.𝕋₁Price_denumz m := by
-simp [Γ.𝕋₁Price_denumz]
+  simp [Γ.𝕋₁Price_denumz, Swap.apply, Γ.mintsupply]
+
+@[simp] theorem Swap.mintsupply 
+  (sw: Swap sx o s a t0 t1 v0) (m: 𝕋₁):
+  sw.apply.mintsupply m = s.mintsupply m := by sorry
+
+@[simp] theorem swap_price_mint'
+(sw: Swap sx o s a t0 t1 v0)
+(m: 𝕋₁)
+: sw.apply.𝕋₁Pricez' o t0 t1 (by simp[sw.exi]) = s.𝕋₁Pricez' o t0 t1 sw.exi := by
+  /-
+  sx : SX
+  o : 𝕆
+  s : Γ
+  a : 𝔸
+  t0 t1 : 𝕋₀
+  v0 : ℝ+
+  sw : Swap sx o s a t0 t1 v0
+  m : 𝕋₁
+  ⊢ (↑(v0 + 𝕊ₐ.r0 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) * ↑(o t0) +
+        ↑(PReal.sub (𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1))
+              (v0 * sx v0 (𝕊ₐ.r0 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) (𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)))
+              (_ :
+                v0 *
+                    sx v0 (𝕊ₐ.r0 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1))
+                      (𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) <
+                  𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1))) *
+          ↑(o t1)) /
+      Γ.mintsupply s (𝕊ₐ.init.mint (_ : 𝕊ₐ.init (Swap.apply sw).amms t0 t1)) =
+    (↑(𝕊ₐ.r0 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) * ↑(o t0) +
+        ↑(𝕊ₐ.r1 s.amms t0 t1 (_ : 𝕊ₐ.init s.amms t0 t1)) * ↑(o t1)) /
+      Γ.mintsupply s (𝕊ₐ.init.mint (_ : 𝕊ₐ.init s.amms t0 t1))
+  -/
+  simp [Γ.𝕋₁Pricez', Swap.y, PReal.coe_sub', PReal.coe_mul']
 
 @[simp] theorem swap_price_mint_diff_num_addend1z
 (sw: Swap sx o s a t0 t1 v0)
 (m: 𝕋₁) (hdif: m ≠ sw.mint)
 : sw.apply.𝕋₁Price_num_addend1z o m = s.𝕋₁Price_num_addend1z o m := by
-  simp [Γ.𝕋₁Price_num_addend1z]; left
+  simp only [Γ.𝕋₁Price_num_addend1z]; left
   simp [Swap.apply, hdif]
   rw [← 𝕋₁.choose_eq m] at hdif
   unfold Swap.mint at hdif
@@ -38,41 +192,6 @@ simp [Γ.𝕋₁Price_denumz]
 : sw.apply.𝕋₁Price_numz o m = s.𝕋₁Price_numz o m := by
 simp [Γ.𝕋₁Price_numz]
 simp [hdif]
-
-@[simp] theorem swap_price_mint_diff
-(sw: Swap sx o s a t0 t1 v0)
-(m: 𝕋₁) (hdif: m ≠ sw.mint)
-: sw.apply.𝕋₁Pricez o m = s.𝕋₁Pricez o m := by
-  simp [Γ.𝕋₁Pricez]
-  simp [hdif]
-
-/-
-I must prove
-𝕎₁.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (sw.apply.mints sw.a)) (Swap.apply sw) c.o
-
-is equal to
-
-𝕎₁.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (s sw.a)) (Swap.apply sw) c.o
--/
-
-theorem bruh
-(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
-∀ (m: 𝕋₁), m ∈ (Finsupp.erase sw.mint (sw.apply.mints a')).support → (mintedworth sw.apply o) m ((Finsupp.erase sw.mint (sw.apply.mints a')) m) = (mintedworth s o) m ((Finsupp.erase sw.mint (sw.apply.mints a')) m)
-:= by
-  intro m hin
-  simp at hin
-  have hdif := hin.1
-  simp [mintedworth, hdif]
-
-@[simp] theorem networth_erase
-(sw: Swap sx o s a t0 t1 v0) (a': 𝔸):
-𝕎₁.networth (Finsupp.erase sw.mint (sw.apply.mints a')) sw.apply o
-=
-𝕎₁.networth (Finsupp.erase sw.mint (s.mints a')) s o
-:= by
-  simp [𝕎₁.networth]
-  rw [@Finsupp.sum_congr 𝕋₁ NNReal NNReal _ _ _ (mintedworth (sw.apply) o) (mintedworth s o) (bruh sw a')]
-  simp [Swap.apply]
 
 @[simp] theorem Swap.apply_mints
 (sw: Swap sx o s a t0 t1 v0):

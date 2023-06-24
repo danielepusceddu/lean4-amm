@@ -47,8 +47,14 @@ lemma coe_add (x y: ℝ+):
 lemma coe_mul (x y: ℝ+):
   (((x*y): ℝ+): ℝ)= (x:ℝ)*(y:ℝ) := by rfl
 
+lemma coe_mul' (x y: ℝ+):
+  (((x*y): ℝ+): NNReal)= (x:NNReal)*(y:NNReal) := by rfl
+
 lemma coe_sub (x y: ℝ+) (gt: y < x):
   (((x.sub y gt): ℝ+): ℝ) = (x: ℝ) - (y: ℝ) := by rfl
+
+lemma coe_sub' (x y: ℝ+) (gt: y < x):
+  (((x.sub y gt): ℝ+): NNReal) = (x: NNReal) - (y: NNReal) := by sorry
 
 lemma coe_div (x y: ℝ+):
   (((x/y): ℝ+): ℝ)= (x:ℝ)/(y:ℝ) := by rfl
