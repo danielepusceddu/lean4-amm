@@ -1,6 +1,7 @@
 import AMMLib.Tokens
 import AMMLib.AMMSet
-import AMMLib.Wallets
+import AMMLib.Wallets.AtomicWallSet
+import AMMLib.Wallets.MintedWallSet
 import AMMLib.Swap.Rate
 
 -- Config does not change between states.
@@ -8,9 +9,6 @@ import AMMLib.Swap.Rate
 -- The price oracle should be moved to 
 -- State to implement price updates.
 abbrev 𝕆 := 𝕋₀ → PReal
-structure Cfg where
-  sx: SX
-  o: 𝕋₀ → PReal
 
 -- State
 structure Γ where

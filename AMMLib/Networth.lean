@@ -1,54 +1,35 @@
-import AMMLib.Wallets
+import AMMLib.Wallets.MintedWall
+import AMMLib.Wallets.AtomicWall
 import AMMLib.State
-import AMMLib.Price
 
-def atomicworth 
-(o: 𝕋₀ → PReal) (t: 𝕋₀) (x: NNReal)
-: NNReal := (o t)*x
+/-
+mintsupply that returns PReal:
+Finsupp.add_sum_erase
 
-noncomputable def 𝕎₀.networth
-(w: 𝕎₀) (o: 𝕋₀ → PReal): NNReal :=
-w.sum (atomicworth o)
+in a reachable state
+if s.amms.init t0 t1, then there must exist an 𝔸 in s.mints such that s.mints t0 t1 ≠ 0
+choose that, destruct the supply and we'll get: 
+s.mints t0 t1 + ((s.mints.drain a t0 t1).supply t0 t1)
+which must be positive
 
-theorem atomicworth_zero (o: 𝕋₀ → PReal)
-: ∀ (t: 𝕋₀), (atomicworth o) t 0 = 0 := by
-intro t; simp [atomicworth]
+this will turn Γ.𝕋₁Price into a PReal
+however, 𝕎₀.worth and 𝕎₁.worth will remain NNReals 
+so is it worth it?
+-/
 
-theorem 𝕎₀.networth_destruct
-(w: 𝕎₀) (o: 𝕋₀ → PReal)
-(t: 𝕋₀)
-: (𝕎₀.networth w o) = (o t)*(w t) + (𝕎₀.networth (Finsupp.erase t w) o) := by 
-unfold networth
-rw [← Finsupp.add_sum_erase' w t (atomicworth o) (atomicworth_zero o)]
-simp [atomicworth]
-
-noncomputable def mintedworth
-(s: Γ) (o: 𝕋₀ → PReal) (t: 𝕋₁) (x: NNReal)
-: NNReal := (s.𝕋₁Pricez o t)*x
-
-theorem mintedworth_zero 
+noncomputable def Γ.𝕋₁Price
 (s: Γ) (o: 𝕋₀ → PReal)
-: ∀ (t: 𝕋₁), (mintedworth s o) t 0 = 0 := by
-intro t; simp [mintedworth]
-
-noncomputable def 𝕎₁.networth
-(w: 𝕎₁) (s: Γ) (o: 𝕋₀ → PReal): NNReal :=
-w.sum (mintedworth s o)
-
-theorem 𝕎₁.networth_destruct
-(w: 𝕎₁) (s: Γ) (o: 𝕋₀ → PReal)
-(t: 𝕋₁)
-: (𝕎₁.networth w s o) = (s.𝕋₁Pricez o t)*(w t) + (𝕎₁.networth (Finsupp.erase t w) s o) := by 
-unfold networth
-rw [← Finsupp.add_sum_erase' w t (mintedworth s o) (mintedworth_zero s o)]
-simp [mintedworth]
+(t0 t1: 𝕋₀): NNReal :=
+  if h:s.amms.init t0 t1 then 
+  ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mints.supply t0 t1)
+  else 0
 
 noncomputable def Γ.networth
 (s: Γ) (a: 𝔸) (o: 𝕋₀ → PReal): NNReal
 :=
-(𝕎₀.networth (s.atoms a) o)
+(𝕎₀.worth (s.atoms.get a) o)
 +
-(𝕎₁.networth (s.mints a) s o)
+(𝕎₁.worth (s.mints.get a) (s.𝕋₁Price o))
 
 noncomputable def 𝔸.gain
 (a: 𝔸) (o: 𝕋₀ → PReal) (s s': Γ)
