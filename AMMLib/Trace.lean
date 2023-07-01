@@ -2,29 +2,28 @@ import AMMLib.Deposit
 import AMMLib.State
 import AMMLib.Tokens
 import AMMLib.Swap.Basic
-import AMMLib.Price
 import AMMLib.Networth
 
 /- Tx c init s is the type of all possible sequences of transactions
   that would result in s, starting from Γ init and using configuration c -/
-inductive Tx (c: Cfg) (init: Γ): Γ → Type where
-  | empty: Tx c init init
+inductive Tx (o: 𝕆) (sx: SX) (init: Γ): Γ → Type where
+  | empty: Tx o sx init init
 
-  | dep0 (s': Γ) (rs: Tx c init s') (d: Deposit0 s'): 
-      Tx c init d.apply
+  | dep0 (s': Γ) (rs: Tx o sx init s') (d: Deposit0 s'): 
+      Tx o sx init d.apply
 
-  | swap (s': Γ) (rs: Tx c init s') 
-         (sw: Swap c.sx c.o s' a t0 t1 v0):
-      Tx c init sw.apply
+  | swap (s': Γ) (rs: Tx o sx init s') 
+         (sw: Swap sx o s' a t0 t1 v0):
+      Tx o sx init sw.apply
 
 def reachableInit (s: Γ): Prop :=
-  (s.amms = 𝕊ₐ.empty ∧ ∀ (a: 𝔸) (m: 𝕋₁), s.mints a m = 0)
+  (s.amms = 𝕊ₐ.empty ∧ s.mints = 𝕊₁.empty)
 
-def reachable (c: Cfg) (s: Γ): Prop :=
-  ∃ (init: Γ) (tx: Tx c init s), reachableInit init
+def reachable (o: 𝕆) (sx: SX) (s: Γ): Prop :=
+  ∃ (init: Γ) (tx: Tx o sx init s), reachableInit init
 
-def concat {c: Cfg} {init s' s'': Γ} 
-(t1: Tx c init s') (t2: Tx c s' s''): Tx c init s'' := match t2 with
+def concat {o: 𝕆} {sx: SX} {init s' s'': Γ} 
+(t1: Tx o sx init s') (t2: Tx o sx s' s''): Tx o sx init s'' := match t2 with
   | Tx.empty => t1
   | Tx.dep0 ds rs d => Tx.dep0 ds (concat t1 rs) d
   | Tx.swap ds rs sw => Tx.swap ds (concat t1 rs) sw
@@ -42,10 +41,13 @@ dep0: trivial by cases on the deposited tokens:
 swap: use IH. 
       swaps don't change minted token supplies
 -/
+theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋₀) (samepair: ¬diffpair t0 t1 t0' t1'):
+  s.mintsupply t0 t1 = s.mintsupply t0' t1' := by sorry
+
 theorem AMMimpSupplyProp
-{c: Cfg} {s: Γ} (r: reachable c s) {t0 t1: 𝕋₀}
+{o: 𝕆} {sx: SX} {s: Γ} (r: reachable o sx s) {t0 t1: 𝕋₀}
 (h: s.amms.init t0 t1)
-: 0 < s.mintsupply (𝕋₀.toMint h.dif) := by
+: 0 < s.mintsupply t0 t1 := by
   have ⟨init, tx, ⟨init_amms, init_accs⟩⟩ := r
   induction tx with
   | empty => 
@@ -53,26 +55,23 @@ theorem AMMimpSupplyProp
       simp [𝕊ₐ.init, 𝕊ₐ.empty, init_amms] at h
 
   | dep0 sprev tail d ih =>
-    apply @Decidable.byCases ((𝕋₀.toMint h.dif)=(𝕋₀.toMint d.hdif))
-    . intro eq; rw [eq]
-      simp [Deposit0.apply, Γ.mintsupply, eq]
-      left
-      exact d.r0.coe_pos
-    
-    . intro neq
-      simp [neq]
-      simp [𝕋₀.toMint_diff neq] at h
-      have neq' := (Deposit0.init_diff_iff d t0 t1 neq).mp h
-      have re: reachable c sprev := by
+    apply @Decidable.byCases (diffpair d.t0 d.t1 t0 t1)
+    . intro diff;
+      simp [diff] at h
+      simp [Deposit0.apply, Γ.mintsupply, diff]
+      have re: reachable o sx sprev := by
         exists init; exists tail
-      exact ih re neq'
+      exact ih re h
+    
+    . intro same
+      rw [← Γ.mintsupply_samepair _ _ _ _ _ same]
+      simp [Γ.mintsupply, Deposit0.apply]
+      right
+      exact PReal.coe_pos d.r0
   
   | swap sprev tail sw ih =>
       rw [sw.mintsupply]
       simp at h
-      have re: reachable c sprev := by
+      have re: reachable o sx sprev := by
         exists init; exists tail
       exact ih re h
-
-
--------

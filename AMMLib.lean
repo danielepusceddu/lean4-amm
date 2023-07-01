@@ -1,7 +1,6 @@
 import AMMLib.AMMSet
 import AMMLib.Deposit
 import AMMLib.Networth
-import AMMLib.Price
 import AMMLib.State
 import AMMLib.Supply
 import AMMLib.Swap.Basic
@@ -9,4 +8,7 @@ import AMMLib.Swap.Networth
 import AMMLib.Swap.Rate
 import AMMLib.Tokens
 import AMMLib.Trace
-import AMMLib.Wallets
+import AMMLib.Wallets.AtomicWall
+import AMMLib.Wallets.AtomicWallSet
+import AMMLib.Wallets.MintedWall
+import AMMLib.Wallets.MintedWallSet
