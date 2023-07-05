@@ -25,6 +25,12 @@ instance: Zero 𝕎₁ := ⟨𝕎₁.empty⟩
 
 def 𝕎₁.get (w: 𝕎₁) (t0 t1: 𝕋₀): NNReal := w.f t0 t1
 
+@[simp] theorem 𝕎₁.zero_get (t0 t1: 𝕋₀):
+  (0: 𝕎₁).get t0 t1 = 0 := by
+  have h: (0: 𝕎₁) = empty := by rfl
+  rw [h]
+  simp [empty, get]
+
 theorem 𝕎₁.get_reorder (w: 𝕎₁) (t1 t0: 𝕋₀):
   w.get t1 t0 = w.get t0 t1 := by
   simp [w.h1, 𝕎₁.get]
