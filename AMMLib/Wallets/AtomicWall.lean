@@ -122,3 +122,22 @@ theorem 𝕎₀.worth_destruct (w: 𝕎₀) (o: 𝕋₀ → PReal) (t: 𝕋₀):
   rw [bruh]
   rw [Finsupp.add_sum_erase' w t (λ t (x: NNReal) => x*(o t))]
   simp
+
+/- 
+  Symmetric versions of the theorems with "hdif",
+  to make their use with simp easier
+-/
+@[simp] theorem 𝕎₀.get_add_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (t': 𝕋₀) (hdif: t' ≠ t): (w.add t x) t' = w t' 
+  := 𝕎₀.get_add_diff w t x t' hdif.symm
+
+@[simp] theorem 𝕎₀.get_sub_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t) (t': 𝕋₀) (diff: t' ≠ t):
+  (w.sub t x h) t' = w t' := 𝕎₀.get_sub_diff w t x h t' diff.symm
+
+@[simp] theorem 𝕎₀.get_drain_diff' (w: 𝕎₀) (t t': 𝕋₀) (diff: t' ≠ t):
+  (w.drain t) t' = w t' := 𝕎₀.get_drain_diff w t t' diff.symm
+
+@[simp] theorem 𝕎₀.drain_add_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (t': 𝕋₀) (hdif: t' ≠ t):
+  (w.add t x).drain t' = (w.drain t').add t x := 𝕎₀.drain_add_diff w t x t' hdif.symm
+
+@[simp] theorem 𝕎₀.drain_sub_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t) (t': 𝕋₀) (hdif: t' ≠ t):
+  (w.sub t x h).drain t' = (w.drain t').sub t x (by simp[h,hdif.symm]) := 𝕎₀.drain_sub_diff w t x h t' hdif.symm
