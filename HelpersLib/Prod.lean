@@ -35,3 +35,13 @@ def Prod.swap_emb {α β: Type}: α × β ↪ β × α :=
 lemma Prod.swap_emb_coe {α β: Type}
 : (Prod.swap_emb: (α × β → β × α)) = Prod.swap := by
   unfold swap_emb; simp
+
+theorem Prod.fst_snd {α β: Type} (p: α × β): 
+  p = (p.fst, p.snd) := by simp
+
+theorem Prod.neq_iff_fst_neq_or_snd_eq
+  {α β: Type} (p q: α × β):
+  p ≠ q ↔ p.fst ≠ q.fst ∨ p.snd ≠ q.snd := by
+  have h := (@Prod.eq_iff_fst_eq_snd_eq α β p q).not
+  rw [not_and_or] at h
+  exact h
