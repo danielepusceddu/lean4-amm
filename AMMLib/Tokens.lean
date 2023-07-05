@@ -25,7 +25,7 @@ instance: DecidableEq 𝕋₀ :=
 abbrev AtomicOracle  := 𝕋₀ → PReal
 
 def diffpair (t0 t1 t0' t1': 𝕋₀): Prop :=
-  (t0 ≠ t0' ∧ t1 ≠ t1') ∨ (t0 ≠ t1' ∨ t1 ≠ t0')
+  (t0 ≠ t0' ∧ t0 ≠ t1') ∨ (t1 ≠ t0' ∧ t1 ≠ t1')
 
 instance (t0 t1 t0' t1': 𝕋₀): Decidable (diffpair t0 t1 t0' t1') := 
   by sorry
