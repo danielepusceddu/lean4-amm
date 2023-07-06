@@ -31,9 +31,20 @@ def 𝕎₁.get (w: 𝕎₁) (t0 t1: 𝕋₀): NNReal := w.f t0 t1
   rw [h]
   simp [empty, get]
 
+theorem 𝕎₁.f_eq_get  (w: 𝕎₁) (t0 t1: 𝕋₀):
+  w.f t0 t1 = w.get t0 t1 := by rfl
+
 theorem 𝕎₁.get_reorder (w: 𝕎₁) (t1 t0: 𝕋₀):
   w.get t1 t0 = w.get t0 t1 := by
   simp [w.h1, 𝕎₁.get]
+
+theorem 𝕎₁.samepair_get (w: 𝕎₁) {t0 t1 t0' t1': 𝕋₀}
+  (hdif: t0 ≠ t1) (h: ¬diffpair t0 t1 t0' t1'):
+  w.get t0 t1 = w.get t0' t1' := by
+  have h' := not_diffpair hdif h
+  rcases h' with ⟨a,b⟩|⟨a,b⟩
+  . simp [a,b]
+  . simp [a, b, w.get_reorder]
 
 noncomputable def 𝕎₁.add (w: 𝕎₁) (t0 t1: 𝕋₀) 
   (hdif: t0 ≠ t1) (x: NNReal): 𝕎₁ :=

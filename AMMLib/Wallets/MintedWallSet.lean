@@ -51,6 +51,11 @@ noncomputable def 𝕊₁.drain (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋₀) (hdif: t
 theorem 𝕊₁.supply (s: 𝕊₁) (t0 t1: 𝕋₀): NNReal :=
   s.f.sum (λ _ w => w.get t0 t1)
 
+theorem 𝕊₁.supply_reorder (s: 𝕊₁) (t1 t0: 𝕋₀): 
+  s.supply t1 t0 = s.supply t0 t1 := by
+  unfold supply
+  simp_rw [𝕎₁.get_reorder]
+
 @[simp] theorem 𝕊₁.supply_of_add_self (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋₀) (hdif: t0 ≠ t1) (x: NNReal): 
   (s.add a t0 t1 hdif x).supply t0 t1 = s.supply t0 t1 + x := by
   unfold supply

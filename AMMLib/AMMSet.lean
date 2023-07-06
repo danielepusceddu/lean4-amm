@@ -37,6 +37,11 @@ def 𝕊ₐ.init.swap {amms: 𝕊ₐ} {t0 t1: 𝕋₀} (h: amms.init t0 t1):
   unfold init at *
   exact (amms.h3 t0 t1).mp h
 
+def 𝕊ₐ.init_swap_iff (amms: 𝕊ₐ) (t0 t1: 𝕋₀):
+ amms.init t0 t1 ↔ amms.init t1 t0 := by
+  unfold init
+  exact amms.h3 t0 t1
+
 def 𝕊ₐ.init.dif {amms: 𝕊ₐ} {t0 t1: 𝕋₀} (h: amms.init t0 t1):
   t0 ≠ t1 := by
   unfold init at h
