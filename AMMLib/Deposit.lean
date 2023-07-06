@@ -18,7 +18,7 @@ noncomputable def Deposit0.apply
   ⟨
   (s.atoms.sub v.a v.t0 v.r0 v.hen0).sub v.a v.t1 v.r1 (by simp [v.hen1, v.hdif]),
   s.mints.add v.a v.t0 v.t1 v.hdif v.r0,
-  s.amms.initialize v.hdif v.hnin v.r0 v.r1
+  s.amms.initialize v.hdif v.r0 v.r1
   ⟩
 
 @[simp] theorem Deposit0.supply_minted_diff 
