@@ -10,58 +10,12 @@ import AMMLib.Swap.Rate
   unfold Γ.𝕋₁Price
   simp [init, hdif]
 
-
-/-
-```
-price(m) = (r0*p0 + r1*p1)/supply
-after swap, becomes
-(r0*p0 + x*p0 + r1*p1 - y*p1)/supply
-=
-(r0*p0 + r1*p1)/supply + (x*p0 - y*p1)/supply
-= oldprice + (x*p0 - y*p1)/supply
-
-The price may decrease. However, does it keep being positive?
-0 < (r0*p0 + x*p0 + r1*p1 - y*p1)/supply
-0 < r0*p0 + x*p0 + r1*p1 - y*p1   by positivity of supply
-0 < p0(r0 + x) + p1(r1 - y)
-Yes, both addends are positive, by y < r1
-
-When does the price increase?
-oldprice < oldprice + (x*p0 - y*p1)/supply
-0 < (x*p0 - y*p1)/supply
-0 < (x*p0 - y*p1)
-y*p1 < x*p0
-
-When does the price stay the same?
-y*p1 = x*p0
-
-When does the price decrease?
-y*p1 > x*p0
-```
--/
-@[simp] theorem swap_price_mint_self
-(sw: Swap sx o s a t0 t1 v0)
-: sw.apply.𝕋₁Price o t0 t1 = ⟨(s.𝕋₁Price o t0 t1) + (((v0*(o t0)): ℝ) - sw.y*(o t1)) / (s.mints.supply t0 t1), by sorry⟩ := by
-  unfold Γ.𝕋₁Price
-  simp [sw.exi, PReal.coe_sub']
-  sorry
-
-/-
-I must prove
-𝕎₁.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (sw.apply.mints sw.a)) (Swap.apply sw) c.o
-
-is equal to
-
-𝕎₁.networth (Finsupp.erase (𝕋₀.toMint (_ : sw.t0 ≠ sw.t1)) (s sw.a)) (Swap.apply sw) c.o
--/
-
-@[simp] theorem networth_erase
+@[simp] theorem Swap.networth_erase
 (sw: Swap sx o s a t0 t1 v0):
 ((sw.apply.mints.get a).drain t0 t1 sw.exi.dif)
 =
 ((s.mints.get a).drain t0 t1 sw.exi.dif)
-:= by
-  sorry
+:= by simp [apply]
 
 theorem minca (sw: Swap sx o s a t0 t1 v0):
   (((sw.apply.atoms.get a).drain t0).drain t1).worth o = (((s.atoms.get a).drain t0).drain t1).worth o := by
@@ -72,9 +26,26 @@ theorem minca (sw: Swap sx o s a t0 t1 v0):
 
 @[simp] theorem bruh' 
   (sw: Swap sx o s a t0 t1 v0) (w: 𝕎₁)
-  (h: w.f t0 t1 = 0):
+  (h: w.get t0 t1 = 0):
   w.worth (sw.apply.𝕋₁Price o) = w.worth (s.𝕋₁Price o) := by 
-  sorry
+  unfold 𝕎₁.worth
+  rw [Finsupp.sum_congr]
+  intro p _
+
+  unfold 𝕎₁.u
+  rw [Finsupp.uncurry_apply]
+
+  rcases Decidable.em (s.amms.init p.fst p.snd) with init|uninit
+  . rcases Decidable.em (diffpair t0 t1 p.fst p.snd) with dif|ndif
+    . simp [init, dif]
+    . rw [𝕎₁.f_eq_get]
+      rw [← 𝕎₁.samepair_get _ sw.exi.dif ndif]
+      simp [h]
+  . rw [𝕎₁.f_eq_get]
+    simp [uninit, h, Γ.𝕋₁Price]
+
+theorem expandprice (s: Γ) (o: 𝕆) (t0 t1: 𝕋₀) (init: s.amms.init t0 t1):
+  s.𝕋₁Price o t0 t1 = ((s.amms.r0 t0 t1 init)*(o t0) + (s.amms.r1 t0 t1 init)*(o t1)) / (s.mints.supply t0 t1) := by simp [Γ.𝕋₁Price, init]
 
 theorem lemma32_same'
 (sw: Swap sx o s a t0 t1 v0)
@@ -95,10 +66,11 @@ theorem lemma32_same'
   rw [𝕎₁.worth_destruct _ (sw.apply.𝕋₁Price o) t0 t1 _]
   rw [𝕎₁.worth_destruct _ (s.𝕋₁Price o) t0 t1 _]
 
-  simp
-  simp [sw.exi.dif, sw.exi.dif.symm, sw.enough, sw.nodrain]
+  simp [expandprice, sw.exi, sw.exi.dif, sw.exi.dif.symm, sw.enough, sw.nodrain, PReal.coe_sub, PReal.coe_add]
   ring_nf
-  exact sw.exi.dif
+  . rw [Γ.𝕋₁Price_reorder]
+  . exact sw.exi.dif
+  . rw [Γ.𝕋₁Price_reorder]
 
 theorem lemma33
 (sw: Swap sx o s a t0 t1 x)

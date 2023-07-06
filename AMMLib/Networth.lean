@@ -24,6 +24,16 @@ noncomputable def Γ.𝕋₁Price
   ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mints.supply t0 t1)
   else 0
 
+theorem Γ.𝕋₁Price_reorder (s: Γ) (o: 𝕋₀ → PReal) (t1 t0: 𝕋₀):
+  s.𝕋₁Price o t1 t0 = s.𝕋₁Price o t0 t1 := by
+  unfold Γ.𝕋₁Price
+  rcases Decidable.em (s.amms.init t0 t1) with init|uninit
+  . simp only [init, init.swap, dite_true]
+    rw [𝕊ₐ.r0_reorder _ t1 t0, 𝕊ₐ.r1_reorder _ t1 t0, 
+        add_comm, 𝕊₁.supply_reorder]
+  . have b := (𝕊ₐ.init_swap_iff s.amms t0 t1).not
+    simp [uninit, b.mp uninit]
+
 noncomputable def Γ.networth
 (s: Γ) (a: 𝔸) (o: 𝕋₀ → PReal): NNReal
 :=

@@ -102,14 +102,14 @@ CovariantClass { x // 0 < x } { x // 0 < x } (fun x x_1 => x + x_1) fun x x_1 =>
 
 if x < x1, then y+x < y+x1
 -/
-theorem lt_add_right (x y: ℝ+):
+@[simp] theorem lt_add_right (x y: ℝ+):
   x < x+y := by
   simp only [coe_lt, coe_add]
   conv => lhs; rw [← zero_add (x: ℝ)]; rfl
   rw [add_comm (x: ℝ)]
   exact add_lt_add_right y.coe_pos x
 
-theorem lt_add_left (x y: ℝ+):
+@[simp] theorem lt_add_left (x y: ℝ+):
   x < y+x := by
   rw [add_comm y x]
   exact lt_add_right x y

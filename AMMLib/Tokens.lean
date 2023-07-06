@@ -40,6 +40,12 @@ theorem diffpair.swap_inner_right {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0
 theorem diffpair.swap_inner {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0' t1'):
   diffpair t1 t0 t1' t0' := by sorry
 
+theorem diffpair.swap_outer {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0' t1'):
+  diffpair t0' t1' t0 t1 := by sorry
+
+theorem diffpair_iff_swap_outer (t0 t1 t0' t1': 𝕋₀):
+  diffpair t0 t1 t0' t1' ↔ diffpair t0' t1' t0 t1 := by sorry
+
   /-
   ```
 
