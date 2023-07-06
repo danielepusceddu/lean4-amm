@@ -4,7 +4,7 @@ import AMMLib.AMMSet
 import AMMLib.State
 open BigOperators
 
-noncomputable def 𝕊ₐ.supply (amms: 𝕊ₐ) (t: 𝕋₀): NNReal := (amms.f t).sum λ _ x => x.fst
+noncomputable def 𝕊ₐ.supply (amms: 𝕊ₐ) (t: 𝕋₀): NNReal := (amms.f t).sum λ _ x => x
 
 noncomputable def Γ.atomsupply 
 (s: Γ) (t: 𝕋₀): NNReal :=

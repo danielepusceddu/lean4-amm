@@ -29,6 +29,9 @@ theorem coe_ne_zero (x: ℝ+)
 
 @[simp] theorem coe_eq (x: ℝ+): ((x: NNReal): ℝ) = (x: ℝ) := by rfl
 
+@[simp] theorem coe_real_preal_eq (x: ℝ+):
+  ⟨(x: ℝ), x.property⟩ = (x: ℝ+) := by rfl
+
 theorem coe_nnreal_pos (x: ℝ+): (x: NNReal) ≠ 0 := by
   have h := x.property
   apply NNReal.ne_iff.mp
