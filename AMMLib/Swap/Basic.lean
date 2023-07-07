@@ -54,6 +54,14 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
   unfold apply;
   simp [sw.exi]
 
+@[simp] theorem Swap.atoms_self
+  (sw: Swap sx o s a t0 t1 v0):
+  (sw.apply).atoms.get a = ((s.atoms.get a).sub t0 v0 sw.enough).add t1 sw.y := by simp [apply]
+
+@[simp] theorem Swap.atoms_diff
+  (sw: Swap sx o s a t0 t1 v0) (a': 𝔸) (hdif: a ≠ a'):
+  (sw.apply).atoms.get a' = s.atoms.get a' := by simp [apply, hdif]
+
 @[simp] theorem Swap.b0_self
   (sw: Swap sx o s a t0 t1 v0):
   (sw.apply).atoms.get a t0 = s.atoms.get a t0 - v0 := by

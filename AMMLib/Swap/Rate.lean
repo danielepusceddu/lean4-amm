@@ -54,12 +54,6 @@ def SX.strictmono (sx: SX): Prop :=
   then sx x r0 r1 < sx x' r0' r1'
   else sx x r0 r1 ≤ sx x' r0' r1'
 
-def SX.additive (sx: SX): Prop :=
-∀ (x y r0 r1: ℝ+),
-  sx (x+y) r0 r1
-  =
-  (x*(sx x r0 r1) + y*(sx y r0 r1))/(x + y)
-
 def SX.reversible 
 (sx: SX) (bound: sx.outputbound): Prop :=
   ∀ (x r0 r1: ℝ+),
