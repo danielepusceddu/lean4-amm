@@ -12,39 +12,39 @@ open BigOperators
 structure 𝔸 where
   n: ℕ
 
-structure 𝕋₀ where
+structure 𝕋 where
   n: ℕ
 
 instance: DecidableEq 𝔸 := 
   fun a1 a2 => by 
   cases a1; cases a2; simp; infer_instance
 
-instance: DecidableEq 𝕋₀ := 
+instance: DecidableEq 𝕋 := 
   fun a1 a2 => by 
   cases a1; cases a2; simp; infer_instance
 
-abbrev AtomicOracle  := 𝕋₀ → PReal
+abbrev AtomicOracle  := 𝕋 → PReal
 
 
-def diffpair (t0 t1 t0' t1': 𝕋₀): Prop :=
+def diffpair (t0 t1 t0' t1': 𝕋): Prop :=
   (t0 ≠ t0' ∧ t0 ≠ t1') ∨ (t1 ≠ t0' ∧ t1 ≠ t1')
 
-theorem self_not_diffpair (t0 t1: 𝕋₀):
+theorem self_not_diffpair (t0 t1: 𝕋):
   ¬ diffpair t0 t1 t0 t1 := by simp [diffpair]
 
-theorem diffpair.swap_inner_left {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0' t1'):
+theorem diffpair.swap_inner_left {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
   diffpair t1 t0 t0' t1' := by sorry
 
-theorem diffpair.swap_inner_right {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0' t1'):
+theorem diffpair.swap_inner_right {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
   diffpair t0 t1 t1' t0' := by sorry
 
-theorem diffpair.swap_inner {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0' t1'):
+theorem diffpair.swap_inner {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
   diffpair t1 t0 t1' t0' := by sorry
 
-theorem diffpair.swap_outer {t0 t1 t0' t1': 𝕋₀} (h: diffpair t0 t1 t0' t1'):
+theorem diffpair.swap_outer {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
   diffpair t0' t1' t0 t1 := by sorry
 
-theorem diffpair_iff_swap_outer (t0 t1 t0' t1': 𝕋₀):
+theorem diffpair_iff_swap_outer (t0 t1 t0' t1': 𝕋):
   diffpair t0 t1 t0' t1' ↔ diffpair t0' t1' t0 t1 := by sorry
 
   /-
@@ -60,7 +60,7 @@ theorem diffpair_iff_swap_outer (t0 t1 t0' t1': 𝕋₀):
 
   ```
   -/
-theorem not_diffpair {t0 t1 t0' t1': 𝕋₀} (dif1: t0 ≠ t1) (h: ¬ diffpair t0 t1 t0' t1'):
+theorem not_diffpair {t0 t1 t0' t1': 𝕋} (dif1: t0 ≠ t1) (h: ¬ diffpair t0 t1 t0' t1'):
   (t0 = t0' ∧ t1 = t1') ∨ (t0 = t1' ∧ t1 = t0') := by
   
   unfold diffpair at h
@@ -72,5 +72,5 @@ theorem not_diffpair {t0 t1 t0' t1': 𝕋₀} (dif1: t0 ≠ t1) (h: ¬ diffpair 
   . simp [a, b, dif1]
   . rw [a, b] at dif1; contradiction
 
-instance (t0 t1 t0' t1': 𝕋₀): Decidable (diffpair t0 t1 t0' t1') := 
+instance (t0 t1 t0' t1': 𝕋): Decidable (diffpair t0 t1 t0' t1') := 
   by sorry

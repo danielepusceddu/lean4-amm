@@ -10,36 +10,36 @@ import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import Mathlib.Tactic.LibrarySearch
 
-abbrev 𝕎₀ := 𝕋₀ →₀ NNReal
+abbrev 𝕎₀ := 𝕋 →₀ NNReal
 
-noncomputable def 𝕎₀.add (w: 𝕎₀) (t: 𝕋₀) (x: NNReal): 𝕎₀ := 
+noncomputable def 𝕎₀.add (w: 𝕎₀) (t: 𝕋) (x: NNReal): 𝕎₀ := 
   w.update t ((w t) + x)
 
-@[simp] theorem 𝕎₀.get_add_self (w: 𝕎₀) (t: 𝕋₀) (x: NNReal):
+@[simp] theorem 𝕎₀.get_add_self (w: 𝕎₀) (t: 𝕋) (x: NNReal):
   (w.add t x) t = w t + x := by simp [𝕎₀.add]
 
-@[simp] theorem 𝕎₀.get_add_diff (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (t': 𝕋₀) (hdif: t ≠ t'):
+@[simp] theorem 𝕎₀.get_add_diff (w: 𝕎₀) (t: 𝕋) (x: NNReal) (t': 𝕋) (hdif: t ≠ t'):
   (w.add t x) t' = w t' := by simp [𝕎₀.add, hdif.symm]
 
-noncomputable def 𝕎₀.sub (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (_: x ≤ w t): 𝕎₀ :=
+noncomputable def 𝕎₀.sub (w: 𝕎₀) (t: 𝕋) (x: NNReal) (_: x ≤ w t): 𝕎₀ :=
   w.update t ((w t) - x)
 
-@[simp] theorem 𝕎₀.get_sub_self (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t):
+@[simp] theorem 𝕎₀.get_sub_self (w: 𝕎₀) (t: 𝕋) (x: NNReal) (h: x ≤ w t):
   (w.sub t x h) t = w t - x := by simp [𝕎₀.sub]
 
-@[simp] theorem 𝕎₀.get_sub_diff (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t) (t': 𝕋₀) (diff: t ≠ t'):
+@[simp] theorem 𝕎₀.get_sub_diff (w: 𝕎₀) (t: 𝕋) (x: NNReal) (h: x ≤ w t) (t': 𝕋) (diff: t ≠ t'):
   (w.sub t x h) t' = w t' := by simp [𝕎₀.sub, diff.symm]
 
-noncomputable def 𝕎₀.drain (w: 𝕎₀) (t: 𝕋₀): 𝕎₀ := 
+noncomputable def 𝕎₀.drain (w: 𝕎₀) (t: 𝕋): 𝕎₀ := 
   w.sub t (w t) (by simp)
 
-@[simp] theorem 𝕎₀.get_drain_self (w: 𝕎₀) (t: 𝕋₀):
+@[simp] theorem 𝕎₀.get_drain_self (w: 𝕎₀) (t: 𝕋):
   (w.drain t) t = 0 := by simp [𝕎₀.drain]
 
-@[simp] theorem 𝕎₀.get_drain_diff (w: 𝕎₀) (t t': 𝕋₀) (diff: t ≠ t'):
+@[simp] theorem 𝕎₀.get_drain_diff (w: 𝕎₀) (t t': 𝕋) (diff: t ≠ t'):
   (w.drain t) t' = w t' := by simp [𝕎₀.drain, diff]
 
-theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋₀):
+theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋):
   (w.drain t1).drain t0 = (w.drain t0).drain t1 := by 
   ext t0' t1'
   apply @Decidable.byCases (t0' = t0)
@@ -57,7 +57,7 @@ theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋₀):
     . intro diff1 diff2
       simp [(Ne.intro diff1).symm, (Ne.intro diff2).symm]
 
-@[simp] theorem 𝕎₀.drain_add_self (w: 𝕎₀) (t: 𝕋₀) (x: NNReal):
+@[simp] theorem 𝕎₀.drain_add_self (w: 𝕎₀) (t: 𝕋) (x: NNReal):
   (w.add t x).drain t = w.drain t := by 
   ext t'
   apply @Decidable.byCases (t' = t)
@@ -66,7 +66,7 @@ theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋₀):
   . intro neq
     simp [(Ne.intro neq).symm]
 
-@[simp] theorem 𝕎₀.drain_sub_self (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t):
+@[simp] theorem 𝕎₀.drain_sub_self (w: 𝕎₀) (t: 𝕋) (x: NNReal) (h: x ≤ w t):
   (w.sub t x h).drain t = w.drain t := by
   ext t'
   apply @Decidable.byCases (t' = t)
@@ -75,7 +75,7 @@ theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋₀):
   . intro neq
     simp [(Ne.intro neq).symm]
 
-@[simp] theorem 𝕎₀.drain_add_diff (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (t': 𝕋₀) (hdif: t ≠ t'):
+@[simp] theorem 𝕎₀.drain_add_diff (w: 𝕎₀) (t: 𝕋) (x: NNReal) (t': 𝕋) (hdif: t ≠ t'):
   (w.add t x).drain t' = (w.drain t').add t x := by
   ext t''
   rcases Decidable.em (t''=t), (Decidable.em (t''=t')) with ⟨left|left, right|right⟩
@@ -88,7 +88,7 @@ theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋₀):
     simp [hdif, hdif.symm]
   . simp [(Ne.intro left).symm, (Ne.intro right).symm]
 
-@[simp] theorem 𝕎₀.drain_sub_diff (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t) (t': 𝕋₀) (hdif: t ≠ t'):
+@[simp] theorem 𝕎₀.drain_sub_diff (w: 𝕎₀) (t: 𝕋) (x: NNReal) (h: x ≤ w t) (t': 𝕋) (hdif: t ≠ t'):
   (w.sub t x h).drain t' = (w.drain t').sub t x (by simp[h,hdif.symm]) := by   
   ext t''
   rcases Decidable.em (t''=t), (Decidable.em (t''=t')) with ⟨left|left, right|right⟩
@@ -101,7 +101,7 @@ theorem 𝕎₀.drain_comm (w: 𝕎₀) (t0 t1: 𝕋₀):
     simp [hdif, hdif.symm]
   . simp [(Ne.intro left).symm, (Ne.intro right).symm]
 
-def 𝕎₀.worth (w: 𝕎₀) (o: 𝕋₀ → PReal): NNReal :=
+def 𝕎₀.worth (w: 𝕎₀) (o: 𝕋 → PReal): NNReal :=
   w.sum (λ t x => x*(o t))
 
 theorem Finsupp.update_zero_eq_erase {α β: Type} [DecidableEq α] [Zero β] (f: α →₀ β) (a: α):
@@ -111,7 +111,7 @@ theorem Finsupp.update_zero_eq_erase {α β: Type} [DecidableEq α] [Zero β] (f
   . rw [eq]; simp
   . simp [(Ne.intro neq).symm]
 
-theorem 𝕎₀.worth_destruct (w: 𝕎₀) (o: 𝕋₀ → PReal) (t: 𝕋₀):
+theorem 𝕎₀.worth_destruct (w: 𝕎₀) (o: 𝕋 → PReal) (t: 𝕋):
   w.worth o = (w.drain t).worth o + (w t)*(o t) := by 
   unfold worth
   unfold drain
@@ -128,17 +128,17 @@ theorem 𝕎₀.worth_destruct (w: 𝕎₀) (o: 𝕋₀ → PReal) (t: 𝕋₀):
   Symmetric versions of the theorems with "hdif",
   to make their use with simp easier
 -/
-@[simp] theorem 𝕎₀.get_add_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (t': 𝕋₀) (hdif: t' ≠ t): (w.add t x) t' = w t' 
+@[simp] theorem 𝕎₀.get_add_diff' (w: 𝕎₀) (t: 𝕋) (x: NNReal) (t': 𝕋) (hdif: t' ≠ t): (w.add t x) t' = w t' 
   := 𝕎₀.get_add_diff w t x t' hdif.symm
 
-@[simp] theorem 𝕎₀.get_sub_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t) (t': 𝕋₀) (diff: t' ≠ t):
+@[simp] theorem 𝕎₀.get_sub_diff' (w: 𝕎₀) (t: 𝕋) (x: NNReal) (h: x ≤ w t) (t': 𝕋) (diff: t' ≠ t):
   (w.sub t x h) t' = w t' := 𝕎₀.get_sub_diff w t x h t' diff.symm
 
-@[simp] theorem 𝕎₀.get_drain_diff' (w: 𝕎₀) (t t': 𝕋₀) (diff: t' ≠ t):
+@[simp] theorem 𝕎₀.get_drain_diff' (w: 𝕎₀) (t t': 𝕋) (diff: t' ≠ t):
   (w.drain t) t' = w t' := 𝕎₀.get_drain_diff w t t' diff.symm
 
-@[simp] theorem 𝕎₀.drain_add_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (t': 𝕋₀) (hdif: t' ≠ t):
+@[simp] theorem 𝕎₀.drain_add_diff' (w: 𝕎₀) (t: 𝕋) (x: NNReal) (t': 𝕋) (hdif: t' ≠ t):
   (w.add t x).drain t' = (w.drain t').add t x := 𝕎₀.drain_add_diff w t x t' hdif.symm
 
-@[simp] theorem 𝕎₀.drain_sub_diff' (w: 𝕎₀) (t: 𝕋₀) (x: NNReal) (h: x ≤ w t) (t': 𝕋₀) (hdif: t' ≠ t):
+@[simp] theorem 𝕎₀.drain_sub_diff' (w: 𝕎₀) (t: 𝕋) (x: NNReal) (h: x ≤ w t) (t': 𝕋) (hdif: t' ≠ t):
   (w.sub t x h).drain t' = (w.drain t').sub t x (by simp[h,hdif.symm]) := 𝕎₀.drain_sub_diff w t x h t' hdif.symm

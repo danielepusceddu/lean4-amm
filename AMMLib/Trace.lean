@@ -41,11 +41,11 @@ dep0: trivial by cases on the deposited tokens:
 swap: use IH. 
       swaps don't change minted token supplies
 -/
-theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋₀) (samepair: ¬diffpair t0 t1 t0' t1'):
+theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋) (samepair: ¬diffpair t0 t1 t0' t1'):
   s.mintsupply t0 t1 = s.mintsupply t0' t1' := by sorry
 
 theorem AMMimpSupplyProp
-{o: 𝕆} {sx: SX} {s: Γ} (r: reachable o sx s) {t0 t1: 𝕋₀}
+{o: 𝕆} {sx: SX} {s: Γ} (r: reachable o sx s) {t0 t1: 𝕋}
 (h: s.amms.init t0 t1)
 : 0 < s.mintsupply t0 t1 := by
   have ⟨init, tx, ⟨init_amms, init_accs⟩⟩ := r

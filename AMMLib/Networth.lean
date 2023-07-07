@@ -18,13 +18,13 @@ so is it worth it?
 -/
 
 noncomputable def Γ.𝕋₁Price
-(s: Γ) (o: 𝕋₀ → PReal)
-(t0 t1: 𝕋₀): NNReal :=
+(s: Γ) (o: 𝕋 → PReal)
+(t0 t1: 𝕋): NNReal :=
   if h:s.amms.init t0 t1 then 
   ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mints.supply t0 t1)
   else 0
 
-theorem Γ.𝕋₁Price_reorder (s: Γ) (o: 𝕋₀ → PReal) (t1 t0: 𝕋₀):
+theorem Γ.𝕋₁Price_reorder (s: Γ) (o: 𝕋 → PReal) (t1 t0: 𝕋):
   s.𝕋₁Price o t1 t0 = s.𝕋₁Price o t0 t1 := by
   unfold Γ.𝕋₁Price
   rcases Decidable.em (s.amms.init t0 t1) with init|uninit
@@ -35,13 +35,13 @@ theorem Γ.𝕋₁Price_reorder (s: Γ) (o: 𝕋₀ → PReal) (t1 t0: 𝕋₀):
     simp [uninit, b.mp uninit]
 
 noncomputable def Γ.networth
-(s: Γ) (a: 𝔸) (o: 𝕋₀ → PReal): NNReal
+(s: Γ) (a: 𝔸) (o: 𝕋 → PReal): NNReal
 :=
 (𝕎₀.worth (s.atoms.get a) o)
 +
 (𝕎₁.worth (s.mints.get a) (s.𝕋₁Price o))
 
 noncomputable def 𝔸.gain
-(a: 𝔸) (o: 𝕋₀ → PReal) (s s': Γ)
+(a: 𝔸) (o: 𝕋 → PReal) (s s': Γ)
 : ℝ
 := ((s'.networth a o): ℝ) - ((s.networth a o): ℝ)

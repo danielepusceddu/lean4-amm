@@ -4,7 +4,7 @@ import AMMLib.State
 import AMMLib.Supply
 
 structure Swap 
-  (sx: SX) (o: 𝕆) (s: Γ) (a: 𝔸) (t0 t1: 𝕋₀) (v0: ℝ+) 
+  (sx: SX) (o: 𝕆) (s: Γ) (a: 𝔸) (t0 t1: 𝕋) (v0: ℝ+) 
   where
   enough: v0 ≤ s.atoms.get a t0
   exi: s.amms.init t0 t1
@@ -22,7 +22,7 @@ def Swap.hdif (sw: Swap sx o s a t0 t1 v0):
 t0 ≠ t1 := 𝕊ₐ.exists_imp_dif sw.exi
 
 def Swap.mint (sw: Swap sx o s a t0 t1 v0)
-: 𝕋₁ := 𝕋₀.toMint sw.hdif
+: 𝕋₁ := 𝕋.toMint sw.hdif
 
 def Swap.exi_swap (sw: Swap sx o s a t0 t1 v0):
   s.amms.f t1 t0 ≠ 0 :=
@@ -37,7 +37,7 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 ⟩
 
 @[simp] theorem 𝕊ₐ.init_of_swap (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋₀):
+  (t0' t1': 𝕋):
   sw.apply.amms.init t0' t1' ↔ s.amms.init t0' t1' := by
     unfold Swap.apply
     simp
@@ -76,7 +76,7 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 
 @[simp] theorem Swap.init_iff
   (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋₀):
+  (t0' t1': 𝕋):
   sw.apply.amms.init t0' t1' ↔ s.amms.init t0' t1' := by
   unfold apply
   simp
@@ -87,7 +87,7 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 
 @[simp] theorem Swap.r0_diff
   (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋₀) (init: s.amms.init t0' t1')
+  (t0' t1': 𝕋) (init: s.amms.init t0' t1')
   (hdif: diffpair t0 t1 t0' t1'):
   (sw.apply).amms.r0 t0' t1' (by simp[init]) = s.amms.r0 t0' t1' init := by 
   unfold apply;
@@ -95,7 +95,7 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 
 @[simp] theorem Swap.r1_diff
   (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋₀) (init: s.amms.init t0' t1')
+  (t0' t1': 𝕋) (init: s.amms.init t0' t1')
   (hdif: diffpair t0 t1 t0' t1'):
   (sw.apply).amms.r1 t0' t1' (by simp[init]) = s.amms.r1 t0' t1' init := by 
   unfold apply;
@@ -143,6 +143,6 @@ theorem Swap.inv_y_eq_x
 
 @[simp] theorem Swap.mintsupply
   (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋₀): 
+  (t0' t1': 𝕋): 
   sw.apply.mintsupply t0' t1' = s.mintsupply t0' t1' := by
   simp [Swap.apply, Γ.mintsupply]

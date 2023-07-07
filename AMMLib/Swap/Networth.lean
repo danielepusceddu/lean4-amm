@@ -5,7 +5,7 @@ import HelpersLib.PReal.Subtraction
 
 @[simp] theorem swap_price_mint_diff
 (sw: Swap sx o s a t0 t1 v0)
-(t0' t1': 𝕋₀) (init: s.amms.init t0' t1') 
+(t0' t1': 𝕋) (init: s.amms.init t0' t1') 
 (hdif: diffpair t0 t1 t0' t1')
 : sw.apply.𝕋₁Price o t0' t1' = s.𝕋₁Price o t0' t1' := by
   unfold Γ.𝕋₁Price
@@ -45,7 +45,7 @@ theorem minca (sw: Swap sx o s a t0 t1 v0):
   . rw [𝕎₁.f_eq_get]
     simp [uninit, h, Γ.𝕋₁Price]
 
-theorem expandprice (s: Γ) (o: 𝕆) (t0 t1: 𝕋₀) (init: s.amms.init t0 t1):
+theorem expandprice (s: Γ) (o: 𝕆) (t0 t1: 𝕋) (init: s.amms.init t0 t1):
   s.𝕋₁Price o t0 t1 = ((s.amms.r0 t0 t1 init)*(o t0) + (s.amms.r1 t0 t1 init)*(o t1)) / (s.mints.supply t0 t1) := by simp [Γ.𝕋₁Price, init]
 
 theorem lemma32_same'

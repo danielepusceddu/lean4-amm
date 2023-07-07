@@ -8,7 +8,7 @@ import AMMLib.Swap.Rate
 -- This is where I would add φ.
 -- The price oracle should be moved to 
 -- State to implement price updates.
-abbrev 𝕆 := 𝕋₀ → PReal
+abbrev 𝕆 := 𝕋 → PReal
 
 -- State
 structure Γ where

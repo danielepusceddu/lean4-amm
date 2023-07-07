@@ -3,8 +3,8 @@ import AMMLib.State
 import AMMLib.Supply
 
 structure Deposit0 (s: Γ) where
-  t0: 𝕋₀
-  t1: 𝕋₀
+  t0: 𝕋
+  t1: 𝕋
   r0: ℝ+
   r1: ℝ+
   a: 𝔸
@@ -23,12 +23,12 @@ noncomputable def Deposit0.apply
 
 @[simp] theorem Deposit0.supply_minted_diff 
 {s: Γ} (v: Deposit0 s)
-(t0 t1: 𝕋₀) (hdifp: diffpair v.t0 v.t1 t0 t1):
+(t0 t1: 𝕋) (hdifp: diffpair v.t0 v.t1 t0 t1):
 v.apply.mintsupply t0 t1 = s.mintsupply t0 t1 := by
   simp [apply, Γ.mintsupply, hdifp]
 
 @[simp] theorem Deposit0.init_diff_iff
-  {s: Γ} (v: Deposit0 s) (t0 t1: 𝕋₀) (hdifp: diffpair v.t0 v.t1 t0 t1):
+  {s: Γ} (v: Deposit0 s) (t0 t1: 𝕋) (hdifp: diffpair v.t0 v.t1 t0 t1):
   v.apply.amms.init t0 t1 ↔ s.amms.init t0 t1
   :=
   by sorry
