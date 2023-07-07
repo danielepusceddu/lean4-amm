@@ -47,6 +47,9 @@ theorem eq_iff (x y: ℝ+):
 lemma coe_add (x y: ℝ+):
   (((x+y): ℝ+): ℝ) = (x:ℝ)+(y:ℝ) := by rfl
 
+lemma coe_add' (x y: ℝ+):
+  (((x+y): ℝ+): NNReal) = (x:NNReal)+(y:NNReal) := by rfl
+
 lemma coe_mul (x y: ℝ+):
   (((x*y): ℝ+): ℝ)= (x:ℝ)*(y:ℝ) := by rfl
 
@@ -131,3 +134,10 @@ theorem lt_iff_exists_add
   exists (y.sub x h)
   rw [coe_eq', coe_add, coe_sub]
   simp
+
+@[simp] theorem toreal_of_mk (x: ℝ) (h: 0 < x):
+  ((⟨x, h⟩: ℝ+): ℝ) = x := by rfl
+
+@[simp] theorem sub_y_add_y (x y: ℝ+) (h: y < x):
+  x.sub y h + y = x := by
+  simp [sub, coe_eq', coe_add]

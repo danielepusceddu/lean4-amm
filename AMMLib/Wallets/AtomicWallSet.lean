@@ -6,6 +6,20 @@ structure 𝕊₀ where
 def 𝕊₀.get (s: 𝕊₀) (a: 𝔸): 𝕎₀ :=
   s.f a
 
+@[simp] theorem 𝕊₀.eq_iff (s s': 𝕊₀):
+  s = s' ↔ ∀ (a: 𝔸), s.get a = s'.get a := by
+  apply Iff.intro
+  . intro seq a
+    rw [seq]
+  . intro feq
+    unfold get at feq
+    rcases s with ⟨f⟩
+    rcases s' with ⟨f'⟩
+    simp only [mk.injEq]
+    simp at feq
+    ext a: 1
+    exact feq a
+
 @[simp] theorem 𝕊₀.f_eq_get (s: 𝕊₀): s.f = s.get := by simp [get]
 
 noncomputable def 𝕊₀.add (s: 𝕊₀) (a: 𝔸) (t: 𝕋₀) (x: NNReal): 𝕊₀ :=
