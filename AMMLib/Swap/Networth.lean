@@ -155,3 +155,13 @@ a.gain o s sw2.apply < 0 :=
   rw [𝕊ₐ.r0_reorder s.amms t1 t0,
       𝕊ₐ.r1_reorder s.amms t1 t0]
   exact le_of_lt h1'
+
+theorem Swap.lemma63_constprod
+  (sw1: Swap SX.constprod o s a t0 t1 x₀)
+  (sw2: Swap SX.constprod o s a t1 t0 x)
+  (h: sw1.apply.amms.r1 t0 t1 (by simp[sw1.exi]) / sw1.apply.amms.r0 t0 t1 (by simp[sw1.exi]) = (o t0) / (o t1)):
+  a.gain o s sw2.apply ≤ a.gain o s sw1.apply := by
+
+  rcases Decidable.em (x < x₀) with le|nle
+  . have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add le 
+  . sorry
