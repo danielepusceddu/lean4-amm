@@ -67,7 +67,7 @@ theorem AMMimpSupplyProp
       rw [← Γ.mintsupply_samepair _ _ _ _ _ same]
       simp [Γ.mintsupply, Deposit0.apply]
       right
-      exact PReal.coe_pos d.r0
+      exact d.r0.zero_lt_toNNReal
   
   | swap sprev tail sw ih =>
       rw [sw.mintsupply]

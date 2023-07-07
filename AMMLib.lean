@@ -3,6 +3,7 @@ import AMMLib.Deposit
 import AMMLib.Networth
 import AMMLib.State
 import AMMLib.Supply
+import AMMLib.Swap.Additive
 import AMMLib.Swap.Basic
 import AMMLib.Swap.Networth
 import AMMLib.Swap.Rate

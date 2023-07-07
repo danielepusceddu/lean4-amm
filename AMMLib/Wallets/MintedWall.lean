@@ -4,7 +4,8 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Algebra.BigOperators.Finsupp
 import HelpersLib.NNReal
 import HelpersLib.Prod
-import HelpersLib.PReal
+import HelpersLib.PReal.Basic
+import HelpersLib.PReal.Subtraction
 import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import AMMLib.Wallets.AtomicWall

@@ -4,7 +4,8 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Finsupp.Basic
-import HelpersLib.PReal
+import HelpersLib.PReal.Basic
+import HelpersLib.PReal.Subtraction
 import HelpersLib.Finsupp2
 open BigOperators
 

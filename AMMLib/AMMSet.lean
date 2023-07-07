@@ -3,7 +3,7 @@ import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Sym.Sym2
 import HelpersLib.NNReal
 import HelpersLib.Prod
-import HelpersLib.PReal
+import HelpersLib.PReal.Basic
 import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import AMMLib.Wallets.AtomicWall
@@ -75,7 +75,7 @@ noncomputable def 𝕊ₐ.initialize
     by intro t0' t1'
        rcases Decidable.em (t0'=t0), Decidable.em (t0'=t1), Decidable.em (t1'=t0), Decidable.em (t1'=t1) with ⟨a|a, b|b, c|c, d|d⟩ 
        <;>
-       simp [a, b, c, d, hdif, r0.coe_nnreal_pos, r1.coe_nnreal_pos, amms.h3]
+       simp [a, b, c, d, hdif, r0.toNNReal_ne_zero, r1.toNNReal_ne_zero, amms.h3]
   ⟩
 
 @[simp] theorem 𝕊ₐ.initialize_init_diffpair
@@ -108,8 +108,8 @@ noncomputable def 𝕊ₐ.initialize
   have h' := not_diffpair hdif h
   unfold init
   rcases h' with ⟨a,b⟩|⟨a,b⟩
-  . simp [𝕊ₐ.initialize, ← a, ← b, hdif, r0.coe_nnreal_pos]
-  . simp [𝕊ₐ.initialize, ← a, ← b, hdif, r1.coe_nnreal_pos]
+  . simp [𝕊ₐ.initialize, ← a, ← b, hdif, r0.toNNReal_ne_zero]
+  . simp [𝕊ₐ.initialize, ← a, ← b, hdif, r1.toNNReal_ne_zero]
 
 @[simp] theorem 𝕊ₐ.initialize_init_self
   (amms: 𝕊ₐ) {t0 t1: 𝕋₀} (hdif: t0 ≠ t1) (r0 r1: ℝ+):

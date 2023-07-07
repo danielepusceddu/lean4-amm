@@ -1,6 +1,7 @@
 import AMMLib.Swap.Basic
 import AMMLib.Networth
 import AMMLib.Swap.Rate
+import HelpersLib.PReal.Subtraction
 
 @[simp] theorem swap_price_mint_diff
 (sw: Swap sx o s a t0 t1 v0)
@@ -66,8 +67,14 @@ theorem lemma32_same'
   rw [𝕎₁.worth_destruct _ (sw.apply.𝕋₁Price o) t0 t1 _]
   rw [𝕎₁.worth_destruct _ (s.𝕋₁Price o) t0 t1 _]
 
-  simp [expandprice, sw.exi, sw.exi.dif, sw.exi.dif.symm, sw.enough, sw.nodrain, PReal.coe_sub, PReal.coe_add]
+  have h': (sw.y: NNReal) ≤ ((s.amms.r1 t0 t1 sw.exi): NNReal) := by
+    rw [PReal.toNNReal_le_toNNReal_iff]
+    simp [Swap.y, Swap.rate, le_of_lt sw.nodrain]
+
+  simp [expandprice, sw.exi, sw.exi.dif, sw.exi.dif.symm, sw.enough, sw.nodrain, NNReal.coe_sub h']
+
   ring_nf
+  . trivial
   . rw [Γ.𝕋₁Price_reorder]
   . exact sw.exi.dif
   . rw [Γ.𝕋₁Price_reorder]
@@ -79,17 +86,17 @@ cmp (a.gain o s sw.apply) 0
 =
 cmp sw.rate ((o t0) / (o t1))
 := by 
-  simp [lemma32_same', hzero, PReal.coe_div, Swap.y]
+  simp [lemma32_same', hzero, Swap.y]
 
   generalize (o t0) = p0 at *
   generalize (o t1) = p1 at *
 
-  rw [PReal.coe_mul, mul_assoc]
-  rw [cmp_mul_pos_left x.coe_pos (sw.rate*p1) p0]
+  rw [mul_assoc]
+  rw [cmp_mul_pos_left x.toReal_pos (sw.rate*p1) p0]
   rw [div_eq_mul_inv p0 p1]
-  rw [← cmp_mul_pos_right (inv_pos_of_pos p1.coe_pos) (sw.rate*p1) p0]
-  rw [mul_inv_cancel_right₀ p1.coe_ne_zero sw.rate]
-  exact PReal.coe_cmp sw.rate (p0*p1⁻¹)
+  rw [← cmp_mul_pos_right (inv_pos_of_pos p1.toReal_pos) (sw.rate*p1) p0]
+  rw [mul_inv_cancel_right₀ p1.toReal_ne_zero sw.rate]
+  exact PReal.toReal_cmp sw.rate (p0*p1⁻¹)
 
 theorem lemma33_lt
 (sw: Swap sx o s a t0 t1 v0)
@@ -163,5 +170,6 @@ theorem Swap.lemma63_constprod
   a.gain o s sw2.apply ≤ a.gain o s sw1.apply := by
 
   rcases Decidable.em (x < x₀) with le|nle
-  . have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add le 
+  . have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add le
+    sorry
   . sorry

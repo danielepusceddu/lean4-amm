@@ -74,7 +74,7 @@ def Swap.additive
     ext t
     rcases Decidable.em (t=t0), Decidable.em (t=t1) with ⟨eq0|neq0, eq1|neq1⟩
     . rw [eq0] at eq1; have contra := sw0.exi.dif; contradiction
-    . simp [eq0, sw0.exi.dif, PReal.coe_add', tsub_add_eq_tsub_tsub]
-    . simp [eq1, sw0.exi.dif, PReal.coe_add', tsub_add_eq_tsub_tsub, add_assoc]
+    . simp [eq0, sw0.exi.dif, PReal.add_toReal, tsub_add_eq_tsub_tsub]
+    . simp [eq1, sw0.exi.dif, PReal.add_toReal, tsub_add_eq_tsub_tsub, add_assoc]
     . simp [(Ne.intro neq0).symm, (Ne.intro neq1).symm]
   . simp [(Ne.intro neq).symm]

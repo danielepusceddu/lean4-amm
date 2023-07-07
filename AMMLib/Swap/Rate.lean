@@ -1,4 +1,6 @@
-import HelpersLib.PReal
+import HelpersLib.PReal.Basic
+import HelpersLib.PReal.Order
+import HelpersLib.PReal.Subtraction
 
 abbrev SX := PReal → PReal → PReal → PReal
 
