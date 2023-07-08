@@ -16,19 +16,6 @@ def Swap.rate (sw: Swap sx o s a t0 t1 v0): ℝ+
 def Swap.y (sw: Swap sx o s a t0 t1 v0): ℝ+
   := v0*sw.rate
 
-
-/-
-def Swap.hdif (sw: Swap sx o s a t0 t1 v0):
-t0 ≠ t1 := 𝕊ₐ.exists_imp_dif sw.exi
-
-def Swap.mint (sw: Swap sx o s a t0 t1 v0)
-: 𝕋₁ := 𝕋.toMint sw.hdif
-
-def Swap.exi_swap (sw: Swap sx o s a t0 t1 v0):
-  s.amms.f t1 t0 ≠ 0 :=
-    𝕊ₐ.exists_swap sw.exi
--/
-
 noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 ⟨
   (s.atoms.sub a t0 v0 sw.enough).add a t1 sw.y,
@@ -36,70 +23,30 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
   (s.amms.sub_r1 t0 t1 sw.exi sw.y sw.nodrain).add_r0 t0 t1 (by simp[sw.exi]) v0
 ⟩
 
-@[simp] theorem 𝕊ₐ.init_of_swap (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋):
-  sw.apply.amms.init t0' t1' ↔ s.amms.init t0' t1' := by
-    unfold Swap.apply
-    simp
+@[simp] theorem Swap.atoms (sw: Swap sx o s a t0 t1 v0):
+  sw.apply.atoms = (s.atoms.sub a t0 v0 sw.enough).add a t1 sw.y :=
+  by simp [apply]
 
-@[simp] theorem Swap.r0_self
-  (sw: Swap sx o s a t0 t1 v0):
-  (sw.apply).amms.r0 t0 t1 (by simp[sw.exi]) = v0 + s.amms.r0 t0 t1 sw.exi := by 
-  unfold apply;
-  simp [sw.exi]
+@[simp] theorem Swap.mints (sw: Swap sx o s a t0 t1 v0):
+  sw.apply.mints = s.mints :=
+  by simp [apply]
 
-@[simp] theorem Swap.r1_self
-  (sw: Swap sx o s a t0 t1 v0):
-  (sw.apply).amms.r1 t0 t1 (by simp[sw.exi]) = (s.amms.r1 t0 t1 sw.exi).sub sw.y (sw.nodrain) := by 
-  unfold apply;
-  simp [sw.exi]
+@[simp] theorem Swap.amms (sw: Swap sx o s a t0 t1 v0):
+  sw.apply.amms = (s.amms.sub_r1 t0 t1 sw.exi sw.y sw.nodrain).add_r0 t0 t1 (by simp[sw.exi]) v0 :=
+  by simp [apply]
 
-@[simp] theorem Swap.atoms_self
-  (sw: Swap sx o s a t0 t1 v0):
-  (sw.apply).atoms.get a = ((s.atoms.get a).sub t0 v0 sw.enough).add t1 sw.y := by simp [apply]
-
-@[simp] theorem Swap.atoms_diff
-  (sw: Swap sx o s a t0 t1 v0) (a': 𝔸) (hdif: a ≠ a'):
-  (sw.apply).atoms.get a' = s.atoms.get a' := by simp [apply, hdif]
-
+/- These simp theorems are useful because Swap.atoms
+   has more than one operation, so the simplifier needs sw.exi.dif -/
 @[simp] theorem Swap.b0_self
   (sw: Swap sx o s a t0 t1 v0):
   (sw.apply).atoms.get a t0 = s.atoms.get a t0 - v0 := by
-  unfold apply
-  simp [sw.exi.dif, sw.exi.dif, sw.exi.dif.symm]
+  simp [sw.exi.dif]
 
 @[simp] theorem Swap.b1_self
   (sw: Swap sx o s a t0 t1 v0):
   (sw.apply).atoms.get a t1 = s.atoms.get a t1 + sw.y := by
   unfold apply
-  simp [sw.exi.dif.symm, sw.exi.dif]
-
-@[simp] theorem Swap.init_iff
-  (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋):
-  sw.apply.amms.init t0' t1' ↔ s.amms.init t0' t1' := by
-  unfold apply
-  simp
-
-@[simp] theorem Swap.mints_eq
-  (sw: Swap sx o s a t0 t1 v0):
-  sw.apply.mints = s.mints := by simp [apply]
-
-@[simp] theorem Swap.r0_diff
-  (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋) (init: s.amms.init t0' t1')
-  (hdif: diffmint t0 t1 t0' t1'):
-  (sw.apply).amms.r0 t0' t1' (by simp[init]) = s.amms.r0 t0' t1' init := by 
-  unfold apply;
-  simp [sw.exi, init, hdif]
-
-@[simp] theorem Swap.r1_diff
-  (sw: Swap sx o s a t0 t1 v0)
-  (t0' t1': 𝕋) (init: s.amms.init t0' t1')
-  (hdif: diffmint t0 t1 t0' t1'):
-  (sw.apply).amms.r1 t0' t1' (by simp[init]) = s.amms.r1 t0' t1' init := by 
-  unfold apply;
-  simp [sw.exi, init, hdif]
+  simp [sw.exi.dif]
 
 @[simp] theorem Swap.drain_atoms
   (sw: Swap sx o s a t0 t1 v0) (a': 𝔸):

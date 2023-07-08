@@ -29,11 +29,11 @@ def Swap.additive
     by unfold SX.additive at addi
        have nodrain' := sw1.nodrain
        rw [addi x₀ x₁ _ _ sw0.nodrain]
+       have sw1y := y_norm sw1
+       simp at sw1y
        simp_rw [← y_norm sw0]
        simp_rw [add_comm _ x₀]
-       simp_rw [← sw0.r0_self]
-       simp_rw [← sw0.r1_self]
-       simp_rw [← y_norm sw1]
+       simp_rw [← sw1y]
        simp_rw [← y_norm sw1] at nodrain'
        simp at nodrain'
        have nodrain'' := OrderedAddCommGroup.add_lt_add_left nodrain' sw0.y
@@ -54,8 +54,6 @@ def Swap.additive
   rw [addi _ _ _ _ sw0.nodrain]
   simp_rw [← y_norm sw0]
   simp_rw [add_comm _ x₀]
-  simp_rw [← sw0.r0_self]
-  simp_rw [← sw0.r1_self]
   simp_rw [← y_norm sw1]
   rw [div_eq_mul_inv]
   rw [← mul_assoc, ← mul_assoc]
@@ -104,4 +102,6 @@ def Swap.additive
   (addi: SX.additive sx):
   sw1.apply = (additive sw0 sw1 addi).apply := by
   rw [Γ.eq_iff]
-  simp [addi]
+  rw [Swap.join_additive_amms _ _ addi]
+  rw [Swap.join_additive_atoms _ _ addi]
+  simp_rw [Swap.mints]
