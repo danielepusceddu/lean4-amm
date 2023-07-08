@@ -11,6 +11,9 @@ inductive Tx (o: 𝕆) (sx: SX) (init: Γ): Γ → Type where
 
   | dep0 (s': Γ) (rs: Tx o sx init s') (d: Deposit0 s'): 
       Tx o sx init d.apply
+  
+  | dep (s': Γ) (rs: Tx o sx init s') (d: Deposit s' a t0 t1 v0):
+      Tx o sx init d.apply
 
   | swap (s': Γ) (rs: Tx o sx init s') 
          (sw: Swap sx o s' a t0 t1 v0):
@@ -26,6 +29,7 @@ def concat {o: 𝕆} {sx: SX} {init s' s'': Γ}
 (t1: Tx o sx init s') (t2: Tx o sx s' s''): Tx o sx init s'' := match t2 with
   | Tx.empty => t1
   | Tx.dep0 ds rs d => Tx.dep0 ds (concat t1 rs) d
+  | Tx.dep ds rs d => Tx.dep ds (concat t1 rs) d
   | Tx.swap ds rs sw => Tx.swap ds (concat t1 rs) sw
 
 /-
@@ -38,6 +42,9 @@ dep0: trivial by cases on the deposited tokens:
       if the pair is the same, then the supply is positive.
       if the pair isn't the same, the supply is the same as
       before and we can use IH.
+
+dep: same as dep0.
+
 swap: use IH. 
       swaps don't change minted token supplies
 -/
@@ -69,6 +76,20 @@ theorem AMMimpSupplyProp
       simp [Γ.mintsupply, Deposit0.apply]
       right
       exact d.r0.zero_lt_toNNReal
+  
+  | @dep a t0' t1' v0 sprev tail d ih =>
+      simp at h
+      have re: reachable o sx sprev := by
+        exists init; exists tail
+
+      unfold Γ.mintsupply
+      rcases Decidable.em (diffmint t0' t1' t0 t1) with diffmi|samemi
+      . simp [diffmi, ih re h]; exact ih re h
+      . rw [not_diffmint_iff_samemint _ _ _ _ d.exi.dif] at samemi
+        rcases samemi with ⟨a,b⟩|⟨a,b⟩
+        . simp [a, b, d.v.zero_lt_toNNReal]
+        . rw [𝕊₁.supply_reorder _ t0 t1]
+          simp [a, b, d.v.zero_lt_toNNReal]
   
   | swap sprev tail sw ih =>
       rw [sw.mintsupply]
