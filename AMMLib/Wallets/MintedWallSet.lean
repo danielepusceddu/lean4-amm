@@ -74,7 +74,7 @@ theorem 𝕊₁.supply_reorder (s: 𝕊₁) (t1 t0: 𝕋):
   conv => rhs; rw [add_assoc, add_comm _ x, ← add_assoc]; rfl
   simp
 
-@[simp] theorem 𝕊₁.supply_of_add_diff (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (t0' t1': 𝕋) (hdiffp: diffpair t0 t1 t0' t1'): 
+@[simp] theorem 𝕊₁.supply_of_add_diff (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (t0' t1': 𝕋) (hdiffp: diffmint t0 t1 t0' t1'): 
   (s.add a t0 t1 hdif x).supply t0' t1' = s.supply t0' t1' := by
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
@@ -109,7 +109,7 @@ theorem 𝕊₁.supply_reorder (s: 𝕊₁) (t1 t0: 𝕋):
   conv => rhs; rw [← tsub_add_eq_add_tsub h]
   simp
 
-@[simp] theorem 𝕊₁.supply_of_sub_diff (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ (s.get a).f t0 t1) (t0' t1': 𝕋) (hdiffp: diffpair t0 t1 t0' t1'): 
+@[simp] theorem 𝕊₁.supply_of_sub_diff (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ (s.get a).f t0 t1) (t0' t1': 𝕋) (hdiffp: diffmint t0 t1 t0' t1'): 
   (s.sub a t0 t1 hdif x h).supply t0' t1' = s.supply t0' t1' := by
 
   unfold supply

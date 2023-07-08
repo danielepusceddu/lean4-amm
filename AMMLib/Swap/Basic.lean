@@ -88,7 +88,7 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 @[simp] theorem Swap.r0_diff
   (sw: Swap sx o s a t0 t1 v0)
   (t0' t1': 𝕋) (init: s.amms.init t0' t1')
-  (hdif: diffpair t0 t1 t0' t1'):
+  (hdif: diffmint t0 t1 t0' t1'):
   (sw.apply).amms.r0 t0' t1' (by simp[init]) = s.amms.r0 t0' t1' init := by 
   unfold apply;
   simp [sw.exi, init, hdif]
@@ -96,7 +96,7 @@ noncomputable def Swap.apply (sw: Swap sx o s a t0 t1 v0): Γ :=
 @[simp] theorem Swap.r1_diff
   (sw: Swap sx o s a t0 t1 v0)
   (t0' t1': 𝕋) (init: s.amms.init t0' t1')
-  (hdif: diffpair t0 t1 t0' t1'):
+  (hdif: diffmint t0 t1 t0' t1'):
   (sw.apply).amms.r1 t0' t1' (by simp[init]) = s.amms.r1 t0' t1' init := by 
   unfold apply;
   simp [sw.exi, init, hdif]

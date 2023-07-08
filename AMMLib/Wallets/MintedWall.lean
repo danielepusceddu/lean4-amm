@@ -39,11 +39,9 @@ theorem 𝕎₁.get_reorder (w: 𝕎₁) (t1 t0: 𝕋):
   w.get t1 t0 = w.get t0 t1 := by
   simp [w.h1, 𝕎₁.get]
 
-theorem 𝕎₁.samepair_get (w: 𝕎₁) {t0 t1 t0' t1': 𝕋}
-  (hdif: t0 ≠ t1) (h: ¬diffpair t0 t1 t0' t1'):
+theorem 𝕎₁.samepair_get (w: 𝕎₁) {t0 t1 t0' t1': 𝕋} (h: samemint t0 t1 t0' t1'):
   w.get t0 t1 = w.get t0' t1' := by
-  have h' := not_diffpair hdif h
-  rcases h' with ⟨a,b⟩|⟨a,b⟩
+  rcases h with ⟨a,b⟩|⟨a,b⟩
   . simp [a,b]
   . simp [a, b, w.get_reorder]
 
@@ -74,9 +72,8 @@ theorem 𝕎₁.add_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNR
   (w.add t0 t1 hdif x).get t0 t1 = w.get t0 t1 + x := by
   simp [add, hdif, hdif.symm, get]
 
-@[simp] theorem 𝕎₁.get_add_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (t0' t1': 𝕋) (diffp: diffpair t0 t1 t0' t1'):
+@[simp] theorem 𝕎₁.get_add_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (t0' t1': 𝕋) (diffp: diffmint t0 t1 t0' t1'):
   (w.add t0 t1 hdif x).get t0' t1' = w.get t0' t1' := by
-  unfold diffpair at diffp
 
   rcases diffp with ⟨left,right⟩|⟨left,right⟩
   . rw [get_reorder _ t0' t1']
@@ -115,10 +112,9 @@ theorem 𝕎₁.sub_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNR
   (w.sub t0 t1 hdif x h).get t0 t1 = w.get t0 t1 - x := by
   simp [sub, hdif, hdif.symm, get]
 
-@[simp] theorem 𝕎₁.get_sub_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1) (t0' t1': 𝕋) (diffp: diffpair t0 t1 t0' t1'):
+@[simp] theorem 𝕎₁.get_sub_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1) (t0' t1': 𝕋) (diffp: diffmint t0 t1 t0' t1'):
   (w.sub t0 t1 hdif x h).get t0' t1' = w.get t0' t1' :=
   by
-  unfold diffpair at diffp
 
   rcases diffp with ⟨left,right⟩|⟨left,right⟩
   . rw [get_reorder _ t0' t1']
@@ -144,7 +140,7 @@ theorem 𝕎₁.drain_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1):
   (w.drain t0 t1 hdif).get t0 t1 = 0 := by
   simp [drain]
 
-@[simp] theorem 𝕎₁.get_drain_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (t0' t1': 𝕋) (diffp: diffpair t0 t1 t0' t1'):
+@[simp] theorem 𝕎₁.get_drain_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (t0' t1': 𝕋) (diffp: diffmint t0 t1 t0' t1'):
   (w.drain t0 t1 hdif).get t0' t1' = w.get t0' t1' := by
   simp [drain, diffp]
 

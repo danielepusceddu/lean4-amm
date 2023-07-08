@@ -6,7 +6,7 @@ import HelpersLib.PReal.Subtraction
 @[simp] theorem swap_price_mint_diff
 (sw: Swap sx o s a t0 t1 v0)
 (t0' t1': 𝕋) (init: s.amms.init t0' t1') 
-(hdif: diffpair t0 t1 t0' t1')
+(hdif: diffmint t0 t1 t0' t1')
 : sw.apply.𝕋₁Price o t0' t1' = s.𝕋₁Price o t0' t1' := by
   unfold Γ.𝕋₁Price
   simp [init, hdif]
@@ -37,10 +37,11 @@ theorem minca (sw: Swap sx o s a t0 t1 v0):
   rw [Finsupp.uncurry_apply]
 
   rcases Decidable.em (s.amms.init p.fst p.snd) with init|uninit
-  . rcases Decidable.em (diffpair t0 t1 p.fst p.snd) with dif|ndif
+  . rcases Decidable.em (diffmint t0 t1 p.fst p.snd) with dif|ndif
     . simp [init, dif]
-    . rw [𝕎₁.f_eq_get]
-      rw [← 𝕎₁.samepair_get _ sw.exi.dif ndif]
+    . rw [not_diffmint_iff_samemint _ _ _ _ sw.exi.dif] at ndif
+      rw [𝕎₁.f_eq_get]
+      rw [← 𝕎₁.samepair_get _ ndif]
       simp [h]
   . rw [𝕎₁.f_eq_get]
     simp [uninit, h, Γ.𝕋₁Price]

@@ -25,52 +25,135 @@ instance: DecidableEq 𝕋 :=
 
 abbrev AtomicOracle  := 𝕋 → PReal
 
-
-def diffpair (t0 t1 t0' t1': 𝕋): Prop :=
+def diffmint (t0 t1 t0' t1': 𝕋): Prop :=
   (t0 ≠ t0' ∧ t0 ≠ t1') ∨ (t1 ≠ t0' ∧ t1 ≠ t1')
 
-theorem self_not_diffpair (t0 t1: 𝕋):
-  ¬ diffpair t0 t1 t0 t1 := by simp [diffpair]
+def samemint (t0 t1 t0' t1': 𝕋): Prop :=
+  (t0 = t0' ∧ t1 = t1') ∨ (t0 = t1' ∧ t1 = t0')
 
-theorem diffpair.swap_inner_left {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
-  diffpair t1 t0 t0' t1' := by sorry
+instance (t0 t1 t0' t1': 𝕋): Decidable (samemint t0 t1 t0' t1') := 
+  by unfold samemint; infer_instance;
 
-theorem diffpair.swap_inner_right {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
-  diffpair t0 t1 t1' t0' := by sorry
+instance (t0 t1 t0' t1': 𝕋): Decidable (diffmint t0 t1 t0' t1') := 
+  by unfold diffmint; infer_instance;
 
-theorem diffpair.swap_inner {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
-  diffpair t1 t0 t1' t0' := by sorry
+@[simp] theorem not_diffmint_iff_samemint 
+  (t0 t1 t0' t1': 𝕋) (hdif: t0 ≠ t1):
+  ¬ diffmint t0 t1 t0' t1' ↔ samemint t0 t1 t0' t1' := by
+  unfold diffmint
+  unfold samemint
+  simp_rw [not_or, not_and_or, not_ne_iff]
+  apply Iff.intro
 
-theorem diffpair.swap_outer {t0 t1 t0' t1': 𝕋} (h: diffpair t0 t1 t0' t1'):
-  diffpair t0' t1' t0 t1 := by sorry
-
-theorem diffpair_iff_swap_outer (t0 t1 t0' t1': 𝕋):
-  diffpair t0 t1 t0' t1' ↔ diffpair t0' t1' t0 t1 := by sorry
-
-  /-
-  ```
-
-¬(t0 ≠ t0' ∧ t0 ≠ t1' ∨ t1 ≠ t0' ∧ t1 ≠ t1')    ↔
-¬(t0 ≠ t0' ∧ t0 ≠ t1') ∧ ¬(t1 ≠ t0' ∧ t1 ≠ t1') ↔ 
-(t0 = t0' ∨ t0 = t1') ∧ (t1 = t0' ∨ t1 = t1')   ↔
-
-..... ↔
-
-(t0 = t0' ∧ t1 = t1') ∨ (t0 = t1' ∧ t1 = t0')
-
-  ```
-  -/
-theorem not_diffpair {t0 t1 t0' t1': 𝕋} (dif1: t0 ≠ t1) (h: ¬ diffpair t0 t1 t0' t1'):
-  (t0 = t0' ∧ t1 = t1') ∨ (t0 = t1' ∧ t1 = t0') := by
+  . intro notdiff
+    rcases notdiff with ⟨a|a, b|b⟩
+    . rw [a, b] at hdif; contradiction
+    . simp [a, b, hdif]
+    . simp [a, b, hdif]
+    . rw [a, b] at hdif; contradiction
   
-  unfold diffpair at h
-  simp_rw [not_or, not_and_or, not_ne_iff] at h
+  . intro samemint
+    rcases samemint with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
 
-  rcases h with ⟨a|a, b|b⟩
-  . rw [a, b] at dif1; contradiction
-  . simp [a, b, dif1]
-  . simp [a, b, dif1]
-  . rw [a, b] at dif1; contradiction
+@[simp] theorem not_samemint_iff_diffmint
+  (t0 t1 t0' t1': 𝕋) (hdif: t0 ≠ t1):
+  ¬ samemint t0 t1 t0' t1' ↔ diffmint t0 t1 t0' t1' := by
+  have h := (not_diffmint_iff_samemint t0 t1 t0' t1' hdif).not.symm
+  simp at h
+  exact h
 
-instance (t0 t1 t0' t1': 𝕋): Decidable (diffpair t0 t1 t0' t1') := 
-  by sorry
+theorem self_samemint (t0 t1: 𝕋):
+  samemint t0 t1 t0 t1 := by simp [samemint]
+
+theorem samemint.iff_swap_inner_left (t0 t1 t0' t1': 𝕋):
+  samemint t0 t1 t0' t1' ↔ samemint t1 t0 t0' t1' := by 
+  unfold samemint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+theorem samemint.iff_swap_inner_right (t0 t1 t0' t1': 𝕋):
+  samemint t0 t1 t0' t1' ↔ samemint t0 t1 t1' t0' := by 
+  unfold samemint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+theorem samemint.iff_swap_inner (t0 t1 t0' t1': 𝕋):
+  samemint t0 t1 t0' t1' ↔ samemint t1 t0 t1' t0' := by 
+  unfold samemint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+theorem samemint.iff_swap_outer (t0 t1 t0' t1': 𝕋):
+  samemint t0 t1 t0' t1' ↔ samemint t0' t1' t0 t1 := by 
+  unfold samemint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+theorem diffmint.iff_swap_inner_left (t0 t1 t0' t1': 𝕋):
+  diffmint t0 t1 t0' t1' ↔ diffmint t1 t0 t0' t1' := by 
+  unfold diffmint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+theorem diffmint.iff_swap_inner_right (t0 t1 t0' t1': 𝕋):
+  diffmint t0 t1 t0' t1' ↔ diffmint t0 t1 t1' t0' := by 
+  unfold diffmint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+theorem diffmint.iff_swap_inner (t0 t1 t0' t1': 𝕋):
+  diffmint t0 t1 t0' t1' ↔ diffmint t1 t0 t1' t0' := by 
+  unfold diffmint
+  apply Iff.intro <;> (
+    intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
+  )
+
+/-
+diffmint says: one of the elements of the first pair is different to both elements of the second pair.
+does that imply one of the elements of the second pair is different to both elements of the first pair?
+
+(a,b) (c,d)
+we have a ≠ b, a ≠ c, a ≠ d, c ≠ d.
+assume c = b.
+  then, d ≠ b, so d is the one.
+assume d = b.
+  then, c ≠ b, so c is the one.
+-/
+theorem diffmint.iff_swap_outer (t0 t1 t0' t1': 𝕋) (hdif1: t0 ≠ t1) (hdif2: t0' ≠ t1'):
+  diffmint t0 t1 t0' t1' ↔ diffmint t0' t1' t0 t1 := by 
+  unfold diffmint
+  apply Iff.intro
+  . intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩
+    . rcases Decidable.em (t1=t0') with c|c
+      . rw [c] at hdif1 ⊢
+        simp [a, b, hdif1, b.symm, hdif2.symm]
+      . simp [a.symm, (Ne.intro c).symm]
+    . rcases Decidable.em (t0=t0') with c|c
+      . rw [c] at hdif1 ⊢
+        simp [a, b, hdif1, b.symm, hdif2.symm]
+      . simp [a.symm, (Ne.intro c).symm]
+
+  . intro h
+    rcases h with ⟨a,b⟩|⟨a,b⟩
+    . rcases Decidable.em (t1'=t0) with c|c
+      . rw [c] at hdif2 ⊢
+        simp [a, b, b.symm, hdif1.symm]
+      . simp [a.symm, (Ne.intro c).symm]
+    . rcases Decidable.em (t0'=t0) with c|c
+      . rw [c] at hdif2 ⊢
+        simp [a, b, b.symm, hdif1.symm]
+      . simp [a.symm, (Ne.intro c).symm]

@@ -23,12 +23,12 @@ noncomputable def Deposit0.apply
 
 @[simp] theorem Deposit0.supply_minted_diff 
 {s: Γ} (v: Deposit0 s)
-(t0 t1: 𝕋) (hdifp: diffpair v.t0 v.t1 t0 t1):
+(t0 t1: 𝕋) (hdifp: diffmint v.t0 v.t1 t0 t1):
 v.apply.mintsupply t0 t1 = s.mintsupply t0 t1 := by
   simp [apply, Γ.mintsupply, hdifp]
 
 @[simp] theorem Deposit0.init_diff_iff
-  {s: Γ} (v: Deposit0 s) (t0 t1: 𝕋) (hdifp: diffpair v.t0 v.t1 t0 t1):
+  {s: Γ} (v: Deposit0 s) (t0 t1: 𝕋) (hdifp: diffmint v.t0 v.t1 t0 t1):
   v.apply.amms.init t0 t1 ↔ s.amms.init t0 t1
   :=
-  by sorry
+  by simp [apply, hdifp]

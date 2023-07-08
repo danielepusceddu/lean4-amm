@@ -51,10 +51,9 @@ def 𝕊ₐ.init.dif {amms: 𝕊ₐ} {t0 t1: 𝕋} (h: amms.init t0 t1):
     contradiction
   . exact Ne.intro neq
 
-theorem 𝕊ₐ.init.samepair {amms: 𝕊ₐ} {t0 t1: 𝕋} (h: amms.init t0 t1) {t0' t1': 𝕋} (same: ¬diffpair t0 t1 t0' t1'):
+theorem 𝕊ₐ.init.samepair {amms: 𝕊ₐ} {t0 t1: 𝕋} (h: amms.init t0 t1) {t0' t1': 𝕋} (same: samemint t0 t1 t0' t1'):
   amms.init t0' t1' := by 
-  have same' := not_diffpair h.dif same
-  rcases same' with ⟨a,b⟩|⟨a,b⟩
+  rcases same with ⟨a,b⟩|⟨a,b⟩
   . simp [← a, ← b, h]
   . simp [← a, ← b, h.swap]
 
@@ -80,10 +79,9 @@ noncomputable def 𝕊ₐ.initialize
 
 @[simp] theorem 𝕊ₐ.initialize_init_diffpair
   (amms: 𝕊ₐ) {t0 t1: 𝕋} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
-  (t0' t1': 𝕋) (h: diffpair t0 t1 t0' t1'):
+  (t0' t1': 𝕋) (h: diffmint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).init t0' t1' ↔ amms.init t0' t1' := by 
 
-    unfold diffpair at h
     rcases Decidable.em (t0'=t1') with triv|hdif'
     . simp [triv, same_uninit]
     . unfold init 𝕊ₐ.initialize
@@ -101,20 +99,18 @@ noncomputable def 𝕊ₐ.initialize
 
 @[simp] theorem 𝕊ₐ.initialize_init_not_diffpair
   (amms: 𝕊ₐ) {t0 t1: 𝕋} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
-  (t0' t1': 𝕋) (h: ¬diffpair t0 t1 t0' t1'):
+  (t0' t1': 𝕋) (h: samemint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).init t0' t1' := by
 
-  unfold diffpair at h
-  have h' := not_diffpair hdif h
   unfold init
-  rcases h' with ⟨a,b⟩|⟨a,b⟩
+  rcases h with ⟨a,b⟩|⟨a,b⟩
   . simp [𝕊ₐ.initialize, ← a, ← b, hdif, r0.toNNReal_ne_zero]
   . simp [𝕊ₐ.initialize, ← a, ← b, hdif, r1.toNNReal_ne_zero]
 
 @[simp] theorem 𝕊ₐ.initialize_init_self
   (amms: 𝕊ₐ) {t0 t1: 𝕋} (hdif: t0 ≠ t1) (r0 r1: ℝ+):
   (amms.initialize hdif r0 r1).init t0 t1 := 
-  initialize_init_not_diffpair amms hdif r0 r1 t0 t1 (self_not_diffpair t0 t1)
+  initialize_init_not_diffpair amms hdif r0 r1 t0 t1 (self_samemint t0 t1)
 
 def 𝕊ₐ.r0 (amms: 𝕊ₐ) (t0 t1: 𝕋) 
   (h: amms.init t0 t1): ℝ+ := 
@@ -170,7 +166,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
 
 @[simp] theorem 𝕊ₐ.r0_of_initialize_diffpair
   (amms: 𝕊ₐ) {t0 t1: 𝕋} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
-  (t0' t1': 𝕋) (hinit: amms.init t0' t1') (difp: diffpair t0 t1 t0' t1'):
+  (t0' t1': 𝕋) (hinit: amms.init t0' t1') (difp: diffmint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).r0 t0' t1' (by simp[difp, hinit]) = amms.r0 t0' t1' hinit := by 
   rcases difp with ⟨a,b⟩|⟨a,b⟩
   . rcases Decidable.em (t1=t1') with c|c
@@ -186,11 +182,11 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
 
 @[simp] theorem 𝕊ₐ.r1_of_initialize_diffpair
   (amms: 𝕊ₐ) {t0 t1: 𝕋} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
-  (t0' t1': 𝕋) (hinit: amms.init t0' t1') (difp: diffpair t0 t1 t0' t1'):
+  (t0' t1': 𝕋) (hinit: amms.init t0' t1') (difp: diffmint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).r1 t0' t1' (by simp[difp, hinit]) = amms.r1 t0' t1' hinit := by 
   rw [r1_reorder _ t0' t1' (by simp[difp, hinit])]
   rw [r1_reorder amms t0' t1' hinit]
-  simp [hinit.swap, hdif.symm, difp.swap_inner_right]
+  simp [hinit.swap, hdif.symm, (diffmint.iff_swap_inner_right t0 t1 t0' t1').mp difp]
 
 @[simp] theorem 𝕊ₐ.init_of_add_r0
   (amms: 𝕊ₐ) (t0 t1 t0' t1': 𝕋) (h: amms.init t0 t1) (x: PReal):
@@ -198,9 +194,10 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   ↔
   amms.init t0' t1'
   := by 
-  rcases Decidable.em (diffpair t0 t1 t0' t1') with a|a
+  rcases Decidable.em (diffmint t0 t1 t0' t1') with a|a
   . simp [add_r0, a]
-  . simp [add_r0, a]; exact h.samepair a
+  . rw [not_diffmint_iff_samemint t0 t1 t0' t1' h.dif] at a
+    simp [add_r0, a]; exact h.samepair a
 
 @[simp] theorem 𝕊ₐ.init_of_add_r1
   (amms: 𝕊ₐ) (t0 t1 t0' t1': 𝕋) (h: amms.init t0 t1) (x: PReal):
@@ -208,9 +205,10 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   ↔
   amms.init t0' t1'
   := by
-  rcases Decidable.em (diffpair t0 t1 t0' t1') with a|a
+  rcases Decidable.em (diffmint t0 t1 t0' t1') with a|a
   . simp [add_r1, a]
-  . simp [add_r1, a]; exact h.samepair a
+  . rw [not_diffmint_iff_samemint t0 t1 t0' t1' h.dif] at a
+    simp [add_r1, a]; exact h.samepair a
 
 @[simp] theorem 𝕊ₐ.init_of_sub_r0
   (amms: 𝕊ₐ) (t0 t1 t0' t1': 𝕋) (h: amms.init t0 t1) (x: PReal) (h': x < amms.r0 t0 t1 h):
@@ -218,9 +216,10 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   ↔
   amms.init t0' t1'
   := by
-  rcases Decidable.em (diffpair t0 t1 t0' t1') with a|a
+  rcases Decidable.em (diffmint t0 t1 t0' t1') with a|a
   . simp [sub_r0, a]
-  . simp [sub_r0, a]; exact h.samepair a
+  . rw [not_diffmint_iff_samemint t0 t1 t0' t1' h.dif] at a
+    simp [sub_r0, a]; exact h.samepair a
 
 @[simp] theorem 𝕊ₐ.init_of_sub_r1
   (amms: 𝕊ₐ) (t0 t1 t0' t1': 𝕋) (h: amms.init t0 t1) (x: PReal) (h': x < amms.r1 t0 t1 h):
@@ -228,9 +227,10 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   ↔
   amms.init t0' t1'
   := by
-  rcases Decidable.em (diffpair t0 t1 t0' t1') with a|a
+  rcases Decidable.em (diffmint t0 t1 t0' t1') with a|a
   . simp [sub_r1, a]
-  . simp [sub_r1, a]; exact h.samepair a
+  . rw [not_diffmint_iff_samemint t0 t1 t0' t1' h.dif] at a
+    simp [sub_r1, a]; exact h.samepair a
 
 @[simp] theorem 𝕊ₐ.r0_of_add_r0
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (x: PReal)
@@ -245,7 +245,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (x: PReal)
   (h: amms.init t0 t1) 
   (t0' t1': 𝕋) (h': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1')
+  (hdiff: diffmint t0 t1 t0' t1')
   :
   (amms.add_r0 t0 t1 h x).r0 t0' t1' (by simp [h'])
   =
@@ -263,7 +263,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (x: PReal)
   (h: amms.init t0 t1) 
   (t0' t1': 𝕋) (h': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1')
+  (hdiff: diffmint t0 t1 t0' t1')
   :
   (amms.add_r1 t0 t1 h x).r0 t0' t1' (by simp [h'])
   =
@@ -282,7 +282,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (x: PReal)
   (h: amms.init t0 t1) 
   (t0' t1': 𝕋) (h': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1')
+  (hdiff: diffmint t0 t1 t0' t1')
   :
   (amms.add_r1 t0 t1 h x).r1 t0' t1' (by simp [h'])
   =
@@ -300,7 +300,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (x: PReal)
   (h: amms.init t0 t1) 
   (t0' t1': 𝕋) (h': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1')
+  (hdiff: diffmint t0 t1 t0' t1')
   :
   (amms.add_r0 t0 t1 h x).r1 t0' t1' (by simp [h'])
   =
@@ -338,7 +338,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
 @[simp] theorem 𝕊ₐ.r0_of_sub_r0_diff
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t0 t1 h)
   (t0' t1': 𝕋) (h'': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1'):
+  (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r0 t0 t1 h x h').r0 t0' t1' (by simp[h''])
   =
   amms.r0 t0' t1' h''
@@ -347,7 +347,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
 @[simp] theorem 𝕊ₐ.r0_of_sub_r1_diff
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t0 t1 h)
   (t0' t1': 𝕋) (h'': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1'):
+  (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r1 t0 t1 h x h').r0 t0' t1' (by simp[h''])
   =
   amms.r0 t0' t1' h''
@@ -356,7 +356,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
 @[simp] theorem 𝕊ₐ.r1_of_sub_r1_diff
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t0 t1 h)
   (t0' t1': 𝕋) (h'': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1'):
+  (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r1 t0 t1 h x h').r1 t0' t1' (by simp[h''])
   =
   amms.r1 t0' t1' h''
@@ -365,7 +365,7 @@ noncomputable def 𝕊ₐ.sub_r1 (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 
 @[simp] theorem 𝕊ₐ.r1_of_sub_r0_diff
   (amms: 𝕊ₐ) (t0 t1: 𝕋) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t0 t1 h)
   (t0' t1': 𝕋) (h'': amms.init t0' t1')
-  (hdiff: diffpair t0 t1 t0' t1'):
+  (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r0 t0 t1 h x h').r1 t0' t1' (by simp[h''])
   =
   amms.r1 t0' t1' h''

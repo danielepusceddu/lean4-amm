@@ -41,7 +41,7 @@ dep0: trivial by cases on the deposited tokens:
 swap: use IH. 
       swaps don't change minted token supplies
 -/
-theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋) (samepair: ¬diffpair t0 t1 t0' t1'):
+theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋) (samepair: samemint t0 t1 t0' t1'):
   s.mintsupply t0 t1 = s.mintsupply t0' t1' := by sorry
 
 theorem AMMimpSupplyProp
@@ -55,7 +55,7 @@ theorem AMMimpSupplyProp
       simp [𝕊ₐ.init, 𝕊ₐ.empty, init_amms] at h
 
   | dep0 sprev tail d ih =>
-    apply @Decidable.byCases (diffpair d.t0 d.t1 t0 t1)
+    apply @Decidable.byCases (diffmint d.t0 d.t1 t0 t1)
     . intro diff;
       simp [diff] at h
       simp [Deposit0.apply, Γ.mintsupply, diff]
@@ -64,6 +64,7 @@ theorem AMMimpSupplyProp
       exact ih re h
     
     . intro same
+      rw [not_diffmint_iff_samemint _ _ _ _ d.hdif] at same
       rw [← Γ.mintsupply_samepair _ _ _ _ _ same]
       simp [Γ.mintsupply, Deposit0.apply]
       right
