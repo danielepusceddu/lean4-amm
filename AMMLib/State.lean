@@ -15,3 +15,14 @@ structure Γ where
   atoms: 𝕊₀
   mints: 𝕊₁
   amms: 𝕊ₐ
+
+theorem Γ.eq_iff (s s': Γ):
+  s = s' ↔ s.atoms = s'.atoms ∧ s.mints = s'.mints ∧ s.amms = s'.amms := by
+  apply Iff.intro
+  . intro eq; simp [eq]
+  . intro bruh
+    rcases bruh with ⟨a,b,c⟩
+    rcases s with ⟨atoms, mints, amms⟩
+    rcases s' with ⟨atoms', mints', amms'⟩
+    simp at a b c
+    simp [a, b, c]

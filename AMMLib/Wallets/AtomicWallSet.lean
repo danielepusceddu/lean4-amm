@@ -6,7 +6,7 @@ structure 𝕊₀ where
 def 𝕊₀.get (s: 𝕊₀) (a: 𝔸): 𝕎₀ :=
   s.f a
 
-@[simp] theorem 𝕊₀.eq_iff (s s': 𝕊₀):
+theorem 𝕊₀.eq_iff (s s': 𝕊₀):
   s = s' ↔ ∀ (a: 𝔸), s.get a = s'.get a := by
   apply Iff.intro
   . intro seq a
