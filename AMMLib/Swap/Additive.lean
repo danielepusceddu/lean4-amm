@@ -1,4 +1,5 @@
 import AMMLib.Swap.Basic
+import AMMLib.AMMSetNN
 
 def SX.additive (sx: SX): Prop :=
 ∀ (x y r0 r1: ℝ+) (h: x*(sx x r0 r1) < r1),
@@ -78,3 +79,29 @@ def Swap.additive
     . simp [eq1, sw0.exi.dif, PReal.add_toReal, tsub_add_eq_tsub_tsub, add_assoc]
     . simp [(Ne.intro neq0).symm, (Ne.intro neq1).symm]
   . simp [(Ne.intro neq).symm]
+
+@[simp] theorem Swap.join_additive_amms
+  (sw0: Swap sx o s a t0 t1 x₀)
+  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (addi: SX.additive sx):
+  sw1.apply.amms = (additive sw0 sw1 addi).apply.amms := by
+
+  rw [𝕊ₐ.eq_iff]
+  intro t0' t1'
+
+  rcases Decidable.em (diffmint t0 t1 t0' t1') with diffm|samem
+  . simp [apply, diffm]
+  . rw [not_diffmint_iff_samemint _ _ _ _ sw0.exi.dif] at samem
+    rcases samem with ⟨a,b⟩|⟨a,b⟩
+    . simp [apply, a, b]
+      rw [← add_assoc, add_comm x₁.toNNReal _]
+    . simp [apply, ← a, ← b, sw0.exi.dif,
+            𝕊ₐ.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
+
+@[simp] theorem Swap.join_additive
+  (sw0: Swap sx o s a t0 t1 x₀)
+  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (addi: SX.additive sx):
+  sw1.apply = (additive sw0 sw1 addi).apply := by
+  rw [Γ.eq_iff]
+  simp [addi]
