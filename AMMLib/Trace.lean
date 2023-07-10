@@ -6,27 +6,27 @@ import AMMLib.Networth
 
 /- Tx c init s is the type of all possible sequences of transactions
   that would result in s, starting from Γ init and using configuration c -/
-inductive Tx (o: 𝕆) (sx: SX) (init: Γ): Γ → Type where
-  | empty: Tx o sx init init
+inductive Tx (sx: SX) (init: Γ): Γ → Type where
+  | empty: Tx sx init init
 
-  | dep0 (s': Γ) (rs: Tx o sx init s') (d: Deposit0 s'): 
-      Tx o sx init d.apply
+  | dep0 (s': Γ) (rs: Tx sx init s') (d: Deposit0 s'): 
+      Tx sx init d.apply
   
-  | dep (s': Γ) (rs: Tx o sx init s') (d: Deposit s' a t0 t1 v0):
-      Tx o sx init d.apply
+  | dep (s': Γ) (rs: Tx sx init s') (d: Deposit s' a t0 t1 v0):
+      Tx sx init d.apply
 
-  | swap (s': Γ) (rs: Tx o sx init s') 
+  | swap (s': Γ) (rs: Tx sx init s') 
          (sw: Swap sx s' a t0 t1 v0):
-      Tx o sx init sw.apply
+      Tx sx init sw.apply
 
 def reachableInit (s: Γ): Prop :=
   (s.amms = 𝕊ₐ.empty ∧ s.mints = 𝕊₁.empty)
 
-def reachable (o: 𝕆) (sx: SX) (s: Γ): Prop :=
-  ∃ (init: Γ) (tx: Tx o sx init s), reachableInit init
+def reachable (sx: SX) (s: Γ): Prop :=
+  ∃ (init: Γ) (tx: Tx sx init s), reachableInit init
 
-def concat {o: 𝕆} {sx: SX} {init s' s'': Γ} 
-(t1: Tx o sx init s') (t2: Tx o sx s' s''): Tx o sx init s'' := match t2 with
+def concat {sx: SX} {init s' s'': Γ} 
+(t1: Tx sx init s') (t2: Tx sx s' s''): Tx sx init s'' := match t2 with
   | Tx.empty => t1
   | Tx.dep0 ds rs d => Tx.dep0 ds (concat t1 rs) d
   | Tx.dep ds rs d => Tx.dep ds (concat t1 rs) d
@@ -52,7 +52,7 @@ theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋) (samepair: samemint
   s.mintsupply t0 t1 = s.mintsupply t0' t1' := by sorry
 
 theorem AMMimpSupplyProp
-{o: 𝕆} {sx: SX} {s: Γ} (r: reachable o sx s) {t0 t1: 𝕋}
+{sx: SX} {s: Γ} (r: reachable sx s) {t0 t1: 𝕋}
 (h: s.amms.init t0 t1)
 : 0 < s.mintsupply t0 t1 := by
   have ⟨init, tx, ⟨init_amms, init_accs⟩⟩ := r
@@ -66,7 +66,7 @@ theorem AMMimpSupplyProp
     . intro diff;
       simp [diff] at h
       simp [Deposit0.apply, Γ.mintsupply, diff]
-      have re: reachable o sx sprev := by
+      have re: reachable sx sprev := by
         exists init; exists tail
       exact ih re h
     
@@ -79,7 +79,7 @@ theorem AMMimpSupplyProp
   
   | @dep a t0' t1' v0 sprev tail d ih =>
       simp at h
-      have re: reachable o sx sprev := by
+      have re: reachable sx sprev := by
         exists init; exists tail
 
       unfold Γ.mintsupply
@@ -94,6 +94,6 @@ theorem AMMimpSupplyProp
   | swap sprev tail sw ih =>
       rw [sw.mintsupply]
       simp at h
-      have re: reachable o sx sprev := by
+      have re: reachable sx sprev := by
         exists init; exists tail
       exact ih re h
