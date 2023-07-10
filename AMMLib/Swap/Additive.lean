@@ -7,14 +7,14 @@ def SX.additive (sx: SX): Prop :=
   =
   (x*(sx x r0 r1) + y*(sx y (r0+x) (r1.sub (x*(sx x r0 r1)) h))) / (x + y)
 
-theorem Swap.y_norm (sw: Swap sx o s a t0 t1 v0):
+theorem Swap.y_norm (sw: Swap sx s a t0 t1 v0):
   sw.y =  v0*sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi) := by simp [y, rate]
 
 def Swap.additive
-  (sw0: Swap sx o s a t0 t1 x₀)
-  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
-  Swap sx o s a t0 t1 (x₀+x₁) :=
+  Swap sx s a t0 t1 (x₀+x₁) :=
   ⟨
     by have h := sw1.enough
        simp [sw0.exi.dif] at h
@@ -45,8 +45,8 @@ def Swap.additive
   ⟩
 
 @[simp] theorem Swap.additive_y
-  (sw0: Swap sx o s a t0 t1 x₀)
-  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   (additive sw0 sw1 addi).y = sw0.y + sw1.y := by
   unfold SX.additive at addi
@@ -62,8 +62,8 @@ def Swap.additive
   simp
 
 @[simp] theorem Swap.join_additive_atoms
-  (sw0: Swap sx o s a t0 t1 x₀)
-  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply.atoms = (additive sw0 sw1 addi).apply.atoms := by
   rw [𝕊₀.eq_iff]
@@ -79,8 +79,8 @@ def Swap.additive
   . simp [(Ne.intro neq).symm]
 
 @[simp] theorem Swap.join_additive_amms
-  (sw0: Swap sx o s a t0 t1 x₀)
-  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply.amms = (additive sw0 sw1 addi).apply.amms := by
 
@@ -97,8 +97,8 @@ def Swap.additive
             𝕊ₐ.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
 
 @[simp] theorem Swap.join_additive
-  (sw0: Swap sx o s a t0 t1 x₀)
-  (sw1: Swap sx o sw0.apply a t0 t1 x₁)
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply = (additive sw0 sw1 addi).apply := by
   rw [Γ.eq_iff]

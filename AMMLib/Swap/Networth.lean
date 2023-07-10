@@ -4,7 +4,7 @@ import AMMLib.Swap.Rate
 import HelpersLib.PReal.Subtraction
 
 @[simp] theorem swap_price_mint_diff
-(sw: Swap sx o s a t0 t1 v0)
+(sw: Swap sx s a t0 t1 v0) (o: 𝕆)
 (t0' t1': 𝕋) (init: s.amms.init t0' t1') 
 (hdif: diffmint t0 t1 t0' t1')
 : sw.apply.𝕋₁Price o t0' t1' = s.𝕋₁Price o t0' t1' := by
@@ -12,13 +12,13 @@ import HelpersLib.PReal.Subtraction
   simp [init, hdif]
 
 @[simp] theorem Swap.networth_erase
-(sw: Swap sx o s a t0 t1 v0):
+(sw: Swap sx s a t0 t1 v0):
 ((sw.apply.mints.get a).drain t0 t1 sw.exi.dif)
 =
 ((s.mints.get a).drain t0 t1 sw.exi.dif)
 := by simp [apply]
 
-theorem minca (sw: Swap sx o s a t0 t1 v0):
+theorem minca (sw: Swap sx s a t0 t1 v0) (o: 𝕆):
   (((sw.apply.atoms.get a).drain t0).drain t1).worth o = (((s.atoms.get a).drain t0).drain t1).worth o := by
   rw [𝕎₀.drain_comm _ t1 t0]
   rw [𝕎₀.drain_comm _ t1 t0]
@@ -26,7 +26,7 @@ theorem minca (sw: Swap sx o s a t0 t1 v0):
   simp [sw.exi.dif]
 
 @[simp] theorem bruh' 
-  (sw: Swap sx o s a t0 t1 v0) (w: 𝕎₁)
+  (sw: Swap sx s a t0 t1 v0) (o: 𝕆) (w: 𝕎₁)
   (h: w.get t0 t1 = 0):
   w.worth (sw.apply.𝕋₁Price o) = w.worth (s.𝕋₁Price o) := by 
   unfold 𝕎₁.worth
@@ -50,7 +50,7 @@ theorem expandprice (s: Γ) (o: 𝕆) (t0 t1: 𝕋) (init: s.amms.init t0 t1):
   s.𝕋₁Price o t0 t1 = ((s.amms.r0 t0 t1 init)*(o t0) + (s.amms.r1 t0 t1 init)*(o t1)) / (s.mints.supply t0 t1) := by simp [Γ.𝕋₁Price, init]
 
 theorem lemma32_same'
-(sw: Swap sx o s a t0 t1 v0)
+(sw: Swap sx s a t0 t1 v0) (o: 𝕆)
 : 
 (a.gain o s sw.apply)
 =
@@ -81,7 +81,7 @@ theorem lemma32_same'
   . rw [Γ.𝕋₁Price_reorder]
 
 theorem lemma33
-(sw: Swap sx o s a t0 t1 x)
+(sw: Swap sx s a t0 t1 x) (o: 𝕆)
 (hzero: (s.mints.get a).get t0 t1 = 0):
 cmp (a.gain o s sw.apply) 0
 =
@@ -100,29 +100,29 @@ cmp sw.rate ((o t0) / (o t1))
   exact PReal.toReal_cmp sw.rate (p0*p1⁻¹)
 
 theorem lemma33_lt
-(sw: Swap sx o s a t0 t1 v0)
+(sw: Swap sx s a t0 t1 v0) (o: 𝕆)
 (hzero: (s.mints.get a).get t0 t1 = 0):
 (a.gain o s sw.apply) < 0
 ↔
 sw.rate <  (o t0) / (o t1)
 := by 
   rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff]
-  rw [lemma33 sw hzero]
+  rw [lemma33 sw o hzero]
 
 theorem lemma33_gt
-(sw: Swap sx o s a t0 t1 v0)
+(sw: Swap sx s a t0 t1 v0) (o: 𝕆)
 (hzero: (s.mints.get a).get t0 t1 = 0):
 0 < (a.gain o s sw.apply)
 ↔
 (o t0) / (o t1) < sw.rate
 := by 
   rw [← cmp_eq_gt_iff, ← cmp_eq_gt_iff]
-  rw [lemma33 sw hzero]
+  rw [lemma33 sw o hzero]
 
 def Swap.swappedtoks
-(sw: Swap sx o s a t0 t1 v0)
+(sw: Swap sx s a t0 t1 v0)
 {x: ℝ+} (henough: x ≤ s.atoms.get a t1)
-(nodrain: x*(sx x (s.amms.r0 t1 t0 sw.exi.swap) (s.amms.r1 t1 t0 sw.exi.swap)) < (s.amms.r1 t1 t0 sw.exi.swap)): Swap sx o s a t1 t0 x := 
+(nodrain: x*(sx x (s.amms.r0 t1 t0 sw.exi.swap) (s.amms.r1 t1 t0 sw.exi.swap)) < (s.amms.r1 t1 t0 sw.exi.swap)): Swap sx s a t1 t0 x := 
 ⟨
   henough,
   sw.exi.swap,
@@ -147,16 +147,16 @@ Goal:
   Qed by h1
 -/
 theorem Swap.lemma62_constprod
-(sw1: Swap SX.constprod o s a t0 t1 x)
-(sw2: Swap SX.constprod o s a t1 t0 x')
+(sw1: Swap SX.constprod s a t0 t1 x)
+(sw2: Swap SX.constprod s a t1 t0 x') (o: 𝕆)
 (hzero: (s.mints.get a).get t0 t1 = 0)
 (hgain: 0 < a.gain o s sw1.apply):
 a.gain o s sw2.apply < 0 :=
   by
 
-  have h1' := (lemma33_gt sw1 hzero).mp hgain
+  have h1' := (lemma33_gt sw1 o hzero).mp hgain
 
-  apply (lemma33_lt sw2 (by rw [𝕎₁.get_reorder _ t1 t0]; exact hzero)).mpr
+  apply (lemma33_lt sw2 o (by rw [𝕎₁.get_reorder _ t1 t0]; exact hzero)).mpr
 
   apply SX.lemma61_constprod x
   simp only [swappedtoks]
@@ -165,8 +165,8 @@ a.gain o s sw2.apply < 0 :=
   exact le_of_lt h1'
 
 theorem Swap.lemma63_constprod
-  (sw1: Swap SX.constprod o s a t0 t1 x₀)
-  (sw2: Swap SX.constprod o s a t1 t0 x)
+  (sw1: Swap SX.constprod s a t0 t1 x₀)
+  (sw2: Swap SX.constprod s a t1 t0 x) (o: 𝕆)
   (h: sw1.apply.amms.r1 t0 t1 (by simp[sw1.exi]) / sw1.apply.amms.r0 t0 t1 (by simp[sw1.exi]) = (o t0) / (o t1)):
   a.gain o s sw2.apply ≤ a.gain o s sw1.apply := by
 

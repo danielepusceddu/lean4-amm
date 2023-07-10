@@ -16,7 +16,7 @@ inductive Tx (o: 𝕆) (sx: SX) (init: Γ): Γ → Type where
       Tx o sx init d.apply
 
   | swap (s': Γ) (rs: Tx o sx init s') 
-         (sw: Swap sx o s' a t0 t1 v0):
+         (sw: Swap sx s' a t0 t1 v0):
       Tx o sx init sw.apply
 
 def reachableInit (s: Γ): Prop :=
