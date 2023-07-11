@@ -56,6 +56,38 @@ theorem 𝕊₁.supply_reorder (s: 𝕊₁) (t1 t0: 𝕋):
   unfold supply
   simp_rw [𝕎₁.get_reorder]
 
+theorem 𝕊₁.supply_destroy (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋) (hdif: t0 ≠ t1):
+  s.supply t0 t1 = (s.drain a t0 t1 hdif).supply t0 t1 + (s.get a).get t0 t1 := by
+
+  have h: Finsupp.erase a (drain s a t0 t1 hdif).f = Finsupp.erase a s.f 
+  := by ext a'
+        rcases Decidable.em (a' = a) with eq|neq
+        . simp [eq]
+        . simp [neq, (Ne.intro neq).symm]
+
+  unfold supply
+  rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
+  rw [Finsupp.sum_zero' (drain s a t0 t1 hdif).f _ a (by simp)]
+  rw [add_comm]
+  rw [h, get]
+
+theorem 𝕊₁.get_pos_imp_supp_pos 
+  (w: 𝕊₁) (t0 t1: 𝕋) (a: 𝔸) (h: 0 < (w.get a).get t0 t1):
+  0 < w.supply t0 t1 := by
+
+  have hdif: t0 ≠ t1 := by 
+    by_contra contra
+    rw [contra] at h
+    have h' := (w.get a).h2 t1
+    unfold 𝕎₁.get at h
+    have h'' := (ne_of_lt h).symm
+    contradiction
+
+  rw [w.supply_destroy a t0 t1 hdif]
+  rw [add_comm]
+  have h'' := ne_of_gt h
+  exact NNReal.neq_zero_imp_gt ((NNReal.pos_imp_add_pos ((w.get a).get t0 t1) ((w.drain a t0 t1 hdif).supply t0 t1) h''))
+
 @[simp] theorem 𝕊₁.supply_of_add_self (s: 𝕊₁) (a: 𝔸) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal): 
   (s.add a t0 t1 hdif x).supply t0 t1 = s.supply t0 t1 + x := by
   unfold supply

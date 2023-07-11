@@ -18,3 +18,6 @@ def NNReal.toPReal' (x: NNReal) (h: x ≠ 0): PReal :=
   ⟨
     x, neq_zero_imp_gt h
   ⟩
+
+@[simp] theorem NNReal_toPReal_toNNReal_eq_self (x: NNReal) (h: 0 < x): 
+  x.toPReal h = x := by rfl

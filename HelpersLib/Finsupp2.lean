@@ -3,6 +3,17 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Tactic.LibrarySearch
 import HelpersLib.Prod
 
+-- If g gives you zero for an element,
+-- then erasing it from the finsupp has no effect on the sum
+theorem Finsupp.sum_zero' {α β γ: Type} [Zero β] [AddCommMonoid γ] [DecidableEq α] 
+  (f: α →₀ β) (g: α → β → γ) (x: α) (h: g x (f x) = 0):
+  f.sum g = (Finsupp.erase x f).sum g := by
+
+  rcases Decidable.em (x ∈ f.support) with insupp|outsupp
+  . rw [← Finsupp.add_sum_erase _ x _ insupp]
+    rw [h, zero_add]
+  . rw [Finsupp.erase_of_not_mem_support outsupp]
+
 theorem Finsupp.update_comm {α β: Type} [DecidableEq α] [Zero β]
 (f: α →₀ β) (a a': α) (b b': β) (hdif: a ≠ a'):
 (f.update a b).update a' b' = (f.update a' b').update a b :=

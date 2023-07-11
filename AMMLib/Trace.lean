@@ -1,4 +1,5 @@
 import AMMLib.Deposit
+import AMMLib.Redeem
 import AMMLib.State
 import AMMLib.Tokens
 import AMMLib.Swap.Basic
@@ -15,6 +16,9 @@ inductive Tx (sx: SX) (init: Γ): Γ → Type where
   | dep (s': Γ) (rs: Tx sx init s') (d: Deposit s' a t0 t1 v0):
       Tx sx init d.apply
 
+  | red (s': Γ) (rs: Tx sx init s') (r: Redeem s' a t0 t1 v0):
+      Tx sx init r.apply
+
   | swap (s': Γ) (rs: Tx sx init s') 
          (sw: Swap sx s' a t0 t1 v0):
       Tx sx init sw.apply
@@ -30,6 +34,7 @@ def concat {sx: SX} {init s' s'': Γ}
   | Tx.empty => t1
   | Tx.dep0 ds rs d => Tx.dep0 ds (concat t1 rs) d
   | Tx.dep ds rs d => Tx.dep ds (concat t1 rs) d
+  | Tx.red ds rs r => Tx.red ds (concat t1 rs) r
   | Tx.swap ds rs sw => Tx.swap ds (concat t1 rs) sw
 
 /-
@@ -90,6 +95,31 @@ theorem AMMimpSupplyProp
         . simp [a, b, d.v.zero_lt_toNNReal]
         . rw [𝕊₁.supply_reorder _ t0 t1]
           simp [a, b, d.v.zero_lt_toNNReal]
+
+  | @red a t0' t1' v0 sprev tail d ih =>
+      simp at h
+      simp [Γ.mintsupply]
+      have re: reachable sx sprev := by
+        exists init; exists tail
+
+      rcases Decidable.em (diffmint t0' t1' t0 t1) with diffmi|samemi
+      . simp [diffmi, ih re h]; exact ih re h
+      . rw [not_diffmint_iff_samemint _ _ _ _ d.exi.dif] at samemi
+        rcases samemi with ⟨a,b⟩|⟨a,b⟩
+        . have nodrain': v0 < sprev.mints.supply t0 t1 := by
+            have bruh := d.nodrain
+            rw [← PReal.toNNReal_lt_toNNReal_iff] at bruh
+            simp [a,b] at bruh
+            exact bruh
+          simp [a, b, nodrain']
+
+        . have nodrain': v0 < sprev.mints.supply t1 t0 := by
+            have bruh := d.nodrain
+            rw [← PReal.toNNReal_lt_toNNReal_iff] at bruh
+            simp [a,b] at bruh
+            exact bruh
+          rw [𝕊₁.supply_reorder _ t0 t1]
+          simp [a, b, nodrain']
   
   | swap sprev tail sw ih =>
       rw [sw.mintsupply]
