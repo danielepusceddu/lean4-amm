@@ -66,11 +66,10 @@ def Swap.additive
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply.atoms = (additive sw0 sw1 addi).apply.atoms := by
-  rw [𝕊₀.eq_iff]
-  intro a'
+  ext a' t
+
   rcases Decidable.em (a'=a) with eq|neq
   . simp [eq]
-    ext t
     rcases Decidable.em (t=t0), Decidable.em (t=t1) with ⟨eq0|neq0, eq1|neq1⟩
     . rw [eq0] at eq1; have contra := sw0.exi.dif; contradiction
     . simp [eq0, sw0.exi.dif, PReal.add_toReal, tsub_add_eq_tsub_tsub]

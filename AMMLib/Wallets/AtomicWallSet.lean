@@ -6,19 +6,15 @@ structure 𝕊₀ where
 def 𝕊₀.get (s: 𝕊₀) (a: 𝔸): 𝕎₀ :=
   s.f a
 
-theorem 𝕊₀.eq_iff (s s': 𝕊₀):
-  s = s' ↔ ∀ (a: 𝔸), s.get a = s'.get a := by
-  apply Iff.intro
-  . intro seq a
-    rw [seq]
-  . intro feq
-    unfold get at feq
-    rcases s with ⟨f⟩
-    rcases s' with ⟨f'⟩
+@[ext]
+theorem 𝕊₀.ext {s1 s2: 𝕊₀} (h: ∀ a, s1.get a = s2.get a): s1 = s2 := by
+    unfold get at h
+    rcases s1 with ⟨f⟩
+    rcases s2 with ⟨f'⟩
     simp only [mk.injEq]
-    simp at feq
+    simp at h
     ext a: 1
-    exact feq a
+    exact h a
 
 @[simp] theorem 𝕊₀.f_eq_get (s: 𝕊₀): s.f = s.get := by simp [get]
 
