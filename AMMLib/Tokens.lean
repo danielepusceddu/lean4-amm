@@ -157,3 +157,15 @@ theorem diffmint.iff_swap_outer (t0 t1 t0' t1': T) (hdif1: t0 ≠ t1) (hdif2: t0
       . rw [c] at hdif2 ⊢
         simp [a, b, b.symm, hdif1.symm]
       . simp [a.symm, (Ne.intro c).symm]
+
+theorem diffmint.swap_inner {t0 t1 t0' t1': T} 
+  (d: diffmint t0 t1 t0' t1'):
+  diffmint t1 t0 t1' t0' := by
+  rw [diffmint.iff_swap_inner t0 t1 t0' t1'] at d
+  exact d
+
+theorem diffmint.swap_inner_left {t0 t1 t0' t1': T} 
+  (d: diffmint t0 t1 t0' t1'):
+  diffmint t1 t0 t0' t1' := by
+  rw [diffmint.iff_swap_inner_left t0 t1 t0' t1'] at d
+  exact d

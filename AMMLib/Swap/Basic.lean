@@ -1,5 +1,6 @@
 import AMMLib.Tokens
 import AMMLib.AMMSet
+import AMMLib.AMMSetNN
 import AMMLib.State
 import AMMLib.Supply
 
@@ -15,6 +16,14 @@ def Swap.rate (sw: Swap sx s a t0 t1 v0): ℝ+
   
 def Swap.y (sw: Swap sx s a t0 t1 v0): ℝ+
   := v0*sw.rate
+
+theorem Swap.y_lt_r1 (sw: Swap sx s a t0 t1 v0):
+  sw.y < s.amms.r1 t0 t1 sw.exi := by exact sw.nodrain
+
+theorem Swap.y_lt_r1₀ (sw: Swap sx s a t0 t1 v0):
+  sw.y < s.amms.r1₀ t0 t1 := by 
+    rw [← Sₐ.r1_toNNReal _ _ _ sw.exi]
+    exact sw.nodrain
 
 noncomputable def Swap.apply (sw: Swap sx s a t0 t1 v0): Γ :=
 ⟨
@@ -58,35 +67,6 @@ noncomputable def Swap.apply (sw: Swap sx s a t0 t1 v0): Γ :=
     rw [W₀.drain_comm]
     simp
   . simp [neq]
-
-def Swap.inv 
-  (sw: Swap sx s a t0 t1 v0)
-  (hbound: SX.outputbound sx)
-  (hrev: SX.reversible sx hbound)
-  : Swap sx sw.apply a t1 t0 sw.y
-  :=
-  ⟨
-    by simp,
-    by simp [sw.exi.swap],
-    by 
-      unfold SX.outputbound at hbound
-      unfold SX.reversible at hrev
-      rw [Sₐ.r0_reorder _ t1 t0, Sₐ.r1_reorder _ t1 t0]
-      simp [hrev, y, rate]
-  ⟩
-
-theorem Swap.inv_y_eq_x
-  (sw: Swap sx s a t0 t1 x)
-  (hbound: SX.outputbound sx)
-  (hrev: SX.reversible sx hbound)
-  : (sw.inv hbound hrev).y = x := by 
-  unfold y
-  unfold rate
-  rw [Sₐ.r0_reorder _ t1 t0 _,
-      Sₐ.r1_reorder _ t1 t0 _]
-  rw [mul_assoc]
-  unfold SX.reversible at hrev
-  simp [y, rate, hrev]
 
 @[simp] theorem Swap.mintsupply
   (sw: Swap sx s a t0 t1 v0)
