@@ -9,36 +9,36 @@ import HelpersLib.PReal.Subtraction
 import HelpersLib.Finsupp2
 open BigOperators
 
-structure 𝔸 where
+structure A where
   n: ℕ
 
-structure 𝕋 where
+structure T where
   n: ℕ
 
-instance: DecidableEq 𝔸 := 
+instance: DecidableEq A := 
   fun a1 a2 => by 
   cases a1; cases a2; simp; infer_instance
 
-instance: DecidableEq 𝕋 := 
+instance: DecidableEq T := 
   fun a1 a2 => by 
   cases a1; cases a2; simp; infer_instance
 
-abbrev AtomicOracle  := 𝕋 → PReal
+abbrev AtomicOracle  := T → PReal
 
-def diffmint (t0 t1 t0' t1': 𝕋): Prop :=
+def diffmint (t0 t1 t0' t1': T): Prop :=
   (t0 ≠ t0' ∧ t0 ≠ t1') ∨ (t1 ≠ t0' ∧ t1 ≠ t1')
 
-def samemint (t0 t1 t0' t1': 𝕋): Prop :=
+def samemint (t0 t1 t0' t1': T): Prop :=
   (t0 = t0' ∧ t1 = t1') ∨ (t0 = t1' ∧ t1 = t0')
 
-instance (t0 t1 t0' t1': 𝕋): Decidable (samemint t0 t1 t0' t1') := 
+instance (t0 t1 t0' t1': T): Decidable (samemint t0 t1 t0' t1') := 
   by unfold samemint; infer_instance;
 
-instance (t0 t1 t0' t1': 𝕋): Decidable (diffmint t0 t1 t0' t1') := 
+instance (t0 t1 t0' t1': T): Decidable (diffmint t0 t1 t0' t1') := 
   by unfold diffmint; infer_instance;
 
 @[simp] theorem not_diffmint_iff_samemint 
-  (t0 t1 t0' t1': 𝕋) (hdif: t0 ≠ t1):
+  (t0 t1 t0' t1': T) (hdif: t0 ≠ t1):
   ¬ diffmint t0 t1 t0' t1' ↔ samemint t0 t1 t0' t1' := by
   unfold diffmint
   unfold samemint
@@ -56,16 +56,16 @@ instance (t0 t1 t0' t1': 𝕋): Decidable (diffmint t0 t1 t0' t1') :=
     rcases samemint with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
 
 @[simp] theorem not_samemint_iff_diffmint
-  (t0 t1 t0' t1': 𝕋) (hdif: t0 ≠ t1):
+  (t0 t1 t0' t1': T) (hdif: t0 ≠ t1):
   ¬ samemint t0 t1 t0' t1' ↔ diffmint t0 t1 t0' t1' := by
   have h := (not_diffmint_iff_samemint t0 t1 t0' t1' hdif).not.symm
   simp at h
   exact h
 
-theorem self_samemint (t0 t1: 𝕋):
+theorem self_samemint (t0 t1: T):
   samemint t0 t1 t0 t1 := by simp [samemint]
 
-theorem samemint.iff_swap_inner_left (t0 t1 t0' t1': 𝕋):
+theorem samemint.iff_swap_inner_left (t0 t1 t0' t1': T):
   samemint t0 t1 t0' t1' ↔ samemint t1 t0 t0' t1' := by 
   unfold samemint
   apply Iff.intro <;> (
@@ -73,7 +73,7 @@ theorem samemint.iff_swap_inner_left (t0 t1 t0' t1': 𝕋):
     rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
   )
 
-theorem samemint.iff_swap_inner_right (t0 t1 t0' t1': 𝕋):
+theorem samemint.iff_swap_inner_right (t0 t1 t0' t1': T):
   samemint t0 t1 t0' t1' ↔ samemint t0 t1 t1' t0' := by 
   unfold samemint
   apply Iff.intro <;> (
@@ -81,7 +81,7 @@ theorem samemint.iff_swap_inner_right (t0 t1 t0' t1': 𝕋):
     rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
   )
 
-theorem samemint.iff_swap_inner (t0 t1 t0' t1': 𝕋):
+theorem samemint.iff_swap_inner (t0 t1 t0' t1': T):
   samemint t0 t1 t0' t1' ↔ samemint t1 t0 t1' t0' := by 
   unfold samemint
   apply Iff.intro <;> (
@@ -89,7 +89,7 @@ theorem samemint.iff_swap_inner (t0 t1 t0' t1': 𝕋):
     rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
   )
 
-theorem samemint.iff_swap_outer (t0 t1 t0' t1': 𝕋):
+theorem samemint.iff_swap_outer (t0 t1 t0' t1': T):
   samemint t0 t1 t0' t1' ↔ samemint t0' t1' t0 t1 := by 
   unfold samemint
   apply Iff.intro <;> (
@@ -97,7 +97,7 @@ theorem samemint.iff_swap_outer (t0 t1 t0' t1': 𝕋):
     rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
   )
 
-theorem diffmint.iff_swap_inner_left (t0 t1 t0' t1': 𝕋):
+theorem diffmint.iff_swap_inner_left (t0 t1 t0' t1': T):
   diffmint t0 t1 t0' t1' ↔ diffmint t1 t0 t0' t1' := by 
   unfold diffmint
   apply Iff.intro <;> (
@@ -105,7 +105,7 @@ theorem diffmint.iff_swap_inner_left (t0 t1 t0' t1': 𝕋):
     rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
   )
 
-theorem diffmint.iff_swap_inner_right (t0 t1 t0' t1': 𝕋):
+theorem diffmint.iff_swap_inner_right (t0 t1 t0' t1': T):
   diffmint t0 t1 t0' t1' ↔ diffmint t0 t1 t1' t0' := by 
   unfold diffmint
   apply Iff.intro <;> (
@@ -113,7 +113,7 @@ theorem diffmint.iff_swap_inner_right (t0 t1 t0' t1': 𝕋):
     rcases h with ⟨a,b⟩|⟨a,b⟩ <;> simp [a,b]
   )
 
-theorem diffmint.iff_swap_inner (t0 t1 t0' t1': 𝕋):
+theorem diffmint.iff_swap_inner (t0 t1 t0' t1': T):
   diffmint t0 t1 t0' t1' ↔ diffmint t1 t0 t1' t0' := by 
   unfold diffmint
   apply Iff.intro <;> (
@@ -132,7 +132,7 @@ assume c = b.
 assume d = b.
   then, c ≠ b, so c is the one.
 -/
-theorem diffmint.iff_swap_outer (t0 t1 t0' t1': 𝕋) (hdif1: t0 ≠ t1) (hdif2: t0' ≠ t1'):
+theorem diffmint.iff_swap_outer (t0 t1 t0' t1': T) (hdif1: t0 ≠ t1) (hdif2: t0' ≠ t1'):
   diffmint t0 t1 t0' t1' ↔ diffmint t0' t1' t0 t1 := by 
   unfold diffmint
   apply Iff.intro

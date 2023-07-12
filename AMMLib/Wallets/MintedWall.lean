@@ -10,43 +10,43 @@ import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import AMMLib.Wallets.AtomicWall
 
-structure 𝕎₁ where 
-  f: 𝕋 →₀ 𝕎₀
-  h1: ∀ (t0 t1: 𝕋), f t0 t1 = f t1 t0
-  h2: ∀ (t: 𝕋), f t t = 0
+structure W₁ where 
+  f: T →₀ W₀
+  h1: ∀ (t0 t1: T), f t0 t1 = f t1 t0
+  h2: ∀ (t: T), f t t = 0
 
-def 𝕎₁.empty: 𝕎₁ :=
+def W₁.empty: W₁ :=
 ⟨ 
   0,
   by simp,
   by simp
 ⟩
 
-instance: Zero 𝕎₁ := ⟨𝕎₁.empty⟩
+instance: Zero W₁ := ⟨W₁.empty⟩
 
-def 𝕎₁.get (w: 𝕎₁) (t0 t1: 𝕋): NNReal := w.f t0 t1
+def W₁.get (w: W₁) (t0 t1: T): NNReal := w.f t0 t1
 
-@[simp] theorem 𝕎₁.zero_get (t0 t1: 𝕋):
-  (0: 𝕎₁).get t0 t1 = 0 := by
-  have h: (0: 𝕎₁) = empty := by rfl
+@[simp] theorem W₁.zero_get (t0 t1: T):
+  (0: W₁).get t0 t1 = 0 := by
+  have h: (0: W₁) = empty := by rfl
   rw [h]
   simp [empty, get]
 
-theorem 𝕎₁.f_eq_get  (w: 𝕎₁) (t0 t1: 𝕋):
+theorem W₁.f_eq_get  (w: W₁) (t0 t1: T):
   w.f t0 t1 = w.get t0 t1 := by rfl
 
-theorem 𝕎₁.get_reorder (w: 𝕎₁) (t1 t0: 𝕋):
+theorem W₁.get_reorder (w: W₁) (t1 t0: T):
   w.get t1 t0 = w.get t0 t1 := by
-  simp [w.h1, 𝕎₁.get]
+  simp [w.h1, W₁.get]
 
-theorem 𝕎₁.samepair_get (w: 𝕎₁) {t0 t1 t0' t1': 𝕋} (h: samemint t0 t1 t0' t1'):
+theorem W₁.samepair_get (w: W₁) {t0 t1 t0' t1': T} (h: samemint t0 t1 t0' t1'):
   w.get t0 t1 = w.get t0' t1' := by
   rcases h with ⟨a,b⟩|⟨a,b⟩
   . simp [a,b]
   . simp [a, b, w.get_reorder]
 
-noncomputable def 𝕎₁.add (w: 𝕎₁) (t0 t1: 𝕋) 
-  (hdif: t0 ≠ t1) (x: NNReal): 𝕎₁ :=
+noncomputable def W₁.add (w: W₁) (t0 t1: T) 
+  (hdif: t0 ≠ t1) (x: NNReal): W₁ :=
 ⟨
   (w.f.update t0 ((w.f t0).add t1 x)).update t1 ((w.f t1).add t0 x),
   by intro t0' t1'
@@ -59,7 +59,7 @@ noncomputable def 𝕎₁.add (w: 𝕎₁) (t0 t1: 𝕋)
      <;> simp [hdif, left, right, w.h2]
 ⟩ 
 
-theorem 𝕎₁.add_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNReal):
+theorem W₁.add_reorder (w: W₁) (t1 t0: T) (hdif: t0 ≠ t1) (x: NNReal):
   w.add t1 t0 hdif.symm x = w.add t0 t1 hdif x := by
 
   simp only [add, mk.injEq]
@@ -68,11 +68,11 @@ theorem 𝕎₁.add_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNR
      left, right|right, left'|left', right'|right'⟩
   <;> simp [left, right, left', right', hdif, hdif.symm, w.h1]
 
-@[simp] theorem 𝕎₁.get_add_self (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal):
+@[simp] theorem W₁.get_add_self (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1) (x: NNReal):
   (w.add t0 t1 hdif x).get t0 t1 = w.get t0 t1 + x := by
   simp [add, hdif, hdif.symm, get]
 
-@[simp] theorem 𝕎₁.get_add_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (t0' t1': 𝕋) (diffp: diffmint t0 t1 t0' t1'):
+@[simp] theorem W₁.get_add_diff (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1) (x: NNReal) (t0' t1': T) (diffp: diffmint t0 t1 t0' t1'):
   (w.add t0 t1 hdif x).get t0' t1' = w.get t0' t1' := by
 
   rcases diffp with ⟨left,right⟩|⟨left,right⟩
@@ -86,7 +86,7 @@ theorem 𝕎₁.add_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNR
     . simp [get, add, left, right, left.symm, right.symm, left'.symm, w.h1]
     . simp [get, add, left, right, left.symm, right.symm, left', w.h1]
 
-noncomputable def 𝕎₁.sub (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1): 𝕎₁ :=
+noncomputable def W₁.sub (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1): W₁ :=
 ⟨
   (w.f.update t0 ((w.f t0).sub t1 x h)).update t1 ((w.f t1).sub t0 x (by unfold get at h; simp [h, w.h1])),
 
@@ -100,7 +100,7 @@ noncomputable def 𝕎₁.sub (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: N
      <;> simp [hdif, left, right, w.h2]
 ⟩ 
 
-theorem 𝕎₁.sub_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1):
+theorem W₁.sub_reorder (w: W₁) (t1 t0: T) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1):
   w.sub t1 t0 hdif.symm x (by rw [get_reorder _ t1 t0]; exact h) = w.sub t0 t1 hdif x h := by
   simp only [sub, mk.injEq]
   ext t0' t1'
@@ -108,11 +108,11 @@ theorem 𝕎₁.sub_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNR
      left, right|right, left'|left', right'|right'⟩
   <;> simp [left, right, left', right', hdif, hdif.symm, w.h1]
 
-@[simp] theorem 𝕎₁.get_sub_self (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1):
+@[simp] theorem W₁.get_sub_self (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1):
   (w.sub t0 t1 hdif x h).get t0 t1 = w.get t0 t1 - x := by
   simp [sub, hdif, hdif.symm, get]
 
-@[simp] theorem 𝕎₁.get_sub_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1) (t0' t1': 𝕋) (diffp: diffmint t0 t1 t0' t1'):
+@[simp] theorem W₁.get_sub_diff (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1) (x: NNReal) (h: x ≤ w.get t0 t1) (t0' t1': T) (diffp: diffmint t0 t1 t0' t1'):
   (w.sub t0 t1 hdif x h).get t0' t1' = w.get t0' t1' :=
   by
 
@@ -127,35 +127,35 @@ theorem 𝕎₁.sub_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1) (x: NNR
     . simp [get, sub, left, right, left.symm, right.symm, left'.symm, w.h1]
     . simp [get, sub, left, right, left.symm, right.symm, left', w.h1]
 
-noncomputable def 𝕎₁.drain (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1): 𝕎₁ := 
+noncomputable def W₁.drain (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1): W₁ := 
   w.sub t0 t1 hdif (w.get t0 t1) (by simp)
 
-theorem 𝕎₁.drain_reorder (w: 𝕎₁) (t1 t0: 𝕋) (hdif: t0 ≠ t1):
+theorem W₁.drain_reorder (w: W₁) (t1 t0: T) (hdif: t0 ≠ t1):
   w.drain t1 t0 hdif.symm = w.drain t0 t1 hdif := by 
   unfold drain
   simp_rw [get_reorder _ t1 t0]
   rw [sub_reorder _ t1 t0 hdif]
 
-@[simp] theorem 𝕎₁.get_drain_self (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1):
+@[simp] theorem W₁.get_drain_self (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1):
   (w.drain t0 t1 hdif).get t0 t1 = 0 := by
   simp [drain]
 
-@[simp] theorem 𝕎₁.get_drain_diff (w: 𝕎₁) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (t0' t1': 𝕋) (diffp: diffmint t0 t1 t0' t1'):
+@[simp] theorem W₁.get_drain_diff (w: W₁) (t0 t1: T) (hdif: t0 ≠ t1) (t0' t1': T) (diffp: diffmint t0 t1 t0' t1'):
   (w.drain t0 t1 hdif).get t0' t1' = w.get t0' t1' := by
   simp [drain, diffp]
 
 
-noncomputable def 𝕎₁.u (w: 𝕎₁): (𝕋 × 𝕋) →₀ NNReal := w.f.uncurry
+noncomputable def W₁.u (w: W₁): (T × T) →₀ NNReal := w.f.uncurry
 
-theorem 𝕎₁.u_def (w: 𝕎₁) (t0 t1: 𝕋): w.u (t0,t1) = w.get t0 t1 := by
+theorem W₁.u_def (w: W₁) (t0 t1: T): w.u (t0,t1) = w.get t0 t1 := by
   unfold get
   unfold u
   rw [Finsupp.uncurry_apply]
 
-noncomputable def 𝕎₁.worth (w: 𝕎₁) (o: 𝕋 → 𝕋 → NNReal): NNReal :=
+noncomputable def W₁.worth (w: W₁) (o: T → T → NNReal): NNReal :=
   (w.u.sum (λ p x => x*(o p.fst p.snd))) / 2
 
-theorem 𝕎₁.worth_destruct (w: 𝕎₁) (o: 𝕋 → 𝕋 → NNReal) (t0 t1: 𝕋) (hdif: t0 ≠ t1) (ho: o t1 t0 = o t0 t1):
+theorem W₁.worth_destruct (w: W₁) (o: T → T → NNReal) (t0 t1: T) (hdif: t0 ≠ t1) (ho: o t1 t0 = o t0 t1):
   w.worth o = (w.drain t0 t1 hdif).worth o + (w.get t0 t1)*(o t0 t1)
   := by 
   unfold worth
@@ -163,12 +163,12 @@ theorem 𝕎₁.worth_destruct (w: 𝕎₁) (o: 𝕋 → 𝕋 → NNReal) (t0 t1
   rw [← Finsupp.add_sum_erase' _ (t1,t0) _ (by simp)]
   rw [Finsupp.erase_ne (by simp[hdif])]
 
-  have h: ∀ (w: 𝕎₁) (t0 t1: 𝕋) (h: t0 ≠ t1), Finsupp.erase (t1,t0) (Finsupp.erase (t0,t1) w.u) = (w.drain t0 t1 h).u := by 
+  have h: ∀ (w: W₁) (t0 t1: T) (h: t0 ≠ t1), Finsupp.erase (t1,t0) (Finsupp.erase (t0,t1) w.u) = (w.drain t0 t1 h).u := by 
     intro w' t0' t1' h'
     unfold drain
     unfold sub
     unfold u
-    unfold 𝕎₀.sub
+    unfold W₀.sub
     unfold get
     simp [w'.h1 t1' t0', Finsupp.update_zero_eq_erase]
     ext p

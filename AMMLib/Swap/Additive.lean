@@ -16,7 +16,7 @@ def Swap.additive
   (addi: SX.additive sx):
   Swap sx s a t0 t1 (x₀+x₁) :=
   ⟨
-    by have h := sw1.enough
+    by 
        simp [sw0.exi.dif] at h
        have h' := add_le_add_left h x₀
        rw [← add_tsub_assoc_of_le sw0.enough] at h'
@@ -83,7 +83,7 @@ def Swap.additive
   (addi: SX.additive sx):
   sw1.apply.amms = (additive sw0 sw1 addi).apply.amms := by
 
-  rw [𝕊ₐ.eq_iff]
+  rw [Sₐ.eq_iff]
   intro t0' t1'
 
   rcases Decidable.em (diffmint t0 t1 t0' t1') with diffm|samem
@@ -93,7 +93,7 @@ def Swap.additive
     . simp [apply, a, b]
       rw [← add_assoc, add_comm x₁.toNNReal _]
     . simp [apply, ← a, ← b, sw0.exi.dif,
-            𝕊ₐ.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
+            Sₐ.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
 
 @[simp] theorem Swap.join_additive
   (sw0: Swap sx s a t0 t1 x₀)

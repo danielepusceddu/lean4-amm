@@ -4,7 +4,7 @@ import AMMLib.State
 import AMMLib.Supply
 
 structure Swap 
-  (sx: SX) (s: Γ) (a: 𝔸) (t0 t1: 𝕋) (v0: ℝ+) 
+  (sx: SX) (s: Γ) (a: A) (t0 t1: T) (v0: ℝ+) 
   where
   enough: v0 ≤ s.atoms.get a t0
   exi: s.amms.init t0 t1
@@ -49,13 +49,13 @@ noncomputable def Swap.apply (sw: Swap sx s a t0 t1 v0): Γ :=
   simp [sw.exi.dif]
 
 @[simp] theorem Swap.drain_atoms
-  (sw: Swap sx s a t0 t1 v0) (a': 𝔸):
+  (sw: Swap sx s a t0 t1 v0) (a': A):
   ((sw.apply.atoms.get a').drain t0).drain t1 = ((s.atoms.get a').drain t0).drain t1 := by 
   unfold apply;
   rcases Decidable.em (a=a') with eq|neq
-  . rw [𝕎₀.drain_comm]; 
-    simp only [eq, 𝕊₀.get_add_self, 𝕊₀.get_sub_self, 𝕎₀.drain_add_self, ne_eq]
-    rw [𝕎₀.drain_comm]
+  . rw [W₀.drain_comm]; 
+    simp only [eq, S₀.get_add_self, S₀.get_sub_self, W₀.drain_add_self, ne_eq]
+    rw [W₀.drain_comm]
     simp
   . simp [neq]
 
@@ -71,7 +71,7 @@ def Swap.inv
     by 
       unfold SX.outputbound at hbound
       unfold SX.reversible at hrev
-      rw [𝕊ₐ.r0_reorder _ t1 t0, 𝕊ₐ.r1_reorder _ t1 t0]
+      rw [Sₐ.r0_reorder _ t1 t0, Sₐ.r1_reorder _ t1 t0]
       simp [hrev, y, rate]
   ⟩
 
@@ -82,14 +82,14 @@ theorem Swap.inv_y_eq_x
   : (sw.inv hbound hrev).y = x := by 
   unfold y
   unfold rate
-  rw [𝕊ₐ.r0_reorder _ t1 t0 _,
-      𝕊ₐ.r1_reorder _ t1 t0 _]
+  rw [Sₐ.r0_reorder _ t1 t0 _,
+      Sₐ.r1_reorder _ t1 t0 _]
   rw [mul_assoc]
   unfold SX.reversible at hrev
   simp [y, rate, hrev]
 
 @[simp] theorem Swap.mintsupply
   (sw: Swap sx s a t0 t1 v0)
-  (t0' t1': 𝕋): 
+  (t0' t1': T): 
   sw.apply.mintsupply t0' t1' = s.mintsupply t0' t1' := by
   simp [Swap.apply, Γ.mintsupply]

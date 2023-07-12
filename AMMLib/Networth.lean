@@ -7,41 +7,41 @@ mintsupply that returns PReal:
 Finsupp.add_sum_erase
 
 in a reachable state
-if s.amms.init t0 t1, then there must exist an 𝔸 in s.mints such that s.mints t0 t1 ≠ 0
+if s.amms.init t0 t1, then there must exist an A in s.mints such that s.mints t0 t1 ≠ 0
 choose that, destruct the supply and we'll get: 
 s.mints t0 t1 + ((s.mints.drain a t0 t1).supply t0 t1)
 which must be positive
 
-this will turn Γ.𝕋₁Price into a PReal
-however, 𝕎₀.worth and 𝕎₁.worth will remain NNReals 
+this will turn Γ.T₁Price into a PReal
+however, W₀.worth and W₁.worth will remain NNReals 
 so is it worth it?
 -/
 
-noncomputable def Γ.𝕋₁Price
-(s: Γ) (o: 𝕋 → PReal)
-(t0 t1: 𝕋): NNReal :=
+noncomputable def Γ.T₁Price
+(s: Γ) (o: T → PReal)
+(t0 t1: T): NNReal :=
   if h:s.amms.init t0 t1 then 
   ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mints.supply t0 t1)
   else 0
 
-theorem Γ.𝕋₁Price_reorder (s: Γ) (o: 𝕋 → PReal) (t1 t0: 𝕋):
-  s.𝕋₁Price o t1 t0 = s.𝕋₁Price o t0 t1 := by
-  unfold Γ.𝕋₁Price
+theorem Γ.T₁Price_reorder (s: Γ) (o: T → PReal) (t1 t0: T):
+  s.T₁Price o t1 t0 = s.T₁Price o t0 t1 := by
+  unfold Γ.T₁Price
   rcases Decidable.em (s.amms.init t0 t1) with init|uninit
   . simp only [init, init.swap, dite_true]
-    rw [𝕊ₐ.r0_reorder _ t1 t0, 𝕊ₐ.r1_reorder _ t1 t0, 
-        add_comm, 𝕊₁.supply_reorder]
-  . have b := (𝕊ₐ.init_swap_iff s.amms t0 t1).not
+    rw [Sₐ.r0_reorder _ t1 t0, Sₐ.r1_reorder _ t1 t0, 
+        add_comm, S₁.supply_reorder]
+  . have b := (Sₐ.init_swap_iff s.amms t0 t1).not
     simp [uninit, b.mp uninit]
 
 noncomputable def Γ.networth
-(s: Γ) (a: 𝔸) (o: 𝕋 → PReal): NNReal
+(s: Γ) (a: A) (o: T → PReal): NNReal
 :=
-(𝕎₀.worth (s.atoms.get a) o)
+(W₀.worth (s.atoms.get a) o)
 +
-(𝕎₁.worth (s.mints.get a) (s.𝕋₁Price o))
+(W₁.worth (s.mints.get a) (s.T₁Price o))
 
-noncomputable def 𝔸.gain
-(a: 𝔸) (o: 𝕋 → PReal) (s s': Γ)
+noncomputable def A.gain
+(a: A) (o: T → PReal) (s s': Γ)
 : ℝ
 := ((s'.networth a o): ℝ) - ((s.networth a o): ℝ)

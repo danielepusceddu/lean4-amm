@@ -3,11 +3,11 @@ import AMMLib.State
 import AMMLib.Supply
 
 structure Deposit0 (s: Γ) where
-  t0: 𝕋
-  t1: 𝕋
+  t0: T
+  t1: T
   r0: ℝ+
   r1: ℝ+
-  a: 𝔸
+  a: A
   hdif: t0 ≠ t1
   hnin: ¬s.amms.init t0 t1
   hen0: r0 ≤ s.atoms.get a t0
@@ -23,12 +23,12 @@ noncomputable def Deposit0.apply
 
 @[simp] theorem Deposit0.supply_minted_diff 
 {s: Γ} (v: Deposit0 s)
-(t0 t1: 𝕋) (hdifp: diffmint v.t0 v.t1 t0 t1):
+(t0 t1: T) (hdifp: diffmint v.t0 v.t1 t0 t1):
 v.apply.mintsupply t0 t1 = s.mintsupply t0 t1 := by
   simp [apply, Γ.mintsupply, hdifp]
 
 @[simp] theorem Deposit0.init_diff_iff
-  {s: Γ} (v: Deposit0 s) (t0 t1: 𝕋) (hdifp: diffmint v.t0 v.t1 t0 t1):
+  {s: Γ} (v: Deposit0 s) (t0 t1: T) (hdifp: diffmint v.t0 v.t1 t0 t1):
   v.apply.amms.init t0 t1 ↔ s.amms.init t0 t1
   :=
   by simp [apply, hdifp]
@@ -39,7 +39,7 @@ Deposit gain v = v0 * (mintedsupp)/r0
 v0 = v * rx0 = v0 * mintedsupp/r0 * r0/mintedsupp = v0 ok
 v1 = v * rx1 = v0 * mintedsupp/r0 * r1/mintedsupp = v0*r1/r0
 -/
-structure Deposit (s: Γ) (a: 𝔸) (t0 t1: 𝕋) (v0: ℝ+) where
+structure Deposit (s: Γ) (a: A) (t0 t1: T) (v0: ℝ+) where
   exi: s.amms.init t0 t1
   possupp: 0 < s.mints.supply t0 t1
   hen0: v0 ≤ s.atoms.get a t0

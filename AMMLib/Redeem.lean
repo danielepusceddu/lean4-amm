@@ -2,18 +2,18 @@ import AMMLib.AMMSet
 import AMMLib.State
 import AMMLib.Supply
 
-structure Redeem (s: Γ) (a: 𝔸) (t0 t1: 𝕋) (v: ℝ+) where
+structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
   exi: s.amms.init t0 t1
   hen0: v ≤ (s.mints.get a).get t0 t1
 
-  nodrain: v < ((s.mints.supply t0 t1).toPReal (𝕊₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
+  nodrain: v < ((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
     calc 0 < (v: NNReal) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := hen0)
   ))
 
 
 noncomputable def Redeem.gain0 (d: Redeem s a t0 t1 v): PReal :=
-  v * (s.amms.r0 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (𝕊₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
+  v * (s.amms.r0 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
     calc 0 < (v: NNReal) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := d.hen0)
   ))
@@ -28,7 +28,7 @@ theorem Redeem.gain0_lt_r0 (r: Redeem s a t0 t1 v):
   simp [r.nodrain]
 
 noncomputable def Redeem.gain1 (d: Redeem s a t0 t1 v): PReal :=
-  v * (s.amms.r1 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (𝕊₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
+  v * (s.amms.r1 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
     calc 0 < (v: NNReal) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := d.hen0)
   ))

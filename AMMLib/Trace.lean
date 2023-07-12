@@ -24,7 +24,7 @@ inductive Tx (sx: SX) (init: Γ): Γ → Type where
       Tx sx init sw.apply
 
 def reachableInit (s: Γ): Prop :=
-  (s.amms = 𝕊ₐ.empty ∧ s.mints = 𝕊₁.empty)
+  (s.amms = Sₐ.empty ∧ s.mints = S₁.empty)
 
 def reachable (sx: SX) (s: Γ): Prop :=
   ∃ (init: Γ) (tx: Tx sx init s), reachableInit init
@@ -53,18 +53,18 @@ dep: same as dep0.
 swap: use IH. 
       swaps don't change minted token supplies
 -/
-theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': 𝕋) (samepair: samemint t0 t1 t0' t1'):
+theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': T) (samepair: samemint t0 t1 t0' t1'):
   s.mintsupply t0 t1 = s.mintsupply t0' t1' := by sorry
 
 theorem AMMimpSupplyProp
-{sx: SX} {s: Γ} (r: reachable sx s) {t0 t1: 𝕋}
+{sx: SX} {s: Γ} (r: reachable sx s) {t0 t1: T}
 (h: s.amms.init t0 t1)
 : 0 < s.mintsupply t0 t1 := by
   have ⟨init, tx, ⟨init_amms, init_accs⟩⟩ := r
   induction tx with
   | empty => 
       exfalso
-      simp [𝕊ₐ.init, 𝕊ₐ.empty, init_amms] at h
+      simp [Sₐ.init, Sₐ.empty, init_amms] at h
 
   | dep0 sprev tail d ih =>
     apply @Decidable.byCases (diffmint d.t0 d.t1 t0 t1)
@@ -93,7 +93,7 @@ theorem AMMimpSupplyProp
       . rw [not_diffmint_iff_samemint _ _ _ _ d.exi.dif] at samemi
         rcases samemi with ⟨a,b⟩|⟨a,b⟩
         . simp [a, b, d.v.zero_lt_toNNReal]
-        . rw [𝕊₁.supply_reorder _ t0 t1]
+        . rw [S₁.supply_reorder _ t0 t1]
           simp [a, b, d.v.zero_lt_toNNReal]
 
   | @red a t0' t1' v0 sprev tail d ih =>
@@ -107,10 +107,10 @@ theorem AMMimpSupplyProp
       . rw [not_diffmint_iff_samemint _ _ _ _ d.exi.dif] at samemi
         rcases samemi with ⟨a,b⟩|⟨a,b⟩
         . have nodrain': v0 < sprev.mints.supply t0 t1 := by
-            have bruh := d.nodrain
-            rw [← PReal.toNNReal_lt_toNNReal_iff] at bruh
-            simp [a,b] at bruh
-            exact bruh
+            have nodrain := d.nodrain
+            rw [← PReal.toNNReal_lt_toNNReal_iff] at nodrain
+            simp [a,b] at nodrain
+            exact nodrain
           simp [a, b, nodrain']
 
         . have nodrain': v0 < sprev.mints.supply t1 t0 := by
@@ -118,7 +118,7 @@ theorem AMMimpSupplyProp
             rw [← PReal.toNNReal_lt_toNNReal_iff] at bruh
             simp [a,b] at bruh
             exact bruh
-          rw [𝕊₁.supply_reorder _ t0 t1]
+          rw [S₁.supply_reorder _ t0 t1]
           simp [a, b, nodrain']
   
   | swap sprev tail sw ih =>

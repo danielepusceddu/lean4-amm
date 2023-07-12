@@ -8,13 +8,13 @@ import AMMLib.Swap.Rate
 -- This is where I would add φ.
 -- The price oracle should be moved to 
 -- State to implement price updates.
-abbrev 𝕆 := 𝕋 → PReal
+abbrev O := T → PReal
 
 -- State
 structure Γ where
-  atoms: 𝕊₀
-  mints: 𝕊₁
-  amms: 𝕊ₐ
+  atoms: S₀
+  mints: S₁
+  amms: Sₐ
 
 theorem Γ.eq_iff (s s': Γ):
   s = s' ↔ s.atoms = s'.atoms ∧ s.mints = s'.mints ∧ s.amms = s'.amms := by
