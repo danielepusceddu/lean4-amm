@@ -15,8 +15,13 @@ def Swap.additive
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   Swap sx s a t0 t1 (x₀+x₁) :=
+
+  -- Create the witness
   ⟨
     by 
+       -- Prove that in state s,
+       -- a has at least x₀+x₁ in balance of t0
+       have h := sw1.enough
        simp [sw0.exi.dif] at h
        have h' := add_le_add_left h x₀
        rw [← add_tsub_assoc_of_le sw0.enough] at h'
@@ -24,9 +29,13 @@ def Swap.additive
        rw [tsub_self, zero_add] at h'
        exact h',
 
+    -- Prove the AMM is initialized
     sw0.exi,
 
-    by unfold SX.additive at addi
+    by 
+       -- Prove the AMM won't be drained, ie. that
+       -- r1 in s is greater than sw0.y + sw1.y
+       unfold SX.additive at addi
        have nodrain' := sw1.nodrain
        rw [addi x₀ x₁ _ _ sw0.nodrain]
        have sw1y := y_norm sw1
@@ -49,32 +58,42 @@ def Swap.additive
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   (additive sw0 sw1 addi).y = sw0.y + sw1.y := by
-  unfold SX.additive at addi
-  simp [y, right_distrib, rate]
-  rw [addi _ _ _ _ sw0.nodrain]
-  simp_rw [← y_norm sw0]
-  simp_rw [add_comm _ x₀]
-  simp_rw [← y_norm sw1]
-  rw [div_eq_mul_inv]
-  rw [← mul_assoc, ← mul_assoc]
-  rw [← right_distrib, ← right_distrib]
-  rw [mul_comm, ← mul_assoc]
-  simp
+    unfold SX.additive at addi
+    simp [y, right_distrib, rate]
+    rw [addi _ _ _ _ sw0.nodrain]
+    simp_rw [← y_norm sw0]
+    simp_rw [add_comm _ x₀]
+    simp_rw [← y_norm sw1]
+    rw [div_eq_mul_inv]
+    rw [← mul_assoc, ← mul_assoc]
+    rw [← right_distrib, ← right_distrib]
+    rw [mul_comm, ← mul_assoc]
+    simp
 
+-- The atom set obtained by applying the consecutive swaps
+-- is the same as the one obtained by applying the additive swap
 @[simp] theorem Swap.join_additive_atoms
   (sw0: Swap sx s a t0 t1 x₀)
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply.atoms = (additive sw0 sw1 addi).apply.atoms := by
+
+  -- Apply functional extensionality lemma 
   ext a' t
 
   rcases Decidable.em (a'=a) with eq|neq
-  . simp [eq]
-    rcases Decidable.em (t=t0), Decidable.em (t=t1) with ⟨eq0|neq0, eq1|neq1⟩
-    . rw [eq0] at eq1; have contra := sw0.exi.dif; contradiction
-    . simp [eq0, sw0.exi.dif, PReal.add_toReal, tsub_add_eq_tsub_tsub]
-    . simp [eq1, sw0.exi.dif, PReal.add_toReal, tsub_add_eq_tsub_tsub, add_assoc]
-    . simp [(Ne.intro neq0).symm, (Ne.intro neq1).symm]
+    -- If a' is the same account as the swap,
+    -- check if t is the same as t0 or t1.
+    -- Then use the simplifier to obtain the new balance after swap
+  . rcases Decidable.em (t=t0) with eq0|neq0
+    . simp [eq, eq0, sw0.exi.dif, 
+            PReal.add_toReal, tsub_add_eq_tsub_tsub]
+    . rcases Decidable.em (t=t1) with eq1|neq1
+      . simp [eq, eq1, sw0.exi.dif, PReal.add_toReal,
+              tsub_add_eq_tsub_tsub, add_assoc]
+      . simp [eq, (Ne.intro neq0).symm, (Ne.intro neq1).symm]
+
+  -- If not the same account, value after swap is unchanged
   . simp [(Ne.intro neq).symm]
 
 @[simp] theorem Swap.join_additive_amms
@@ -83,23 +102,31 @@ def Swap.additive
   (addi: SX.additive sx):
   sw1.apply.amms = (additive sw0 sw1 addi).apply.amms := by
 
+  -- Apply extensionality lemma
   rw [Sₐ.eq_iff]
   intro t0' t1'
 
+  -- Check if the minted token is different
   rcases Decidable.em (diffmint t0 t1 t0' t1') with diffm|samem
+    -- If it is, then the AMM is unchanged
   . simp [apply, diffm]
+
+    -- Otherwise it's updated in the same way
   . rw [not_diffmint_iff_samemint _ _ _ _ sw0.exi.dif] at samem
     rcases samem with ⟨a,b⟩|⟨a,b⟩
-    . simp [apply, a, b]
-      rw [← add_assoc, add_comm x₁.toNNReal _]
+    . simp [apply, a, b, ← add_assoc, add_comm x₁.toNNReal _]
     . simp [apply, ← a, ← b, sw0.exi.dif,
             Sₐ.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
 
+-- The atom set obtained by applying the consecutive swaps
+-- is the same as the one obtained by applying the additive swap
 @[simp] theorem Swap.join_additive
   (sw0: Swap sx s a t0 t1 x₀)
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply = (additive sw0 sw1 addi).apply := by
+  
+  -- State equality lemma
   rw [Γ.eq_iff]
   rw [Swap.join_additive_amms _ _ addi]
   rw [Swap.join_additive_atoms _ _ addi]

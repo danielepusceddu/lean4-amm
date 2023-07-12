@@ -3,13 +3,24 @@ import AMMLib.State
 import AMMLib.Supply
 
 structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
+  -- The AMM must have been initialized
   exi: s.amms.init t0 t1
+
+  -- The account must have enough minted tokens
   hen0: v ≤ (s.mints.get a).get t0 t1
 
+  -- The output must not drain the AMM's reserves
   nodrain: v < ((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
     calc 0 < (v: NNReal) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := hen0)
   ))
+
+theorem Redeem.nodrain_toNNReal (d: Redeem s a t0 t1 v):
+  v < s.mints.supply t0 t1 := by
+    have nodrain := d.nodrain
+    rw [← PReal.toNNReal_lt_toNNReal_iff] at nodrain
+    simp at nodrain
+    exact nodrain
 
 
 noncomputable def Redeem.gain0 (d: Redeem s a t0 t1 v): PReal :=
@@ -44,8 +55,13 @@ theorem Redeem.gain1_lt_r1 (r: Redeem s a t0 t1 v):
 
 noncomputable def Redeem.apply (r: Redeem s a t0 t1 v): Γ :=
   ⟨
+    -- Add the reward to the account
     (s.atoms.add a t0 r.gain0).add a t1 r.gain1,
+
+    -- Remove the redeemed tokens from the account
     s.mints.sub a t0 t1 r.exi.dif v r.hen0,
+
+    -- Remove the reward from the AMM's reserves
     (s.amms.sub_r0 t0 t1 r.exi r.gain0 r.gain0_lt_r0).sub_r1 t0 t1 (by simp[r.exi]) r.gain1 (by simp[r.gain1_lt_r1])
   ⟩
 
