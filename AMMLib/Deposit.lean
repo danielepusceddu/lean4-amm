@@ -2,34 +2,29 @@ import AMMLib.AMMSet
 import AMMLib.State
 import AMMLib.Supply
 
-structure Deposit0 (s: Γ) where
-  t0: T
-  t1: T
-  r0: ℝ+
-  r1: ℝ+
-  a: A
+structure Deposit0 (s: Γ) (t0 t1: T) (a: A) (r0 r1: ℝ+) where
   hdif: t0 ≠ t1
   hnin: ¬s.amms.init t0 t1
   hen0: r0 ≤ s.atoms.get a t0
   hen1: r1 ≤ s.atoms.get a t1 
 
 noncomputable def Deposit0.apply 
-{s: Γ} (v: Deposit0 s): Γ :=
+{s: Γ} (v: Deposit0 s t0 t1 a r0 r1): Γ :=
   ⟨
-  (s.atoms.sub v.a v.t0 v.r0 v.hen0).sub v.a v.t1 v.r1 (by simp [v.hen1, v.hdif]),
-  s.mints.add v.a v.t0 v.t1 v.hdif v.r0,
-  s.amms.initialize v.hdif v.r0 v.r1
+  (s.atoms.sub a t0 r0 v.hen0).sub a t1 r1 (by simp [v.hen1, v.hdif]),
+  s.mints.add a t0 t1 v.hdif r0,
+  s.amms.initialize v.hdif r0 r1
   ⟩
 
 @[simp] theorem Deposit0.supply_minted_diff 
-{s: Γ} (v: Deposit0 s)
-(t0 t1: T) (hdifp: diffmint v.t0 v.t1 t0 t1):
-v.apply.mintsupply t0 t1 = s.mintsupply t0 t1 := by
+{s: Γ} (v: Deposit0 s t0 t1 a r0 r1)
+(t0' t1': T) (hdifp: diffmint t0 t1 t0' t1'):
+v.apply.mintsupply t0' t1' = s.mintsupply t0' t1' := by
   simp [apply, Γ.mintsupply, hdifp]
 
 @[simp] theorem Deposit0.init_diff_iff
-  {s: Γ} (v: Deposit0 s) (t0 t1: T) (hdifp: diffmint v.t0 v.t1 t0 t1):
-  v.apply.amms.init t0 t1 ↔ s.amms.init t0 t1
+  {s: Γ} (v: Deposit0 s t0 t1 a r0 r1) (t0' t1': T) (hdifp: diffmint t0 t1 t0' t1'):
+  v.apply.amms.init t0' t1' ↔ s.amms.init t0' t1'
   :=
   by simp [apply, hdifp]
 

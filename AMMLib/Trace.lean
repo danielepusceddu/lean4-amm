@@ -10,7 +10,7 @@ import AMMLib.Networth
 inductive Tx (sx: SX) (init: Γ): Γ → Type where
   | empty: Tx sx init init
 
-  | dep0 (s': Γ) (rs: Tx sx init s') (d: Deposit0 s'): 
+  | dep0 (s': Γ) (rs: Tx sx init s') (d: Deposit0 s' t0 t1 a r0 r1): 
       Tx sx init d.apply
   
   | dep (s': Γ) (rs: Tx sx init s') (d: Deposit s' a t0 t1 v0):
@@ -76,8 +76,8 @@ theorem AMMimpMintSupply (r: reachable sx s)
 
   -- Creation of AMM case: trivial by 
   -- cases on the created tokens t0' t1'.
-  | dep0 sprev tail d ih =>
-    apply @Decidable.byCases (diffmint d.t0 d.t1 t0 t1)
+  | @dep0 t0' t1' a r0 r1 sprev tail d ih =>
+    apply @Decidable.byCases (diffmint t0' t1' t0 t1)
 
     -- If their minted token is different, then by definition of
     -- Deposit0, the minted supply remains unchanged.
@@ -96,7 +96,7 @@ theorem AMMimpMintSupply (r: reachable sx s)
       rw [← Γ.mintsupply_samepair _ _ _ _ _ same]
       simp [Γ.mintsupply, Deposit0.apply]
       right
-      exact d.r0.zero_lt_toNNReal
+      exact r0.zero_lt_toNNReal
   
   -- Deposit to liquidity pool case: by cases
   -- on the deposited tokens t0' t1'. Similar to Creation.
