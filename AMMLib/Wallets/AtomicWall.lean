@@ -10,6 +10,7 @@ import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import Mathlib.Tactic.LibrarySearch
 
+-- Atomic token wallet
 abbrev W₀ := T →₀ NNReal
 
 noncomputable def W₀.add (w: W₀) (t: T) (x: NNReal): W₀ := 
@@ -119,8 +120,10 @@ theorem W₀.worth_destruct (w: W₀) (o: T → PReal) (t: T):
   simp only [le_refl, tsub_eq_zero_of_le]
   rw [Finsupp.update_zero_eq_erase]
   rw [add_comm]
-  have bruh: (w t)*(o t) = (λ t (x: NNReal) => x*(o t)) t (w t) := by simp
-  rw [bruh]
+  have invert_app: 
+    (w t)*(o t) = (λ t (x: NNReal) => x*(o t)) t (w t) := 
+    by simp
+  rw [invert_app]
   rw [Finsupp.add_sum_erase' w t (λ t (x: NNReal) => x*(o t))]
   simp
 

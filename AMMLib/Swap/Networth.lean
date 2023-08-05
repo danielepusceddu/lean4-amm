@@ -75,7 +75,7 @@ theorem Swap.self_gain_eq (sw: Swap sx s a t0 t1 x) (o: O) :
     simp [Swap.y, Swap.rate, le_of_lt sw.nodrain]
 
   simp [expandprice, sw.exi, sw.exi.dif, sw.exi.dif.symm, 
-        sw.enough, sw.nodrain, NNReal.coe_sub h']
+        sw.enough, NNReal.coe_sub h', le_of_lt sw.y_lt_r1₀]
 
   ring_nf
   . trivial
@@ -146,22 +146,29 @@ Goal:
   Qed by h1
 -/
 theorem Swap.lemma62_constprod
-(sw1: Swap SX.constprod s a t0 t1 x)
-(sw2: Swap SX.constprod s a t1 t0 x') (o: O)
-(hzero: (s.mints.get a).get t0 t1 = 0)
-(hgain: 0 < a.gain o s sw1.apply):
-a.gain o s sw2.apply < 0 :=
+  (sw1: Swap SX.constprod s a t0 t1 x)
+  (sw2: Swap SX.constprod s a t1 t0 x') (o: O)
+  (hzero: (s.mints.get a).get t0 t1 = 0)
+  (hgain: 0 < a.gain o s sw1.apply):
+  a.gain o s sw2.apply < 0 :=
   by
+  have hzero': (s.mints.get a).get t1 t0 = 0 :=
+               by rw [W₁.get_reorder _ t1 t0]; exact hzero
 
-  have h1' := (Swap.swaprate_vs_exchrate_gt sw1 o hzero).mp hgain
+  -- First modus ponens
+  -- ammrate(t1,t0) < extrate(t1,t0) → sw2gain < 0
+  apply (Swap.swaprate_vs_exchrate_lt sw2 o hzero').mpr
 
-  apply (Swap.swaprate_vs_exchrate_lt sw2 o (by rw [W₁.get_reorder _ t1 t0]; exact hzero)).mpr
-
+  -- Second modus ponens
+  -- extrate(t0,t1) ≤ ammrate(t0,t1) 
+  -- → 
+  -- ammrate(t1,t0) < extrate(t1,t0)
   apply SX.lemma61_constprod x
   simp only [swappedtoks]
   rw [Sₐ.r0_reorder s.amms t1 t0,
       Sₐ.r1_reorder s.amms t1 t0]
-  exact le_of_lt h1'
+  exact le_of_lt 
+        ((Swap.swaprate_vs_exchrate_gt sw1 o hzero).mp hgain)
 
 theorem Swap.lemma63_constprod
   (sw1: Swap SX.constprod s a t0 t1 x₀)

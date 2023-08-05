@@ -10,6 +10,7 @@ import HelpersLib.Finsupp2
 import AMMLib.Tokens
 import AMMLib.Wallets.AtomicWall
 
+-- Minted token wallet
 structure W₁ where 
   f: T →₀ W₀
   h1: ∀ (t0 t1: T), f t0 t1 = f t1 t0
@@ -48,15 +49,21 @@ theorem W₁.samepair_get (w: W₁) {t0 t1 t0' t1': T} (h: samemint t0 t1 t0' t1
 noncomputable def W₁.add (w: W₁) (t0 t1: T) 
   (hdif: t0 ≠ t1) (x: NNReal): W₁ :=
 ⟨
+  -- Update both f t0 t1 and f t1 t0
   (w.f.update t0 ((w.f t0).add t1 x)).update t1 ((w.f t1).add t0 x),
-  by intro t0' t1'
-     rcases (Decidable.em (t0' = t0)), (Decidable.em (t0' = t1)), (Decidable.em (t1' = t0)), (Decidable.em (t1' = t1)) with ⟨left|
-     left, right|right, left'|left', right'|right'⟩
-     <;> simp [left, right, left', right', hdif, w.h1],
 
-  by intro t
-     rcases Decidable.em (t = t0), Decidable.em (t = t1) with ⟨left|left, right|right⟩
-     <;> simp [hdif, left, right, w.h2]
+  by -- Prove application order still does not matter
+  intro t0' t1'
+  rcases (Decidable.em (t0' = t0)), (Decidable.em (t0' = t1)),
+         (Decidable.em (t1' = t0)), (Decidable.em (t1' = t1)) 
+         with ⟨left|left, right|right, left'|left', right'|right'⟩
+  <;> simp [left, right, left', right', hdif, w.h1],
+
+  by -- Prove f t t = 0 still holds
+  intro t
+  rcases Decidable.em (t = t0), Decidable.em (t = t1) 
+         with ⟨left|left, right|right⟩
+  <;> simp [hdif, left, right, w.h2]
 ⟩ 
 
 theorem W₁.add_reorder (w: W₁) (t1 t0: T) (hdif: t0 ≠ t1) (x: NNReal):

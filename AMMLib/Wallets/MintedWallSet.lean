@@ -1,5 +1,6 @@
 import AMMLib.Wallets.MintedWall
 
+-- Set of minted token wallets
 structure S₁ where
   f: A →₀ W₁
 

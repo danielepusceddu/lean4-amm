@@ -9,7 +9,8 @@ structure Swap
   where
   enough: v0 ≤ s.atoms.get a t0
   exi: s.amms.init t0 t1
-  nodrain: v0*(sx v0 (s.amms.r0 t0 t1 exi) (s.amms.r1 t0 t1 exi)) < (s.amms.r1 t0 t1 exi)
+  nodrain: v0*(sx v0 (s.amms.r0 t0 t1 exi) (s.amms.r1 t0 t1 exi)) 
+           < (s.amms.r1 t0 t1 exi)
 
 def Swap.rate (sw: Swap sx s a t0 t1 v0): ℝ+
   := sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi)

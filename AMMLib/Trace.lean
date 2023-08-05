@@ -5,29 +5,38 @@ import AMMLib.Tokens
 import AMMLib.Swap.Basic
 import AMMLib.Networth
 
-/- Tx c init s is the type of all possible sequences of transactions
-  that would result in s, starting from Γ init and using configuration c -/
+/- Tx c init s is the type of all possible sequences 
+  of valid transactions that would result in s, 
+  starting from state init and with swaprate function sx -/
 inductive Tx (sx: SX) (init: Γ): Γ → Type where
+  -- The empty sequence brings you to the initial state
   | empty: Tx sx init init
 
-  | dep0 (s': Γ) (rs: Tx sx init s') (d: Deposit0 s' t0 t1 a r0 r1): 
-      Tx sx init d.apply
-  
-  | dep (s': Γ) (rs: Tx sx init s') (d: Deposit s' a t0 t1 v0):
+  -- Sequence with a valid Deposit0 at the end
+  | dep0 (s': Γ) (rs: Tx sx init s') 
+         (d0: Deposit0 s' t0 t1 a r0 r1): 
+      Tx sx init d0.apply
+
+  -- Sequence with a valid Deposit at the end
+  | dep (s': Γ) (rs: Tx sx init s') 
+        (d: Deposit s' a t0 t1 v0):
       Tx sx init d.apply
 
-  | red (s': Γ) (rs: Tx sx init s') (r: Redeem s' a t0 t1 v0):
+  -- Sequence with a valid Redeem at the end
+  | red (s': Γ) (rs: Tx sx init s') 
+        (r: Redeem s' a t0 t1 v0):
       Tx sx init r.apply
 
+  -- Sequence with a valid Swap at the end
   | swap (s': Γ) (rs: Tx sx init s') 
          (sw: Swap sx s' a t0 t1 v0):
       Tx sx init sw.apply
 
-def reachableInit (s: Γ): Prop :=
+def validInit (s: Γ): Prop :=
   (s.amms = Sₐ.empty ∧ s.mints = S₁.empty)
 
 def reachable (sx: SX) (s: Γ): Prop :=
-  ∃ (init: Γ) (tx: Tx sx init s), reachableInit init
+  ∃ (init: Γ) (tx: Tx sx init s), validInit init
 
 def concat {sx: SX} {init s' s'': Γ} 
 (t1: Tx sx init s') (t2: Tx sx s' s''): Tx sx init s'' := match t2 with

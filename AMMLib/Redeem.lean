@@ -10,9 +10,11 @@ structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
   hen0: v ≤ (s.mints.get a).get t0 t1
 
   -- The output must not drain the AMM's reserves
-  nodrain: v < ((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
-    calc 0 < (v: NNReal) := v.property
-         _ ≤ (s.mints.get a).get t0 t1 := hen0)
+  nodrain: v < ((s.mints.supply t0 t1).toPReal 
+                (S₁.get_pos_imp_supp_pos s.mints t0 t1 a 
+                (by
+                calc 0 < (v: NNReal) := v.property
+                    _ ≤ (s.mints.get a).get t0 t1 := hen0)
   ))
 
 theorem Redeem.nodrain_toNNReal (d: Redeem s a t0 t1 v):
@@ -62,7 +64,8 @@ noncomputable def Redeem.apply (r: Redeem s a t0 t1 v): Γ :=
     s.mints.sub a t0 t1 r.exi.dif v r.hen0,
 
     -- Remove the reward from the AMM's reserves
-    (s.amms.sub_r0 t0 t1 r.exi r.gain0 r.gain0_lt_r0).sub_r1 t0 t1 (by simp[r.exi]) r.gain1 (by simp[r.gain1_lt_r1])
+    (s.amms.sub_r0 t0 t1 r.exi r.gain0 r.gain0_lt_r0
+    ).sub_r1 t0 t1 (by simp[r.exi]) r.gain1 (by simp[r.gain1_lt_r1])
   ⟩
 
 @[simp] theorem Redeem.atoms (r: Redeem s a t0 t1 v):

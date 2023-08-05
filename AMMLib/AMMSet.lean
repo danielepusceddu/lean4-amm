@@ -57,35 +57,47 @@ theorem Sₐ.init.samepair {amms: Sₐ} {t0 t1: T} (h: amms.init t0 t1) {t0' t1'
   . simp [← a, ← b, h]
   . simp [← a, ← b, h.swap]
 
-noncomputable def Sₐ.initialize 
+-- Set an AMM's reserves to an arbitrary pair of positive reals
+noncomputable def Sₐ.initialize
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+): Sₐ :=
   
   ⟨
-    (amms.f.update t0 ((amms.f t0).update t1 r0)).update t1 ((amms.f t1).update t0 r1),
+    (amms.f.update t0 ((amms.f t0).update t1 r0)
+    ).update t1 ((amms.f t1).update t0 r1),
 
-    by intro t
-       rcases Decidable.em (t=t0), Decidable.em (t=t1) with ⟨eq0|neq0, eq1|neq1⟩ 
-       . rw [eq0] at eq1; contradiction
-       . simp [eq0, hdif, amms.h2 t0]
-       . simp [eq1, hdif, amms.h2 t1, hdif.symm]
-       . simp [neq0, neq1, amms.h2 t],
+    by 
+    intro t
+    rcases Decidable.em (t=t0), Decidable.em (t=t1) 
+           with ⟨eq0|neq0, eq1|neq1⟩ 
+    . rw [eq0] at eq1; contradiction
+    . simp [eq0, hdif, amms.h2 t0]
+    . simp [eq1, hdif, amms.h2 t1, hdif.symm]
+    . simp [neq0, neq1, amms.h2 t],
 
 
-    by intro t0' t1'
-       rcases Decidable.em (t0'=t0), Decidable.em (t0'=t1), Decidable.em (t1'=t0), Decidable.em (t1'=t1) with ⟨a|a, b|b, c|c, d|d⟩ 
-       <;>
-       simp [a, b, c, d, hdif, r0.toNNReal_ne_zero, r1.toNNReal_ne_zero, amms.h3]
+    by 
+    intro t0' t1'
+    rcases Decidable.em (t0'=t0), Decidable.em (t0'=t1), 
+          Decidable.em (t1'=t0), Decidable.em (t1'=t1) 
+          with ⟨a|a, b|b, c|c, d|d⟩ 
+    <;>
+    simp [a, b, c, d, hdif, r0.toNNReal_ne_zero, r1.toNNReal_ne_zero, amms.h3]
   ⟩
 
+-- An AMM is initialized 
 @[simp] theorem Sₐ.initialize_init_diffpair
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
   (t0' t1': T) (h: diffmint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).init t0' t1' ↔ amms.init t0' t1' := by 
 
+    -- t0'=t1' case is trivial, since a t ↔ t exchange
+    -- may not exist
     rcases Decidable.em (t0'=t1') with triv|hdif'
     . simp [triv, same_uninit]
     . unfold init Sₐ.initialize
       rcases h with ⟨a,b⟩|⟨a,b⟩
+      -- Otherwise, by cases on the intersection between
+      -- {t0,t1} and {t0',t1'}
       . rcases Decidable.em (t1=t1') with c|c
         . simp [a.symm, c, hdif, hdif']
         . rcases Decidable.em (t1=t0') with d|d
@@ -142,17 +154,24 @@ noncomputable instance decidableInit (amms: Sₐ) (t0 t1: T): Decidable (amms.in
   := by unfold Sₐ.init
         infer_instance
 
-noncomputable def Sₐ.add_r0 (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: PReal): Sₐ := 
+noncomputable def Sₐ.add_r0 (amms: Sₐ) (t0 t1: T) 
+  (h: amms.init t0 t1) (x: PReal): Sₐ := 
   amms.initialize h.dif ((amms.r0 t0 t1 h) + x) (amms.r1 t0 t1 h)
 
-noncomputable def Sₐ.sub_r0 (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: PReal) (nodrain: x < amms.r0 t0 t1 h): Sₐ := 
+noncomputable def Sₐ.sub_r0 (amms: Sₐ) (t0 t1: T) 
+  (h: amms.init t0 t1) (x: PReal) 
+  (nodrain: x < amms.r0 t0 t1 h): Sₐ := 
   amms.initialize h.dif ((amms.r0 t0 t1 h).sub x nodrain) (amms.r1 t0 t1 h)
 
-noncomputable def Sₐ.add_r1 (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: PReal): Sₐ := 
+noncomputable def Sₐ.add_r1 (amms: Sₐ) (t0 t1: T) 
+  (h: amms.init t0 t1) (x: PReal): Sₐ := 
   amms.initialize h.dif (amms.r0 t0 t1 h) ((amms.r1 t0 t1 h) + x)
 
-noncomputable def Sₐ.sub_r1 (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: PReal) (nodrain: x < amms.r1 t0 t1 h): Sₐ := 
-  amms.initialize h.dif (amms.r0 t0 t1 h) ((amms.r1 t0 t1 h).sub x nodrain)
+noncomputable def Sₐ.sub_r1 (amms: Sₐ) (t0 t1: T) 
+  (h: amms.init t0 t1) (x: PReal) 
+  (nodrain: x < amms.r1 t0 t1 h): Sₐ := 
+  amms.initialize h.dif 
+    (amms.r0 t0 t1 h) ((amms.r1 t0 t1 h).sub x nodrain)
 
 @[simp] theorem Sₐ.r0_of_initialize
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+):

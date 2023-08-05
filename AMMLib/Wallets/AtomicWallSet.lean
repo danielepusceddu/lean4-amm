@@ -25,7 +25,8 @@ noncomputable def S₀.add (s: S₀) (a: A) (t: T) (x: NNReal): S₀ :=
   (s.add a t x).get a = (s.get a).add t x := by
   simp [get, add]
 
-@[simp] theorem S₀.get_add_diffa (s: S₀) (a: A) (t: T) (x: NNReal) (a': A) (hdif: a ≠ a'):
+@[simp] theorem S₀.get_add_diffa (s: S₀) (a: A) (t: T) (x: NNReal)
+  (a': A) (hdif: a ≠ a'):
   (s.add a t x).get a' = s.get a' := by
   simp [get, add, hdif.symm]
 
@@ -46,13 +47,17 @@ noncomputable def S₀.drainw (s: S₀) (a: A): S₀ :=
 theorem S₀.supply (s: S₀) (t: T): NNReal :=
   s.f.sum (λ _ w => w t)
 
-@[simp] theorem S₀.supply_of_add_self (s: S₀) (a: A) (t: T) (x: NNReal): 
+-- When adding balance to a wallet, 
+-- we are adding to the set's supply of that token as well.
+@[simp] theorem S₀.supply_of_add_self (s: S₀) (a: A) 
+  (t: T) (x: NNReal): 
   (s.add a t x).supply t = s.supply t + x := by
   unfold supply
   rw [← Finsupp.add_sum_erase' (s.f) a _ (by simp)]
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
 
-  have h: Finsupp.erase a (s.add a t x).f = Finsupp.erase a s.f := by
+  have h: 
+    Finsupp.erase a (s.add a t x).f = Finsupp.erase a s.f := by
     ext a' t'
     rcases Decidable.em (a'=a) with uh|uh
     . simp [uh]
@@ -61,13 +66,16 @@ theorem S₀.supply (s: S₀) (t: T): NNReal :=
   rw [add_assoc, add_comm _ x, ← add_assoc]
   simp [h]
 
-@[simp] theorem S₀.supply_of_add_diff (s: S₀) (a: A) (t: T) (x: NNReal) (t': T) (hdiff: t ≠ t'): 
+-- Supplies of other tokens remain unchanged.
+@[simp] theorem S₀.supply_of_add_diff (s: S₀) (a: A) (t: T) 
+  (x: NNReal) (t': T) (hdiff: t ≠ t'): 
   (s.add a t x).supply t' = s.supply t' := by
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
   rw [← Finsupp.add_sum_erase' s.f a _ (by simp)]
 
-  have h: Finsupp.erase a (s.add a t x).f = Finsupp.erase a s.f := by
+  have h: 
+    Finsupp.erase a (s.add a t x).f = Finsupp.erase a s.f := by
     ext a' t'
     rcases Decidable.em (a'=a) with uh|uh
     . simp [uh]

@@ -15,13 +15,15 @@ structure A where
 structure T where
   n: ℕ
 
-instance: DecidableEq A := 
-  fun a1 a2 => by 
-  cases a1; cases a2; simp; infer_instance
+instance: DecidableEq A := fun a1 a2 => by 
+  cases a1; cases a2
+  rw [A.mk.injEq] -- a1 = a2 ↔ a1.n = a2.n
+  infer_instance  -- naturals have decidable equality
 
-instance: DecidableEq T := 
-  fun a1 a2 => by 
-  cases a1; cases a2; simp; infer_instance
+instance: DecidableEq T := fun t1 t2 => by 
+  cases t1; cases t2 
+  rw [T.mk.injEq] -- t1 = t2 ↔ t1.n = t2.n
+  infer_instance  -- -- naturals have decidable equality
 
 abbrev AtomicOracle  := T → PReal
 

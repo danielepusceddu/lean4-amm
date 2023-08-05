@@ -1,5 +1,6 @@
 import AMMLib.Swap.Basic
 import AMMLib.AMMSetNN
+import AMMLib.Swap.Networth
 
 def SX.additive (sx: SX): Prop :=
 ∀ (x y r0 r1: ℝ+) (h: x*(sx x r0 r1) < r1),

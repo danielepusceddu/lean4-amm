@@ -21,9 +21,9 @@ GOAL
 r0 / (r1 + y) < p1 / p0                 by transitivity
 -/
 theorem SX.lemma61_constprod
-(x r0 r1 p0 p1: ℝ+)
-(h: p0/p1 ≤ constprod x r0 r1):
-∀ (y: ℝ+), constprod y r1 r0 < p1/p0 := by
+  (x r0 r1 p0 p1: ℝ+)
+  (h: p0/p1 ≤ constprod x r0 r1):
+  ∀ (y: ℝ+), constprod y r1 r0 < p1/p0 := by
   intro y
   unfold constprod at h ⊢
 
