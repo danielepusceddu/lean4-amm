@@ -29,6 +29,15 @@ def Swap.inv (sw: Swap sx s a t0 t1 v0)
        simp [hrev, y, rate]
   ⟩
 
+theorem Swap.rate_of_inv_eq_inv_rate (sw: Swap sx s a t0 t1 x)
+  (hrev: SX.reversible sx hbound)
+  : (sw.inv hrev).rate = sw.rate⁻¹ := by
+  unfold rate
+  rw [Sₐ.r0_reorder _ t1 t0 _,
+      Sₐ.r1_reorder _ t1 t0 _]
+  unfold SX.reversible at hrev
+  simp [y, rate, hrev]
+
 @[simp] theorem Swap.inv_y_eq_x (sw: Swap sx s a t0 t1 x)
   (hrev: SX.reversible sx hbound)
   : (sw.inv hrev).y = x := by 

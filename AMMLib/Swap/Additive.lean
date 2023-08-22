@@ -1,6 +1,7 @@
 import AMMLib.Swap.Basic
 import AMMLib.AMMSetNN
 import AMMLib.Swap.Networth
+import AMMLib.Swap.Reversible
 
 def SX.additive (sx: SX): Prop :=
 ∀ (x y r0 r1: ℝ+) (h: x*(sx x r0 r1) < r1),
@@ -52,6 +53,44 @@ def Swap.additive
        rw [div_eq_mul_inv]
        rw [mul_comm, mul_assoc]
        simp [nodrain'']
+  ⟩
+
+def Swap.bound_split1
+  (sw: Swap sx s a t0 t1 (x₀+x₁))
+  (bound: SX.outputbound sx):
+  Swap sx s a t0 t1 x₀ :=
+
+  -- Create the witness
+  ⟨
+    by 
+       -- Prove that in state s,
+       -- a has at least x₀+x₁ in balance of t0
+       have h := sw.enough
+       calc 
+        (x₀: NNReal) ≤ x₀+x₁ := by simp
+         _           ≤ s.atoms.get a t0 := by simp at h; exact h,
+    sw.exi,
+    bound _ _ _
+  ⟩
+
+def Swap.bound_split2
+  (sw: Swap sx s a t0 t1 (x₀+x₁))
+  (bound: SX.outputbound sx):
+  Swap sx (sw.bound_split1 bound).apply a t0 t1 x₁ :=
+
+  -- Create the witness
+  ⟨
+    by 
+       -- Prove that in state s,
+       -- a has at least x₀+x₁ in balance of t0
+       have h := sw.enough
+       simp at h
+       simp [h, sw.exi.dif]
+       apply (le_tsub_iff_left (sw.bound_split1 bound).enough).mpr
+       exact h,
+
+    by simp [sw.exi],
+    bound _ _ _
   ⟩
 
 @[simp] theorem Swap.additive_y
@@ -132,3 +171,100 @@ def Swap.additive
   rw [Swap.join_additive_amms _ _ addi]
   rw [Swap.join_additive_atoms _ _ addi]
   simp_rw [Swap.mints]
+
+-- Lemma 5.7
+theorem Swap.additive_gain
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
+  (sw2: Swap sx s a t0 t1 (x₀+x₁))
+  (addi: SX.additive sx)
+  (o: T → ℝ+):
+  a.gain o s sw2.apply = a.gain o s sw0.apply + a.gain o sw0.apply sw1.apply := by sorry
+
+theorem Swap.apply_same_val
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx s a t0 t1 x₁)
+  (h: x₀ = x₁):
+  sw0.apply = sw1.apply := by
+  sorry
+
+theorem Swap.rev_gain
+  (sw: Swap sx s a t0 t1 x) (hrev: SX.reversible sx hbound)
+  (o: T → ℝ+):
+  - a.gain o sw.apply (sw.inv hrev).apply = a.gain o s sw.apply := by sorry
+
+theorem Swap.lemma63_constprod'
+  (sw1: Swap SX.constprod s a t0 t1 x₀)
+  (sw2: Swap SX.constprod s a t0 t1 x) (o: O)
+  (h: sw1.apply.amms.r1 t0 t1 (by simp[sw1.exi]) / sw1.apply.amms.r0 t0 t1 (by simp[sw1.exi]) = (o t0) / (o t1))
+  (hdif: x₀ ≠ x)
+  (hzero: (s.mints.get a).get t0 t1 = 0):
+  a.gain o s sw2.apply < a.gain o s sw1.apply := by
+
+  have addi: SX.additive SX.constprod := by sorry
+  have bound: SX.outputbound SX.constprod := by sorry
+  have rev: SX.reversible SX.constprod bound := by sorry
+
+  rcases Decidable.em (x₀ < x) with le|nle
+  . have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add le
+    have sw2' := sw2
+    rw [prop₁] at sw2'
+    rw [Swap.apply_same_val sw2 sw2' prop₁]
+
+    have sw3: Swap SX.constprod sw1.apply a t0 t1 x₁ := 
+      sw2'.bound_split2 bound
+
+    rw [Swap.additive_gain sw1 sw3 sw2' addi o]
+
+    have sw3_rate_lt_exch: sw3.rate < o t0 / o t1 := by
+      simp [rate, SX.constprod, ← h]
+    simp [(Swap.swaprate_vs_exchrate_lt sw3 o hzero).mpr sw3_rate_lt_exch]
+
+  . have le: x ≤ x₀ := not_lt.mp nle
+    have lt: x < x₀ := hdif.lt_of_le' le
+    have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add lt
+    have sw1' := sw1
+    rw [prop₁] at sw1'
+    rw [Swap.apply_same_val sw1 sw1' prop₁]
+    have sw3: Swap SX.constprod sw2.apply a t0 t1 x₁ := 
+      sw1'.bound_split2 bound
+    rw [Swap.additive_gain sw2 sw3 sw1' addi o]
+    rw [← Swap.rev_gain sw3 rev o]
+
+    have sw3_invrate_lt: (sw3.inv rev).rate < o t1 / o t0 := by
+      rw [rate_of_inv_eq_inv_rate]
+      rw [inv_lt', inv_div]
+      rw [← h]
+      unfold rate
+      unfold SX.constprod
+      simp only [amms, Sₐ.r1_of_add_r0, Sₐ.r1_of_sub_r1, 
+                 Sₐ.r0_of_add_r0, Sₐ.r0_of_sub_r1,
+                 y, prop₁, rate]
+
+      -- same denumerator
+      rw [add_assoc, add_comm x₁ _, ← add_assoc x _ _]
+      rw [div_lt_div_iff_right]
+
+      -- remove r1
+      rw [PReal.x_sub_y_lt_x_sub_z_iff]
+
+      rw [mul_div, mul_div]
+      rw [div_lt_div_iff']
+
+      -- distributivity
+      simp_rw [right_distrib]
+      simp_rw [left_distrib]
+      rw [add_assoc]
+      rw [add_lt_add_iff_left]
+      rw [add_lt_add_iff_left]
+      rw [add_comm]
+      rw [mul_comm _ x₁, mul_comm x _, ← mul_assoc]
+      exact PReal.lt_add_right _ _
+
+    have hzero': (sw3.apply.mints.get a).get t1 t0 = 0 := by
+      simp [hzero, W₁.get_reorder _ t1 t0]
+
+    have sw3_inv_gain_neg := 
+      (swaprate_vs_exchrate_lt (sw3.inv rev) o hzero').mpr sw3_invrate_lt
+
+    exact lt_add_of_pos_right _ (neg_pos.mpr sw3_inv_gain_neg)
