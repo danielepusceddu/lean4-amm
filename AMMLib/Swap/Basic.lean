@@ -12,11 +12,22 @@ structure Swap
   nodrain: v0*(sx v0 (s.amms.r0 t0 t1 exi) (s.amms.r1 t0 t1 exi)) 
            < (s.amms.r1 t0 t1 exi)
 
+theorem Swap.singleton
+  (sw0: Swap sx s a t0 t1 x)
+  (sw1: Swap sx s a t0 t1 x):
+  sw0 = sw1 := by
+    cases sw0
+    cases sw1
+    rfl
+
 def Swap.rate (sw: Swap sx s a t0 t1 v0): ℝ+
   := sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi)
   
 def Swap.y (sw: Swap sx s a t0 t1 v0): ℝ+
   := v0*sw.rate
+
+theorem Swap.y_eq (s: Swap sx s a t0 t1 x):
+  s.y = x*s.rate := by rfl
 
 theorem Swap.y_lt_r1 (sw: Swap sx s a t0 t1 v0):
   sw.y < s.amms.r1 t0 t1 sw.exi := by exact sw.nodrain

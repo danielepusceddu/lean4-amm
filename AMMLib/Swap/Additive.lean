@@ -110,6 +110,17 @@ def Swap.bound_split2
     rw [mul_comm, ← mul_assoc]
     simp
 
+@[simp] theorem Swap.additive_y'
+  (sw0: Swap sx s a t0 t1 x₀)
+  (sw1: Swap sx sw0.apply a t0 t1 x₁)
+  (sw2: Swap sx s a t0 t1 (x₀ + x₁))
+  (addi: SX.additive sx):
+  sw2.y = sw0.y + sw1.y := by
+    have h: sw2 = (additive sw0 sw1 addi) := by
+      exact Swap.singleton _ _
+    rw [h]
+    exact Swap.additive_y sw0 sw1 addi
+
 -- The atom set obtained by applying the consecutive swaps
 -- is the same as the one obtained by applying the additive swap
 @[simp] theorem Swap.join_additive_atoms
@@ -172,14 +183,40 @@ def Swap.bound_split2
   rw [Swap.join_additive_atoms _ _ addi]
   simp_rw [Swap.mints]
 
--- Lemma 5.7
+/- Lemma 5.7
+   Here we do not take outputbound as parameter, because in the original
+   proof it is used exclusively to build sw0 and sw1.
+   But here we take those transactions as parameter, to make the type easier to use in other proofs.
+-/
 theorem Swap.additive_gain
   (sw0: Swap sx s a t0 t1 x₀)
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (sw2: Swap sx s a t0 t1 (x₀+x₁))
   (addi: SX.additive sx)
   (o: T → ℝ+):
-  a.gain o s sw2.apply = a.gain o s sw0.apply + a.gain o sw0.apply sw1.apply := by sorry
+  a.gain o s sw2.apply = a.gain o s sw0.apply + a.gain o sw0.apply sw1.apply := by 
+
+  have sw2y_toreal: ((x₀:ℝ)+x₁)*sw2.rate = sw2.y := by
+    rw [← PReal.add_toReal, ← PReal.mul_toReal, sw2.y_eq]
+
+  rw [add_comm (a.gain o s sw0.apply)]
+  apply eq_add_of_sub_eq
+  simp [self_gain_eq, y]
+
+  rw [← mul_sub_right_distrib]
+  rw [sub_right_comm]
+  rw [← sub_add]
+  rw [← mul_sub_right_distrib]
+  rw [← add_sub]
+  rw [← mul_sub_right_distrib]
+  rw [← sub_sub, sub_self, zero_sub, neg_mul, 
+      add_comm, neg_add_eq_sub]
+  rw [sw2y_toreal]
+
+  rw [Swap.additive_y' sw0 sw1 sw2 addi]
+  unfold y
+  simp_rw [PReal.add_toReal, PReal.mul_toReal]
+  rw [add_comm, ← add_sub, sub_self, add_zero]
 
 theorem Swap.apply_same_val
   (sw0: Swap sx s a t0 t1 x₀)
