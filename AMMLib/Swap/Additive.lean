@@ -225,11 +225,6 @@ theorem Swap.apply_same_val
   sw0.apply = sw1.apply := by
   sorry
 
-theorem Swap.rev_gain
-  (sw: Swap sx s a t0 t1 x) (hrev: SX.reversible sx hbound)
-  (o: T → ℝ+):
-  - a.gain o sw.apply (sw.inv hrev).apply = a.gain o s sw.apply := by sorry
-
 theorem Swap.lemma63_constprod'
   (sw1: Swap SX.constprod s a t0 t1 x₀)
   (sw2: Swap SX.constprod s a t0 t1 x) (o: O)

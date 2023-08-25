@@ -1,5 +1,6 @@
 import AMMLib.Swap.Basic
 import AMMLib.AMMSetNN
+import AMMLib.Swap.Networth
 
 def SX.reversible 
 (sx: SX) (bound: sx.outputbound): Prop :=
@@ -98,3 +99,12 @@ theorem Swap.inv_apply_eq_amms
   rw [inv_apply_eq_atoms]
   rw [inv_apply_eq_amms]
   simp
+
+theorem Swap.rev_gain
+  (sw: Swap sx s a t0 t1 x) (hrev: SX.reversible sx hbound)
+  (o: T → ℝ+):
+  - a.gain o sw.apply (sw.inv hrev).apply = a.gain o s sw.apply := by
+    rw [Swap.self_gain_eq, Swap.self_gain_eq]
+    simp only [inv_y_eq_x, mints, (s.mints.get a).get_reorder t1 t0,
+               s.mints.supply_reorder t1 t0]
+    rw [← neg_mul, neg_sub]
