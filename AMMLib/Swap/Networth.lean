@@ -78,7 +78,6 @@ theorem Swap.self_gain_eq (sw: Swap sx s a t0 t1 x) (o: O) :
         sw.enough, NNReal.coe_sub h', le_of_lt sw.y_lt_r1₀]
 
   ring_nf
-  . trivial
   . rw [Γ.T₁Price_reorder]
   . exact sw.exi.dif
   . rw [Γ.T₁Price_reorder]
@@ -164,7 +163,6 @@ theorem Swap.lemma62_constprod
   -- → 
   -- ammrate(t1,t0) < extrate(t1,t0)
   apply SX.lemma61_constprod x
-  simp only [swappedtoks]
   rw [Sₐ.r0_reorder s.amms t1 t0,
       Sₐ.r1_reorder s.amms t1 t0]
   exact le_of_lt 

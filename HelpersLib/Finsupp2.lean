@@ -126,7 +126,6 @@ noncomputable def Finsupp.curried_swap {α β M: Type} [AddCommMonoid M]
 theorem Finsupp.uncurry_curry {α β M: Type} [e: AddCommMonoid M] 
   (f: α →₀ β →₀ M):
   f.uncurry.curry = f := by
-  simp [Finsupp.finsuppProdEquiv.right_inv f]
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
     sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
     forall₃_true_iff, Prod.mk.eta, (single_sum _ _ _).symm, sum_single]

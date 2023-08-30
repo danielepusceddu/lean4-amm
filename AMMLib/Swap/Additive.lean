@@ -103,7 +103,6 @@ def Swap.bound_split2
     rw [addi _ _ _ _ sw0.nodrain]
     simp_rw [← y_norm sw0]
     simp_rw [add_comm _ x₀]
-    simp_rw [← y_norm sw1]
     rw [div_eq_mul_inv]
     rw [← mul_assoc, ← mul_assoc]
     rw [← right_distrib, ← right_distrib]
