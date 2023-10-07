@@ -9,6 +9,59 @@ def SX.additive (sx: SX): Prop :=
   =
   (x*(sx x r0 r1) + y*(sx y (r0+x) (r1.sub (x*(sx x r0 r1)) h))) / (x + y)
 
+/-
+
+r1 / (r0 + (x + y)) =
+
+(x * (r1 / (r0 + x)) + y * (PReal.sub r1 (x * (r1 / (r0 + x))) (_ : x * (r1 / (r0 + x)) < r1) / (r0 + x + y))) / (x + y)
+-/
+theorem SX.constprod.additive: SX.additive SX.constprod := by
+  unfold additive
+  intro x y r0 r1 h
+  have bruh: y*r1 = (y*r0*r1 + y*x*r1)/(r0+x) := by sorry
+  -- `y*(r0+x)*r1 = y*r1*r0 + y*r1*x = y*r0*r1 + y*x*r1`
+
+  /-
+  x y r0 r1 : ℝ+
+  h : x * constprod x r0 r1 < r1
+  ⊢ r1 / (r0 + (x + y)) =
+    (x * (r1 / (r0 + x)) + y * (PReal.sub r1 (x * (r1 / (r0 + x))) (_ : x * (r1 / (r0 + x)) < r1) / (r0 + x + y))) /
+      (x + y)
+  -/
+  simp_rw [constprod]
+  rw [div_eq_div_iff_mul_eq_mul]
+  rw [right_distrib]
+  simp_rw [mul_div]
+  rw [PReal.mul_sub']
+  simp_rw [mul_div, bruh]
+  rw [PReal.div_sub_div_same']
+  simp_rw [← mul_assoc]
+  rw [PReal.add_sub]
+  simp_rw [div_mul]
+  rw [div_right_comm]
+  rw [div_div]
+  simp_rw [div_eq_mul_inv]
+  rw [mul_inv _ (r0 + x)]
+  rw [mul_inv (r0 + x + y)]
+  rw [mul_assoc _ _ ((r0+x)⁻¹)]
+  rw [← mul_inv]
+  rw [mul_comm _ (r0+x)]
+  rw [← mul_assoc]
+  rw [← right_distrib]
+  rw [eq_mul_inv_iff_mul_eq]
+  rw [← mul_assoc]
+  rw [mul_inv_eq_iff_eq_mul]
+  rw [right_distrib]
+  rw [mul_assoc (y*r0*r1) _ (r0 + (x + y))]
+  rw [add_assoc]
+  rw [mul_left_inv, mul_one]
+  rw [left_distrib, left_distrib, right_distrib, right_distrib,
+      left_distrib, left_distrib]
+  rw [← add_assoc, ← add_assoc]
+  rw [mul_comm r1 x]
+  rw [add_assoc _ _ (x*r1*x), add_comm _ ((x*r1*x))]
+  rw [mul_rotate r1 x r0]
+
 theorem Swap.y_norm (sw: Swap sx s a t0 t1 v0):
   sw.y =  v0*sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi) := by simp [y, rate]
 
@@ -222,7 +275,7 @@ theorem Swap.apply_same_val
   (sw1: Swap sx s a t0 t1 x₁)
   (h: x₀ = x₁):
   sw0.apply = sw1.apply := by
-  sorry
+    simp_rw [apply, y, rate, h]
 
 theorem Swap.lemma63_constprod'
   (sw1: Swap SX.constprod s a t0 t1 x₀)
