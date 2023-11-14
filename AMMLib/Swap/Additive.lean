@@ -20,21 +20,13 @@ theorem SX.constprod.additive: SX.additive SX.constprod := by
   intro x y r0 r1 h
   have bruh: y*r1 = (y*r0*r1 + y*x*r1)/(r0+x) := by sorry
   -- `y*(r0+x)*r1 = y*r1*r0 + y*r1*x = y*r0*r1 + y*x*r1`
-
-  /-
-  x y r0 r1 : ℝ+
-  h : x * constprod x r0 r1 < r1
-  ⊢ r1 / (r0 + (x + y)) =
-    (x * (r1 / (r0 + x)) + y * (PReal.sub r1 (x * (r1 / (r0 + x))) (_ : x * (r1 / (r0 + x)) < r1) / (r0 + x + y))) /
-      (x + y)
-  -/
   simp_rw [constprod]
   rw [div_eq_div_iff_mul_eq_mul]
   rw [right_distrib]
   simp_rw [mul_div]
   rw [PReal.mul_sub']
   simp_rw [mul_div, bruh]
-  rw [PReal.div_sub_div_same']
+  rw [PReal.div_sub_div_same' _ _ _ (by simp [mul_assoc])]
   simp_rw [← mul_assoc]
   rw [PReal.add_sub]
   simp_rw [div_mul]
@@ -60,7 +52,13 @@ theorem SX.constprod.additive: SX.additive SX.constprod := by
   rw [← add_assoc, ← add_assoc]
   rw [mul_comm r1 x]
   rw [add_assoc _ _ (x*r1*x), add_comm _ ((x*r1*x))]
-  rw [mul_rotate r1 x r0]
+  rw [mul_rotate x r1 r0]
+  rw [←add_assoc]
+  rw [← add_rotate _ _ (r1*y*r0)]
+  rw [mul_rotate y r0 r1, mul_rotate r0 r1 y]
+  rw [add_left_inj]
+  rw [add_comm (r1*y*x) _, add_right_inj]
+  rw [← mul_rotate]
 
 theorem Swap.y_norm (sw: Swap sx s a t0 t1 v0):
   sw.y =  v0*sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi) := by simp [y, rate]
@@ -73,7 +71,7 @@ def Swap.additive
 
   -- Create the witness
   ⟨
-    by 
+    by
        -- Prove that in state s,
        -- a has at least x₀+x₁ in balance of t0
        have h := sw1.enough
@@ -87,7 +85,7 @@ def Swap.additive
     -- Prove the AMM is initialized
     sw0.exi,
 
-    by 
+    by
        -- Prove the AMM won't be drained, ie. that
        -- r1 in s is greater than sw0.y + sw1.y
        unfold SX.additive at addi
@@ -115,11 +113,11 @@ def Swap.bound_split1
 
   -- Create the witness
   ⟨
-    by 
+    by
        -- Prove that in state s,
        -- a has at least x₀+x₁ in balance of t0
        have h := sw.enough
-       calc 
+       calc
         (x₀: NNReal) ≤ x₀+x₁ := by simp
          _           ≤ s.atoms.get a t0 := by simp at h; exact h,
     sw.exi,
@@ -133,7 +131,7 @@ def Swap.bound_split2
 
   -- Create the witness
   ⟨
-    by 
+    by
        -- Prove that in state s,
        -- a has at least x₀+x₁ in balance of t0
        have h := sw.enough
@@ -181,7 +179,7 @@ def Swap.bound_split2
   (addi: SX.additive sx):
   sw1.apply.atoms = (additive sw0 sw1 addi).apply.atoms := by
 
-  -- Apply functional extensionality lemma 
+  -- Apply functional extensionality lemma
   ext a' t
 
   rcases Decidable.em (a'=a) with eq|neq
@@ -189,7 +187,7 @@ def Swap.bound_split2
     -- check if t is the same as t0 or t1.
     -- Then use the simplifier to obtain the new balance after swap
   . rcases Decidable.em (t=t0) with eq0|neq0
-    . simp [eq, eq0, sw0.exi.dif, 
+    . simp [eq, eq0, sw0.exi.dif,
             PReal.add_toReal, tsub_add_eq_tsub_tsub]
     . rcases Decidable.em (t=t1) with eq1|neq1
       . simp [eq, eq1, sw0.exi.dif, PReal.add_toReal,
@@ -228,7 +226,7 @@ def Swap.bound_split2
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (addi: SX.additive sx):
   sw1.apply = (additive sw0 sw1 addi).apply := by
-  
+
   -- State equality lemma
   rw [Γ.eq_iff]
   rw [Swap.join_additive_amms _ _ addi]
@@ -246,7 +244,7 @@ theorem Swap.additive_gain
   (sw2: Swap sx s a t0 t1 (x₀+x₁))
   (addi: SX.additive sx)
   (o: T → ℝ+):
-  a.gain o s sw2.apply = a.gain o s sw0.apply + a.gain o sw0.apply sw1.apply := by 
+  a.gain o s sw2.apply = a.gain o s sw0.apply + a.gain o sw0.apply sw1.apply := by
 
   have sw2y_toreal: ((x₀:ℝ)+x₁)*sw2.rate = sw2.y := by
     rw [← PReal.add_toReal, ← PReal.mul_toReal, sw2.y_eq]
@@ -261,7 +259,7 @@ theorem Swap.additive_gain
   rw [← mul_sub_right_distrib]
   rw [← add_sub]
   rw [← mul_sub_right_distrib]
-  rw [← sub_sub, sub_self, zero_sub, neg_mul, 
+  rw [← sub_sub, sub_self, zero_sub, neg_mul,
       add_comm, neg_add_eq_sub]
   rw [sw2y_toreal]
 
@@ -295,7 +293,7 @@ theorem Swap.lemma63_constprod'
     rw [prop₁] at sw2'
     rw [Swap.apply_same_val sw2 sw2' prop₁]
 
-    have sw3: Swap SX.constprod sw1.apply a t0 t1 x₁ := 
+    have sw3: Swap SX.constprod sw1.apply a t0 t1 x₁ :=
       sw2'.bound_split2 bound
 
     rw [Swap.additive_gain sw1 sw3 sw2' addi o]
@@ -310,7 +308,7 @@ theorem Swap.lemma63_constprod'
     have sw1' := sw1
     rw [prop₁] at sw1'
     rw [Swap.apply_same_val sw1 sw1' prop₁]
-    have sw3: Swap SX.constprod sw2.apply a t0 t1 x₁ := 
+    have sw3: Swap SX.constprod sw2.apply a t0 t1 x₁ :=
       sw1'.bound_split2 bound
     rw [Swap.additive_gain sw2 sw3 sw1' addi o]
     rw [← Swap.rev_gain sw3 rev o]
@@ -321,7 +319,7 @@ theorem Swap.lemma63_constprod'
       rw [← h]
       unfold rate
       unfold SX.constprod
-      simp only [amms, Sₐ.r1_of_add_r0, Sₐ.r1_of_sub_r1, 
+      simp only [amms, Sₐ.r1_of_add_r0, Sₐ.r1_of_sub_r1,
                  Sₐ.r0_of_add_r0, Sₐ.r0_of_sub_r1,
                  y, prop₁, rate]
 
@@ -348,7 +346,7 @@ theorem Swap.lemma63_constprod'
     have hzero': (sw3.apply.mints.get a).get t1 t0 = 0 := by
       simp [hzero, W₁.get_reorder _ t1 t0]
 
-    have sw3_inv_gain_neg := 
+    have sw3_inv_gain_neg :=
       (swaprate_vs_exchrate_lt (sw3.inv rev) o hzero').mpr sw3_invrate_lt
 
     exact lt_add_of_pos_right _ (neg_pos.mpr sw3_inv_gain_neg)

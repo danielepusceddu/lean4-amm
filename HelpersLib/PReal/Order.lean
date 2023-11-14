@@ -42,7 +42,8 @@ theorem lt_iff_exists_add' {x y: ℝ+}:
 
 -- x - (y+z) = (x - y) - z
 theorem sub_sub' (x y z: ℝ+) (h: y+z < x):
-  x.sub (y+z) h = (x.sub y (by calc y < y + z := by simp _ < x := h)).sub z (
+  x.sub (y+z) h = (x.sub y (by calc y < y + z := by simp
+                                    _ < x := h)).sub z (
     by rw [← toReal_lt_toReal_iff] at h ⊢
        simp at h
        simp [h]
@@ -60,7 +61,7 @@ theorem lt_imp_sub_lt (x y z: ℝ+) (h: z < x) (h': x < y):
        _         < y             := h'
 
 theorem x_sub_y_lt_x_sub_z_iff (x y z: ℝ+) (h: z < x) (h': y < x):
-  x.sub y h' < x.sub z h ↔ z < y := by 
+  x.sub y h' < x.sub z h ↔ z < y := by
   simp_rw [← toReal_lt_toReal_iff]
   simp [-toReal_lt_toReal_iff]
 
