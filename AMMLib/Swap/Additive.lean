@@ -9,23 +9,22 @@ def SX.additive (sx: SX): Prop :=
   =
   (x*(sx x r0 r1) + y*(sx y (r0+x) (r1.sub (x*(sx x r0 r1)) h))) / (x + y)
 
-/-
-
-r1 / (r0 + (x + y)) =
-
-(x * (r1 / (r0 + x)) + y * (PReal.sub r1 (x * (r1 / (r0 + x))) (_ : x * (r1 / (r0 + x)) < r1) / (r0 + x + y))) / (x + y)
--/
 theorem SX.constprod.additive: SX.additive SX.constprod := by
   unfold additive
   intro x y r0 r1 h
-  have bruh: y*r1 = (y*r0*r1 + y*x*r1)/(r0+x) := by sorry
-  -- `y*(r0+x)*r1 = y*r1*r0 + y*r1*x = y*r0*r1 + y*x*r1`
+  have desimp: y*r1 = (y*r0*r1 + y*x*r1)/(r0+x) := by
+    symm
+    rw [mul_comm y x, mul_comm y r0]
+    rw [mul_assoc, mul_assoc]
+    rw [← right_distrib]
+    rw [mul_comm, div_eq_mul_inv, mul_assoc]
+    simp
   simp_rw [constprod]
   rw [div_eq_div_iff_mul_eq_mul]
   rw [right_distrib]
   simp_rw [mul_div]
   rw [PReal.mul_sub']
-  simp_rw [mul_div, bruh]
+  simp_rw [mul_div, desimp]
   rw [PReal.div_sub_div_same' _ _ _ (by simp [mul_assoc])]
   simp_rw [← mul_assoc]
   rw [PReal.add_sub]
@@ -283,7 +282,7 @@ theorem Swap.lemma63_constprod'
   (hzero: (s.mints.get a).get t0 t1 = 0):
   a.gain o s sw2.apply < a.gain o s sw1.apply := by
 
-  have addi: SX.additive SX.constprod := by sorry
+  have addi: SX.additive SX.constprod := SX.constprod.additive
   have bound: SX.outputbound SX.constprod := by sorry
   have rev: SX.reversible SX.constprod bound := by sorry
 
