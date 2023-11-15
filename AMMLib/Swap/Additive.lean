@@ -284,7 +284,7 @@ theorem Swap.lemma63_constprod'
 
   have addi: SX.additive SX.constprod := SX.constprod.additive
   have bound: SX.outputbound SX.constprod := SX.constprod.outputbound
-  have rev: SX.reversible SX.constprod bound := by sorry
+  have rev: SX.reversible SX.constprod bound := SX.constprod.reversible
 
   rcases Decidable.em (x₀ < x) with le|nle
   . have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add le

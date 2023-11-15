@@ -2,7 +2,7 @@ import AMMLib.Swap.Basic
 import AMMLib.AMMSetNN
 import AMMLib.Swap.Networth
 
-def SX.reversible 
+def SX.reversible
 (sx: SX) (bound: sx.outputbound): Prop :=
   ∀ (x r0 r1: ℝ+),
     sx (x*(sx x r0 r1))
@@ -10,6 +10,13 @@ def SX.reversible
        (x + r0)
     =
     1 / (sx x r0 r1)
+
+def SX.constprod.reversible:
+  SX.reversible SX.constprod SX.constprod.outputbound := by
+  unfold SX.reversible constprod
+  intro x r0 r1
+  rw [PReal.sub_y_add_y]
+  rw [one_div, inv_div, add_comm]
 
 def Swap.inv (sw: Swap sx s a t0 t1 v0)
   (hrev: SX.reversible sx hbound)
@@ -41,7 +48,7 @@ theorem Swap.rate_of_inv_eq_inv_rate (sw: Swap sx s a t0 t1 x)
 
 @[simp] theorem Swap.inv_y_eq_x (sw: Swap sx s a t0 t1 x)
   (hrev: SX.reversible sx hbound)
-  : (sw.inv hrev).y = x := by 
+  : (sw.inv hrev).y = x := by
   unfold y
   unfold rate
   rw [Sₐ.r0_reorder _ t1 t0 _,
