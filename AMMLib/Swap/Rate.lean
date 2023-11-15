@@ -4,7 +4,7 @@ import HelpersLib.PReal.Subtraction
 
 abbrev SX := PReal → PReal → PReal → PReal
 
-noncomputable def SX.constprod: SX := 
+noncomputable def SX.constprod: SX :=
   λ (x r0 r1: ℝ+) => r1/(r0 + x)
 
 /-
@@ -41,6 +41,14 @@ theorem SX.lemma61_constprod
 def SX.outputbound (sx: SX): Prop :=
   ∀ (x r0 r1: ℝ+),
      x*(sx x r0 r1) < r1
+
+def SX.constprod.outputbound: SX.outputbound SX.constprod := by
+  unfold SX.outputbound
+  intro x r0 r1
+  unfold constprod
+  rw [div_eq_mul_inv, ← mul_assoc, mul_inv_lt_iff_lt_mul]
+  rw [left_distrib, mul_comm x r1]
+  exact PReal.lt_add_left _ _
 
 def SX.mono (sx: SX): Prop :=
 ∀ (x r0 r1 x' r0' r1': ℝ+),

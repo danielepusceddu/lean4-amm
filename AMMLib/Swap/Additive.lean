@@ -283,7 +283,7 @@ theorem Swap.lemma63_constprod'
   a.gain o s sw2.apply < a.gain o s sw1.apply := by
 
   have addi: SX.additive SX.constprod := SX.constprod.additive
-  have bound: SX.outputbound SX.constprod := by sorry
+  have bound: SX.outputbound SX.constprod := SX.constprod.outputbound
   have rev: SX.reversible SX.constprod bound := by sorry
 
   rcases Decidable.em (x₀ < x) with le|nle
