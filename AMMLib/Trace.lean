@@ -5,30 +5,30 @@ import AMMLib.Tokens
 import AMMLib.Swap.Basic
 import AMMLib.Networth
 
-/- Tx c init s is the type of all possible sequences 
-  of valid transactions that would result in s, 
+/- Tx c init s is the type of all possible sequences
+  of valid transactions that would result in s,
   starting from state init and with swaprate function sx -/
 inductive Tx (sx: SX) (init: Γ): Γ → Type where
   -- The empty sequence brings you to the initial state
   | empty: Tx sx init init
 
   -- Sequence with a valid Deposit0 at the end
-  | dep0 (s': Γ) (rs: Tx sx init s') 
-         (d0: Deposit0 s' t0 t1 a r0 r1): 
+  | dep0 (s': Γ) (rs: Tx sx init s')
+         (d0: Deposit0 s' t0 t1 a r0 r1):
       Tx sx init d0.apply
 
   -- Sequence with a valid Deposit at the end
-  | dep (s': Γ) (rs: Tx sx init s') 
+  | dep (s': Γ) (rs: Tx sx init s')
         (d: Deposit s' a t0 t1 v0):
       Tx sx init d.apply
 
   -- Sequence with a valid Redeem at the end
-  | red (s': Γ) (rs: Tx sx init s') 
+  | red (s': Γ) (rs: Tx sx init s')
         (r: Redeem s' a t0 t1 v0):
       Tx sx init r.apply
 
   -- Sequence with a valid Swap at the end
-  | swap (s': Γ) (rs: Tx sx init s') 
+  | swap (s': Γ) (rs: Tx sx init s')
          (sw: Swap sx s' a t0 t1 v0):
       Tx sx init sw.apply
 
@@ -38,7 +38,7 @@ def validInit (s: Γ): Prop :=
 def reachable (sx: SX) (s: Γ): Prop :=
   ∃ (init: Γ) (tx: Tx sx init s), validInit init
 
-def concat {sx: SX} {init s' s'': Γ} 
+def concat {sx: SX} {init s' s'': Γ}
 (t1: Tx sx init s') (t2: Tx sx s' s''): Tx sx init s'' := match t2 with
   | Tx.empty => t1
   | Tx.dep0 ds rs d => Tx.dep0 ds (concat t1 rs) d
@@ -47,7 +47,7 @@ def concat {sx: SX} {init s' s'': Γ}
   | Tx.swap ds rs sw => Tx.swap ds (concat t1 rs) sw
 
 /-
-Proof that 
+Proof that
 m ∈ (Trace c s).Γ.amms.map.supp → supply m > 0
 
 by induction
@@ -59,16 +59,14 @@ dep0: trivial by cases on the deposited tokens:
 
 dep: same as dep0.
 
-swap: use IH. 
+swap: use IH.
       swaps don't change minted token supplies
 -/
-theorem Γ.mintsupply_samepair (s: Γ) (t0 t1 t0' t1': T) (samepair: samemint t0 t1 t0' t1'):
-  s.mintsupply t0 t1 = s.mintsupply t0' t1' := by sorry
 
 /- If a state is reachable and an AMM has been initialized in it,
    then the supply of the AMM's minted token is greater than zero. -/
-theorem AMMimpMintSupply (r: reachable sx s) 
-  (h: s.amms.init t0 t1): 0 < s.mintsupply t0 t1 := by
+theorem AMMimpMintSupply (r: reachable sx s)
+  (h: s.amms.init t0 t1): 0 < s.mints.supply t0 t1 := by
 
   -- Obtain the initial state and the sequence of transactions
   -- that lead to this reachable state
@@ -79,11 +77,11 @@ theorem AMMimpMintSupply (r: reachable sx s)
 
   -- Contradiction in the empty case:
   -- there cannot be an initialized AMM in the empty AMM Set.
-  | empty => 
+  | empty =>
       exfalso
       simp [Sₐ.init, Sₐ.empty, init_amms] at h
 
-  -- Creation of AMM case: trivial by 
+  -- Creation of AMM case: trivial by
   -- cases on the created tokens t0' t1'.
   | @dep0 t0' t1' a r0 r1 sprev tail d ih =>
     apply @Decidable.byCases (diffmint t0' t1' t0 t1)
@@ -93,32 +91,31 @@ theorem AMMimpMintSupply (r: reachable sx s)
     -- Then, use the induction hypothesis.
     . intro diff;
       simp [diff] at h
-      simp [Deposit0.apply, Γ.mintsupply, diff]
+      simp [Deposit0.apply, diff]
       have re: reachable sx sprev := by
         exists init; exists tail
       exact ih re h
-    
+
     -- If their minted token is the same, then we just incremented
     -- the supply, and since it is non-negative, it must be positive.
     . intro same
       rw [not_diffmint_iff_samemint _ _ _ _ d.hdif] at same
-      rw [← Γ.mintsupply_samepair _ _ _ _ _ same]
-      simp [Γ.mintsupply, Deposit0.apply]
+      rw [← S₁.supply_samepair _ _ _ _ _ same]
+      simp [Deposit0.apply]
       right
       exact r0.zero_lt_toNNReal
-  
+
   -- Deposit to liquidity pool case: by cases
   -- on the deposited tokens t0' t1'. Similar to Creation.
   | @dep a t0' t1' v0 sprev tail d ih =>
       simp at h
       have re: reachable sx sprev := by
         exists init; exists tail
-      unfold Γ.mintsupply
 
       -- If the minted token is different, then the supply
       -- remains unchanged. Use induction hypothesis.
       rcases Decidable.em (diffmint t0' t1' t0 t1) with diffmi|samemi
-      . simp [diffmi, ih re h]; exact ih re h
+      . simp [diffmi, ih re h]
 
       -- If the minted token is the same, then we just
       -- incremented the supply.
@@ -140,7 +137,7 @@ theorem AMMimpMintSupply (r: reachable sx s)
 
       -- If the minted token is different,
       -- then the supply remains unchanged. Use IH.
-      . simp [diffmi, ih re h]; exact ih re h
+      . simp [diffmi, ih re h]
 
       -- If the minted token is the same,
       -- we subtracted from the supply, but the
@@ -154,11 +151,10 @@ theorem AMMimpMintSupply (r: reachable sx s)
           rw [S₁.supply_reorder _ t0 t1]
           simp_rw [← a, ← b] at nodrain' ⊢
           simp [nodrain']
-  
+
   -- The swap case is trivial since minted wallets are
   -- unchanged by swap transactions.
   | swap sprev tail sw ih =>
-      rw [sw.mintsupply]
       simp at h
       have re: reachable sx sprev := by
         exists init; exists tail
