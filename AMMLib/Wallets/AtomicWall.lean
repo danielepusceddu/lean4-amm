@@ -42,7 +42,7 @@ noncomputable def W₀.drain (w: W₀) (t: T): W₀ :=
 
 theorem W₀.drain_comm (w: W₀) (t0 t1: T):
   (w.drain t1).drain t0 = (w.drain t0).drain t1 := by
-  ext t0' t1'
+  ext t0'
   apply @Decidable.byCases (t0' = t0)
   . apply @Decidable.byCases (t0' = t1)
     . intro eq1 eq2
