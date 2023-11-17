@@ -11,13 +11,6 @@ def SX.reversible
     =
     1 / (sx x r0 r1)
 
-def SX.constprod.reversible:
-  SX.reversible SX.constprod SX.constprod.outputbound := by
-  unfold SX.reversible constprod
-  intro x r0 r1
-  rw [PReal.sub_y_add_y]
-  rw [one_div, inv_div, add_comm]
-
 def Swap.inv (sw: Swap sx s a t0 t1 v0)
   (hrev: SX.reversible sx hbound)
   : Swap sx sw.apply a t1 t0 sw.y

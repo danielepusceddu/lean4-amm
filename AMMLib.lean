@@ -5,6 +5,7 @@ import AMMLib.State
 import AMMLib.Supply
 import AMMLib.Swap.Additive
 import AMMLib.Swap.Basic
+import AMMLib.Swap.Constprod
 import AMMLib.Swap.Networth
 import AMMLib.Swap.Rate
 import AMMLib.Tokens
