@@ -20,6 +20,16 @@ def SX.constprod.reversible:
   rw [PReal.sub_y_add_y]
   rw [one_div, inv_div, add_comm]
 
+theorem SX.constprod.homogeneous:
+  homogeneous constprod := by
+  unfold homogeneous
+  intro a x r0 r1
+  unfold constprod
+  rw [← left_distrib, div_eq_mul_inv, inv_mul']
+  rw [div_eq_mul_inv, mul_assoc, ← mul_assoc r1 _]
+  rw [mul_comm r1, ← mul_assoc, ← mul_assoc a]
+  simp [div_eq_mul_inv]
+
 theorem SX.constprod.additive: SX.additive SX.constprod := by
   unfold additive
   intro x y r0 r1 h
