@@ -30,6 +30,30 @@ theorem SX.constprod.homogeneous:
   rw [mul_comm r1, ← mul_assoc, ← mul_assoc a]
   simp [div_eq_mul_inv]
 
+theorem SX.constprod.strictmono:
+  strictmono constprod := by
+  unfold strictmono
+  intro x r0 r1 x' r0' r1'
+  intro ⟨a,b,c⟩
+  unfold constprod
+  have h': r0'+x' ≤ r0+x := add_le_add b a
+  if h: x' < x ∨ r0' < r0 ∨ r1 < r1'
+  then
+    simp only [h, ite_true]
+    rw [div_lt_div_iff']
+    rcases c.lt_or_eq with c'|c'
+    <;> (
+    rcases h with a|b|c
+    . have h': r0'+x' < r0+x := add_lt_add_of_le_of_lt b a
+      simp [Right.mul_lt_mul, c', h']
+    . have h': r0'+x' < r0+x := add_lt_add_of_lt_of_le b a
+      simp [Right.mul_lt_mul, c', h']
+    . rcases h'.lt_or_eq with h'|h'
+      <;> simp [c, h', Right.mul_lt_mul]
+    )
+  else
+    simp [h, div_le_div_iff', mul_le_mul', c, h']
+
 theorem SX.constprod.additive: SX.additive SX.constprod := by
   unfold additive
   intro x y r0 r1 h
