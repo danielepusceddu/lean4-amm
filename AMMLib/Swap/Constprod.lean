@@ -1,6 +1,7 @@
 import AMMLib.Swap.Rate
 import AMMLib.Swap.Additive
 import AMMLib.Swap.Reversible
+import HelpersLib.PReal.Sqrt
 
 noncomputable def SX.constprod: SX :=
   λ (x r0 r1: ℝ+) => r1/(r0 + x)
@@ -178,13 +179,13 @@ theorem SX.constprod.lemma62
   exact le_of_lt
         ((Swap.swaprate_vs_exchrate_gt sw1 o hzero).mp hgain)
 
-theorem Swap.constprod.lemma63
+theorem SX.constprod.lemma63
   (sw1: Swap SX.constprod s a t0 t1 x₀)
-  (sw2: Swap SX.constprod s a t0 t1 x) (o: O)
-  (h: sw1.apply.amms.r1 t0 t1 (by simp[sw1.exi]) / sw1.apply.amms.r0 t0 t1 (by simp[sw1.exi]) = (o t0) / (o t1))
-  (hdif: x₀ ≠ x)
-  (hzero: (s.mints.get a).get t0 t1 = 0):
-  a.gain o s sw2.apply < a.gain o s sw1.apply := by
+  (o: O)
+  (h: sw1.apply.amms.r1 t0 t1 (by simp[sw1.exi]) / sw1.apply.amms.r0 t0 t1 (by simp[sw1.exi]) = (o t0) / (o t1)):
+  sw1.is_solution o := by
+  unfold Swap.is_solution
+  intro x sw2 hdif hzero
 
   have addi: SX.additive SX.constprod := SX.constprod.additive
   have bound: SX.outputbound SX.constprod := SX.constprod.outputbound
@@ -202,11 +203,11 @@ theorem Swap.constprod.lemma63
     rw [Swap.additive_gain sw1 sw3 sw2' addi o]
 
     have sw3_rate_lt_exch: sw3.rate < o t0 / o t1 := by
-      simp [rate, SX.constprod, ← h]
+      simp [Swap.rate, SX.constprod, ← h]
     simp [(Swap.swaprate_vs_exchrate_lt sw3 o hzero).mpr sw3_rate_lt_exch]
 
   . have le: x ≤ x₀ := not_lt.mp nle
-    have lt: x < x₀ := hdif.lt_of_le' le
+    have lt: x < x₀ := hdif.symm.lt_of_le' le
     have ⟨x₁, prop₁⟩ := PReal.lt_iff_exists_add lt
     have sw1' := sw1
     rw [prop₁] at sw1'
@@ -217,14 +218,14 @@ theorem Swap.constprod.lemma63
     rw [← Swap.rev_gain sw3 rev o]
 
     have sw3_invrate_lt: (sw3.inv rev).rate < o t1 / o t0 := by
-      rw [rate_of_inv_eq_inv_rate]
+      rw [Swap.rate_of_inv_eq_inv_rate]
       rw [inv_lt', inv_div]
       rw [← h]
-      unfold rate
+      unfold Swap.rate
       unfold SX.constprod
-      simp only [amms, Sₐ.r1_of_add_r0, Sₐ.r1_of_sub_r1,
+      simp only [Swap.amms, Sₐ.r1_of_add_r0, Sₐ.r1_of_sub_r1,
                  Sₐ.r0_of_add_r0, Sₐ.r0_of_sub_r1,
-                 y, prop₁, rate]
+                 Swap.y, prop₁, Swap.rate]
 
       -- same denumerator
       rw [add_assoc, add_comm x₁ _, ← add_assoc x _ _]
@@ -250,6 +251,6 @@ theorem Swap.constprod.lemma63
       simp [hzero, W₁.get_reorder _ t1 t0]
 
     have sw3_inv_gain_neg :=
-      (swaprate_vs_exchrate_lt (sw3.inv rev) o hzero').mpr sw3_invrate_lt
+      (Swap.swaprate_vs_exchrate_lt (sw3.inv rev) o hzero').mpr sw3_invrate_lt
 
     exact lt_add_of_pos_right _ (neg_pos.mpr sw3_inv_gain_neg)
