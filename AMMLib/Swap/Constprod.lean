@@ -2,6 +2,7 @@ import AMMLib.Swap.Rate
 import AMMLib.Swap.Additive
 import AMMLib.Swap.Reversible
 import HelpersLib.PReal.Sqrt
+import HelpersLib.PReal.Order
 
 noncomputable def SX.constprod: SX :=
   λ (x r0 r1: ℝ+) => r1/(r0 + x)
@@ -254,3 +255,79 @@ theorem SX.constprod.lemma63
       (Swap.swaprate_vs_exchrate_lt (sw3.inv rev) o hzero').mpr sw3_invrate_lt
 
     exact lt_add_of_pos_right _ (neg_pos.mpr sw3_inv_gain_neg)
+
+/-
+(r1 - ((PReal.sqrt(p1 * p0⁻¹ * r0 * r1) - r0) * (r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1))))
+/
+PReal.sqrt(p1 * p0⁻¹ * r0 * r1)
+
+
+= RIGHT DISTRIB
+
+(r1 - ((PReal.sqrt (p1 * p0⁻¹ * r0 * r1) * r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1) - r0 * r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1))))
+/
+PReal.sqrt(p1 * p0⁻¹ * r0 * r1)
+
+= SIMP X/X
+
+(r1 - ((r1 - r0 * r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1))))
+/
+PReal.sqrt(p1 * p0⁻¹ * r0 * r1)
+
+= SUB SUB ''
+
+(r1+r0 * r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1) - r1)
+/
+PReal.sqrt(p1 * p0⁻¹ * r0 * r1)
+
+= ADD COMM
+
+(r0 * r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1) + r1 - r1)
+/
+PReal.sqrt(p1 * p0⁻¹ * r0 * r1)
+
+= ADD Y SUB Y
+
+(r0 * r1 / PReal.sqrt (p1 * p0⁻¹ * r0 * r1))
+/
+PReal.sqrt(p1 * p0⁻¹ * r0 * r1)
+
+= div div
+
+(r0 * r1 / (PReal.sqrt (p1 * p0⁻¹ * r0 * r1) * PReal.sqrt (p1 * p0⁻¹ * r0 * r1)))
+
+= sqrt * sqrt
+
+(r0 * r1 / (p1 * p0⁻¹ * r0 * r1))
+
+= simp
+
+1 / (p1*p0⁻¹)
+
+= inv of mul
+
+p0*p1⁻¹
+
+=
+
+p0 / p1 GOAL
+-/
+theorem SX.constprod.lemma64
+  (sw: Swap SX.constprod s a t0 t1 x₀)
+  (o: O)
+  (less: s.amms.r0 t0 t1 (by simp[sw.exi]) < ((o t1)*(o t0)⁻¹*(s.amms.r0 t0 t1 (by simp[sw.exi]))*(s.amms.r1 t0 t1 (by simp[sw.exi]))).sqrt)
+  (h: x₀ = ((o t1)*(o t0)⁻¹*(s.amms.r0 t0 t1 (by simp[sw.exi]))*(s.amms.r1 t0 t1 (by simp[sw.exi]))).sqrt.sub (s.amms.r0 t0 t1 (by simp[sw.exi])) less):
+  sw.is_solution o := by
+
+  have huh: sw.apply.amms.r1 t0 t1 (by simp[sw.exi]) / sw.apply.amms.r0 t0 t1 (by simp[sw.exi]) = (o t0) / (o t1) := by
+    simp [Swap.y, Swap.rate, constprod, h]
+    simp_rw [PReal.sub_mul'] -- right distrib step
+    simp_rw [div_eq_mul_inv]
+    simp_rw [mul_comm (s.amms.r1 t0 t1 sw.exi) _, ← mul_assoc _ _ (s.amms.r1 t0 t1 sw.exi), mul_right_inv, one_mul] -- simp x/x
+    simp_rw [PReal.sub_sub'', add_comm (s.amms.r1 t0 t1 sw.exi) _, PReal.sub_of_add]
+    rw [mul_comm, ← mul_assoc, mul_comm (s.amms.r0 t0 t1 sw.exi) _, ←mul_assoc, ←mul_inv, PReal.mul_self_sqrt _]
+    simp_rw [mul_inv]; rw [inv_inv]
+    rw [mul_assoc, mul_assoc, mul_assoc, mul_comm _ (o t0)]
+    simp
+
+  exact lemma63 sw o huh

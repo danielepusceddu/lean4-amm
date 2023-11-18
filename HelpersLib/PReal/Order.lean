@@ -69,3 +69,19 @@ theorem x_sub_y_lt_x_sub_z_iff (x y z: ℝ+) (h: z < x) (h': y < x):
   (x+y).sub y (by simp) = x := by
   rw [← toReal_eq_toReal_iff]
   simp
+
+theorem sub_lt_iff (x y z: ℝ+) (h: y<x):
+  x.sub y h < z ↔ x < z+y := by
+  simp_rw [← toReal_lt_toReal_iff]
+  simp [sub_lt_iff_lt_add]
+
+theorem sub_sub'' (x y z: ℝ+) (h1: z < y) (h2: y.sub z h1 < x): -- x - (y - z) = x - y + z = x + z - y
+  x.sub (y.sub z h1) h2 = (x+z).sub y ((sub_lt_iff _ _ _ _).mp h2) := by
+  rw [← toReal_eq_toReal_iff]
+  simp [sub_sub_eq_add_sub]
+
+@[simp]
+theorem sub_of_add (x y: ℝ+):
+  (x+y).sub y (by simp) = x := by
+  rw [← toReal_eq_toReal_iff]
+  simp
