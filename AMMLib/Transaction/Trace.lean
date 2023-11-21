@@ -1,8 +1,6 @@
-import AMMLib.Deposit
-import AMMLib.Redeem
-import AMMLib.State
-import AMMLib.Tokens
-import AMMLib.Swap.Basic
+import AMMLib.Transaction.Deposit
+import AMMLib.Transaction.Redeem
+import AMMLib.Transaction.Swap.Basic
 import AMMLib.Networth
 
 /- Tx c init s is the type of all possible sequences

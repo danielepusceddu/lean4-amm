@@ -1,6 +1,6 @@
-import AMMLib.Swap.Basic
+import AMMLib.Transaction.Swap.Basic
+import AMMLib.Transaction.Swap.Networth
 import AMMLib.AMMSetNN
-import AMMLib.Swap.Networth
 
 def SX.reversible
 (sx: SX) (bound: sx.outputbound): Prop :=

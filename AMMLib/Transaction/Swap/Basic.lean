@@ -4,6 +4,7 @@ import AMMLib.AMMSetNN
 import AMMLib.State
 import AMMLib.Supply
 import AMMLib.Networth
+import AMMLib.Transaction.Swap.Rate
 
 structure Swap
   (sx: SX) (s: Γ) (a: A) (t0 t1: T) (v0: ℝ+)

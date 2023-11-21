@@ -1,6 +1,6 @@
-import AMMLib.Swap.Rate
-import AMMLib.Swap.Additive
-import AMMLib.Swap.Reversible
+import AMMLib.Transaction.Swap.Rate
+import AMMLib.Transaction.Swap.Additive
+import AMMLib.Transaction.Swap.Reversible
 import HelpersLib.PReal.Sqrt
 import HelpersLib.PReal.Order
 

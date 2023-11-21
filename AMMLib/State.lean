@@ -2,11 +2,10 @@ import AMMLib.Tokens
 import AMMLib.AMMSet
 import AMMLib.Wallets.AtomicWallSet
 import AMMLib.Wallets.MintedWallSet
-import AMMLib.Swap.Rate
 
 -- Config does not change between states.
 -- This is where I would add φ.
--- The price oracle should be moved to 
+-- The price oracle should be moved to
 -- State to implement price updates.
 abbrev O := T → PReal
 

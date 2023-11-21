@@ -1,7 +1,7 @@
-import AMMLib.Swap.Basic
+import AMMLib.Transaction.Swap.Basic
 import AMMLib.AMMSetNN
-import AMMLib.Swap.Networth
-import AMMLib.Swap.Reversible
+import AMMLib.Transaction.Swap.Networth
+import AMMLib.Transaction.Swap.Reversible
 
 def SX.additive (sx: SX): Prop :=
 ∀ (x y r0 r1: ℝ+) (h: x*(sx x r0 r1) < r1),
@@ -223,4 +223,3 @@ theorem Swap.apply_same_val
   (h: x₀ = x₁):
   sw0.apply = sw1.apply := by
     simp_rw [apply, y, rate, h]
-
