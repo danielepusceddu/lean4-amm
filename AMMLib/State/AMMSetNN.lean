@@ -1,4 +1,4 @@
-import AMMLib.AMMSet
+import AMMLib.State.AMMSet
 
 def Sₐ.r0₀ (amms: Sₐ) (t0 t1: T): NNReal := amms.f t0 t1
 
@@ -28,18 +28,18 @@ theorem Sₐ.r1_reorder₀
 
 @[simp] theorem Sₐ.r0_of_initialize₀
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+):
-  (amms.initialize hdif r0 r1).r0₀ t0 t1 = r0 := by 
+  (amms.initialize hdif r0 r1).r0₀ t0 t1 = r0 := by
   simp [Sₐ.r0₀, Sₐ.initialize, hdif]
 
 @[simp] theorem Sₐ.r1_of_initialize₀
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+):
-  (amms.initialize hdif r0 r1).r1₀ t0 t1 = r1 := by 
+  (amms.initialize hdif r0 r1).r1₀ t0 t1 = r1 := by
   simp [Sₐ.r1₀, Sₐ.initialize, hdif]
 
 @[simp] theorem Sₐ.r0_of_initialize_diffpair₀
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
   (t0' t1': T) (difp: diffmint t0 t1 t0' t1'):
-  (amms.initialize hdif r0 r1).r0₀ t0' t1' = amms.r0₀ t0' t1' := by 
+  (amms.initialize hdif r0 r1).r0₀ t0' t1' = amms.r0₀ t0' t1' := by
 
   rcases Decidable.em (t0'=t1') with eq|dif'
   . simp [eq]
@@ -59,7 +59,7 @@ theorem Sₐ.r1_reorder₀
 @[simp] theorem Sₐ.r1_of_initialize_diffpair₀
   (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
   (t0' t1': T) (difp: diffmint t0 t1 t0' t1'):
-  (amms.initialize hdif r0 r1).r1₀ t0' t1' = amms.r1₀ t0' t1' := by 
+  (amms.initialize hdif r0 r1).r1₀ t0' t1' = amms.r1₀ t0' t1' := by
   rw [r1_reorder₀ _ t0' t1']
   rw [r1_reorder₀ amms t0' t1']
   simp [(diffmint.iff_swap_inner_right t0 t1 t0' t1').mp difp]
@@ -91,14 +91,14 @@ theorem Sₐ.r1_reorder₀
 
 @[simp] theorem Sₐ.r0_of_add_r1_diff₀
   (amms: Sₐ) (t0 t1: T) (x: PReal)
-  (h: amms.init t0 t1) 
+  (h: amms.init t0 t1)
   (t0' t1': T)
   (hdiff: diffmint t0 t1 t0' t1')
   :
   (amms.add_r1 t0 t1 h x).r0₀ t0' t1'
   =
   amms.r0₀ t0' t1'
-  := by 
+  := by
   simp [add_r1, hdiff]
 
 @[simp] theorem Sₐ.r1_of_add_r1₀
@@ -160,7 +160,7 @@ theorem Sₐ.r1_reorder₀
 
 @[simp] theorem Sₐ.r1_of_add_r0_diff₀
   (amms: Sₐ) (t0 t1: T) (x: PReal)
-  (h: amms.init t0 t1) 
+  (h: amms.init t0 t1)
   (t0' t1': T)(hdiff: diffmint t0 t1 t0' t1'):
   (amms.add_r0 t0 t1 h x).r1₀ t0' t1'
   =
@@ -259,17 +259,17 @@ theorem Sₐ.r1_reorder₀
   := by simp_rw [r1_reorder₀ _ _ _]
         simp
 
-theorem Sₐ.eq_iff (amms amms': Sₐ): 
+theorem Sₐ.eq_iff (amms amms': Sₐ):
   amms = amms' ↔ ∀ (t0 t1: T), amms.r0₀ t0 t1 = amms'.r0₀ t0 t1 := by
   apply Iff.intro
   . intro eq t0 t1
     simp_rw [eq]
   . intro extfun
-    rcases amms with ⟨f, h1, h2⟩ 
+    rcases amms with ⟨f, h1, h2⟩
     rcases amms' with ⟨f', h1', h2'⟩
     unfold r0₀ at extfun
     simp at extfun
-    simp 
+    simp
     ext t0 t1
     rw [NNReal.coe_eq]
     exact extfun t0 t1

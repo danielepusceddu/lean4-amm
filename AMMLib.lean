@@ -1,9 +1,13 @@
-import AMMLib.AMMSet
-import AMMLib.AMMSetNN
-import AMMLib.Networth
-import AMMLib.State
-import AMMLib.Supply
-import AMMLib.Tokens
+import AMMLib.State.AMMSet
+import AMMLib.State.AMMSetNN
+import AMMLib.State.AtomicWall
+import AMMLib.State.AtomicWallSet
+import AMMLib.State.MintedWall
+import AMMLib.State.MintedWallSet
+import AMMLib.State.Networth
+import AMMLib.State.State
+import AMMLib.State.Supply
+import AMMLib.State.Tokens
 import AMMLib.Transaction.Deposit
 import AMMLib.Transaction.Redeem
 import AMMLib.Transaction.Swap.Additive
@@ -13,7 +17,3 @@ import AMMLib.Transaction.Swap.Networth
 import AMMLib.Transaction.Swap.Rate
 import AMMLib.Transaction.Swap.Reversible
 import AMMLib.Transaction.Trace
-import AMMLib.Wallets.AtomicWall
-import AMMLib.Wallets.AtomicWallSet
-import AMMLib.Wallets.MintedWall
-import AMMLib.Wallets.MintedWallSet

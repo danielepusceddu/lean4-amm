@@ -1,6 +1,6 @@
-import AMMLib.AMMSet
-import AMMLib.State
-import AMMLib.Supply
+import AMMLib.State.AMMSet
+import AMMLib.State.State
+import AMMLib.State.Supply
 
 structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
   -- The AMM must have been initialized

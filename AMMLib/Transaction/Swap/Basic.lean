@@ -1,9 +1,9 @@
-import AMMLib.Tokens
-import AMMLib.AMMSet
-import AMMLib.AMMSetNN
-import AMMLib.State
-import AMMLib.Supply
-import AMMLib.Networth
+import AMMLib.State.Tokens
+import AMMLib.State.AMMSet
+import AMMLib.State.AMMSetNN
+import AMMLib.State.State
+import AMMLib.State.Supply
+import AMMLib.State.Networth
 import AMMLib.Transaction.Swap.Rate
 
 structure Swap

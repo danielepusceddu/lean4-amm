@@ -1,4 +1,4 @@
-import AMMLib.Wallets.MintedWall
+import AMMLib.State.MintedWall
 
 -- Set of minted token wallets
 structure S₁ where

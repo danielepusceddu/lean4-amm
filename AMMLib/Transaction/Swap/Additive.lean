@@ -1,5 +1,5 @@
 import AMMLib.Transaction.Swap.Basic
-import AMMLib.AMMSetNN
+import AMMLib.State.AMMSetNN
 import AMMLib.Transaction.Swap.Networth
 import AMMLib.Transaction.Swap.Reversible
 

@@ -1,7 +1,7 @@
 import HelpersLib.Finsupp2
-import AMMLib.Tokens
-import AMMLib.AMMSet
-import AMMLib.State
+import AMMLib.State.Tokens
+import AMMLib.State.AMMSet
+import AMMLib.State.State
 open BigOperators
 
 noncomputable def Sₐ.supply (amms: Sₐ) (t: T): NNReal := (amms.f t).sum λ _ x => x

@@ -1,7 +1,7 @@
-import AMMLib.Tokens
-import AMMLib.AMMSet
-import AMMLib.Wallets.AtomicWallSet
-import AMMLib.Wallets.MintedWallSet
+import AMMLib.State.Tokens
+import AMMLib.State.AMMSet
+import AMMLib.State.AtomicWallSet
+import AMMLib.State.MintedWallSet
 
 -- Config does not change between states.
 -- This is where I would add φ.

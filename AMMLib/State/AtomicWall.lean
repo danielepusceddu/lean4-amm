@@ -7,7 +7,7 @@ import HelpersLib.Prod
 import HelpersLib.PReal.Basic
 import HelpersLib.PReal.Subtraction
 import HelpersLib.Finsupp2
-import AMMLib.Tokens
+import AMMLib.State.Tokens
 import Mathlib.Tactic.LibrarySearch
 
 -- Atomic token wallet

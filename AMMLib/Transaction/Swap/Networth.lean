@@ -1,6 +1,6 @@
 import AMMLib.Transaction.Swap.Basic
 import AMMLib.Transaction.Swap.Rate
-import AMMLib.Networth
+import AMMLib.State.Networth
 import HelpersLib.PReal.Subtraction
 
 @[simp] theorem swap_price_mint_diff

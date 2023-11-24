@@ -1,7 +1,7 @@
 import AMMLib.Transaction.Deposit
 import AMMLib.Transaction.Redeem
 import AMMLib.Transaction.Swap.Basic
-import AMMLib.Networth
+import AMMLib.State.Networth
 
 /- Tx c init s is the type of all possible sequences
   of valid transactions that would result in s,

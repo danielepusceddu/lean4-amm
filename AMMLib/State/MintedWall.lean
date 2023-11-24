@@ -7,8 +7,8 @@ import HelpersLib.Prod
 import HelpersLib.PReal.Basic
 import HelpersLib.PReal.Subtraction
 import HelpersLib.Finsupp2
-import AMMLib.Tokens
-import AMMLib.Wallets.AtomicWall
+import AMMLib.State.Tokens
+import AMMLib.State.AtomicWall
 
 -- Minted token wallet
 structure W₁ where 

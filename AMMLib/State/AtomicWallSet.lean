@@ -1,4 +1,4 @@
-import AMMLib.Wallets.AtomicWall
+import AMMLib.State.AtomicWall
 
 structure S₀ where
   f: A →₀ W₀
