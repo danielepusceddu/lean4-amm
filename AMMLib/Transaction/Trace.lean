@@ -1,3 +1,4 @@
+import AMMLib.Transaction.Create
 import AMMLib.Transaction.Deposit
 import AMMLib.Transaction.Redeem
 import AMMLib.Transaction.Swap.Basic
@@ -10,9 +11,9 @@ inductive Tx (sx: SX) (init: Γ): Γ → Type where
   -- The empty sequence brings you to the initial state
   | empty: Tx sx init init
 
-  -- Sequence with a valid Deposit0 at the end
-  | dep0 (s': Γ) (rs: Tx sx init s')
-         (d0: Deposit0 s' t0 t1 a r0 r1):
+  -- Sequence with a valid Create at the end
+  | create (s': Γ) (rs: Tx sx init s')
+         (d0: Create s' t0 t1 a r0 r1):
       Tx sx init d0.apply
 
   -- Sequence with a valid Deposit at the end
@@ -39,7 +40,7 @@ def reachable (sx: SX) (s: Γ): Prop :=
 def concat {sx: SX} {init s' s'': Γ}
 (t1: Tx sx init s') (t2: Tx sx s' s''): Tx sx init s'' := match t2 with
   | Tx.empty => t1
-  | Tx.dep0 ds rs d => Tx.dep0 ds (concat t1 rs) d
+  | Tx.create ds rs d => Tx.create ds (concat t1 rs) d
   | Tx.dep ds rs d => Tx.dep ds (concat t1 rs) d
   | Tx.red ds rs r => Tx.red ds (concat t1 rs) r
   | Tx.swap ds rs sw => Tx.swap ds (concat t1 rs) sw
@@ -50,12 +51,12 @@ m ∈ (Trace c s).Γ.amms.map.supp → supply m > 0
 
 by induction
 empty (base case): hypothesis is a contradiction
-dep0: trivial by cases on the deposited tokens:
+create: trivial by cases on the deposited tokens:
       if the pair is the same, then the supply is positive.
       if the pair isn't the same, the supply is the same as
       before and we can use IH.
 
-dep: same as dep0.
+dep: same as create.
 
 swap: use IH.
       swaps don't change minted token supplies
@@ -81,15 +82,15 @@ theorem AMMimpMintSupply (r: reachable sx s)
 
   -- Creation of AMM case: trivial by
   -- cases on the created tokens t0' t1'.
-  | @dep0 t0' t1' a r0 r1 sprev tail d ih =>
+  | @create t0' t1' a r0 r1 sprev tail d ih =>
     apply @Decidable.byCases (diffmint t0' t1' t0 t1)
 
     -- If their minted token is different, then by definition of
-    -- Deposit0, the minted supply remains unchanged.
+    -- Create, the minted supply remains unchanged.
     -- Then, use the induction hypothesis.
     . intro diff;
       simp [diff] at h
-      simp [Deposit0.apply, diff]
+      simp [Create.apply, diff]
       have re: reachable sx sprev := by
         exists init; exists tail
       exact ih re h
@@ -99,7 +100,7 @@ theorem AMMimpMintSupply (r: reachable sx s)
     . intro same
       rw [not_diffmint_iff_samemint _ _ _ _ d.hdif] at same
       rw [← S₁.supply_samepair _ _ _ _ _ same]
-      simp [Deposit0.apply]
+      simp [Create.apply]
       right
       exact r0.zero_lt_toNNReal
 
