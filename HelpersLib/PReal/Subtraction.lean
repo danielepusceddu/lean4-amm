@@ -1,6 +1,7 @@
 import HelpersLib.PReal.Basic
 
 namespace PReal
+open NNReal
 
 def sub (x y: ℝ+) (h: y < x): ℝ+ :=
   ⟨(x:ℝ)-(y:ℝ), by aesop⟩
@@ -9,7 +10,7 @@ def sub (x y: ℝ+) (h: y < x): ℝ+ :=
   (((x.sub y gt): ℝ+): ℝ) = (x: ℝ) - (y: ℝ) := by rfl
 
 @[simp] lemma sub_toNNReal (x y: ℝ+) (gt: y < x):
-  (((x.sub y gt): ℝ+): NNReal) = (x: NNReal) - (y: NNReal) := by
+  (((x.sub y gt): ℝ+): ℝ≥0) = (x: ℝ≥0) - (y: ℝ≥0) := by
   unfold sub
   simp [NNReal.sub_def]
 

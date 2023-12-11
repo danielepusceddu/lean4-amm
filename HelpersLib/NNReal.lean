@@ -1,23 +1,24 @@
 import Mathlib.Data.Real.NNReal
 import HelpersLib.PReal.Basic
+open NNReal
 
-lemma NNReal.neq_zero_imp_gt {x: NNReal} (h: x ≠ 0)
+lemma NNReal.neq_zero_imp_gt {x: ℝ≥0} (h: x ≠ 0)
 : 0 < x := Ne.lt_of_le' h x.property
 
-theorem NNReal.pos_imp_add_pos 
-(x y: NNReal) (h: x ≠ 0): x + y ≠ 0 := by
+theorem NNReal.pos_imp_add_pos
+(x y: ℝ≥0) (h: x ≠ 0): x + y ≠ 0 := by
 field_simp
 intro contra; contradiction
 
-def NNReal.toPReal (x: NNReal) (h: 0 < x): PReal :=
+def NNReal.toPReal (x: ℝ≥0) (h: 0 < x): PReal :=
   ⟨
     x, h
   ⟩
 
-def NNReal.toPReal' (x: NNReal) (h: x ≠ 0): PReal :=
+def NNReal.toPReal' (x: ℝ≥0) (h: x ≠ 0): PReal :=
   ⟨
     x, neq_zero_imp_gt h
   ⟩
 
-@[simp] theorem NNReal_toPReal_toNNReal_eq_self (x: NNReal) (h: 0 < x): 
+@[simp] theorem NNReal_toPReal_toNNReal_eq_self (x: ℝ≥0) (h: 0 < x):
   x.toPReal h = x := by rfl

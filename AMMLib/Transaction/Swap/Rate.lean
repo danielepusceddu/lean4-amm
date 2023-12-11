@@ -3,6 +3,9 @@ import HelpersLib.PReal.Order
 import HelpersLib.PReal.Subtraction
 
 abbrev SX := PReal → PReal → PReal → PReal
+/-
+abbrev SX := ℝ>0 → ℝ>0 → ℝ>0 → ℝ>0
+-/
 
 def SX.outputbound (sx: SX): Prop :=
   ∀ (x r0 r1: ℝ+),

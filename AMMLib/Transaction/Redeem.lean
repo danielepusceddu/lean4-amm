@@ -1,6 +1,7 @@
 import AMMLib.State.AMMSet
 import AMMLib.State.State
 import AMMLib.State.Supply
+open NNReal
 
 structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
   -- The AMM must have been initialized
@@ -10,10 +11,10 @@ structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
   hen0: v ≤ (s.mints.get a).get t0 t1
 
   -- The output must not drain the AMM's reserves
-  nodrain: v < ((s.mints.supply t0 t1).toPReal 
-                (S₁.get_pos_imp_supp_pos s.mints t0 t1 a 
+  nodrain: v < ((s.mints.supply t0 t1).toPReal
+                (S₁.get_pos_imp_supp_pos s.mints t0 t1 a
                 (by
-                calc 0 < (v: NNReal) := v.property
+                calc 0 < (v: ℝ≥0) := v.property
                     _ ≤ (s.mints.get a).get t0 t1 := hen0)
   ))
 
@@ -27,7 +28,7 @@ theorem Redeem.nodrain_toNNReal (d: Redeem s a t0 t1 v):
 
 noncomputable def Redeem.gain0 (d: Redeem s a t0 t1 v): PReal :=
   v * (s.amms.r0 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
-    calc 0 < (v: NNReal) := v.property
+    calc 0 < (v: ℝ≥0) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := d.hen0)
   ))
 
@@ -42,7 +43,7 @@ theorem Redeem.gain0_lt_r0 (r: Redeem s a t0 t1 v):
 
 noncomputable def Redeem.gain1 (d: Redeem s a t0 t1 v): PReal :=
   v * (s.amms.r1 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
-    calc 0 < (v: NNReal) := v.property
+    calc 0 < (v: ℝ≥0) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := d.hen0)
   ))
 
@@ -69,7 +70,7 @@ noncomputable def Redeem.apply (r: Redeem s a t0 t1 v): Γ :=
   ⟩
 
 @[simp] theorem Redeem.atoms (r: Redeem s a t0 t1 v):
-  r.apply.atoms = (s.atoms.add a t0 r.gain0).add a t1 r.gain1 
+  r.apply.atoms = (s.atoms.add a t0 r.gain0).add a t1 r.gain1
   := by simp [apply]
 
 @[simp] theorem Redeem.mints (r: Redeem s a t0 t1 v):

@@ -2,6 +2,7 @@ import AMMLib.Transaction.Swap.Basic
 import AMMLib.State.AMMSetNN
 import AMMLib.Transaction.Swap.Networth
 import AMMLib.Transaction.Swap.Reversible
+open NNReal
 
 def SX.additive (sx: SX): Prop :=
 ∀ (x y r0 r1: ℝ+) (h: x*(sx x r0 r1) < r1),
@@ -67,7 +68,7 @@ def Swap.bound_split1
        -- a has at least x₀+x₁ in balance of t0
        have h := sw.enough
        calc
-        (x₀: NNReal) ≤ x₀+x₁ := by simp
+        (x₀: ℝ≥0) ≤ x₀+x₁ := by simp
          _           ≤ s.atoms.get a t0 := by simp at h; exact h,
     sw.exi,
     bound _ _ _

@@ -1,6 +1,7 @@
 import AMMLib.Transaction.Swap.Basic
 import AMMLib.Transaction.Swap.Networth
 import AMMLib.State.AMMSetNN
+open NNReal
 
 def SX.reversible
 (sx: SX) (bound: sx.outputbound): Prop :=
@@ -87,7 +88,7 @@ theorem Swap.inv_apply_eq_amms
     . simp [← a, ← b, sw.exi, sw.exi.swap, s.amms.r0_reorder₀ t1 t0]
       rw [← add_tsub_assoc_of_le (le_of_lt sw.y_lt_r1₀)]
       rw [add_comm]
-      rw [add_tsub_assoc_of_le (le_refl (sw.y: NNReal))]
+      rw [add_tsub_assoc_of_le (le_refl (sw.y: ℝ≥0))]
       simp
 
 @[simp] theorem Swap.inv_apply

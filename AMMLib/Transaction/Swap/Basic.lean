@@ -40,11 +40,11 @@ theorem Swap.y_lt_r1₀ (sw: Swap sx s a t0 t1 v0):
     exact sw.nodrain
 
 noncomputable def Swap.apply (sw: Swap sx s a t0 t1 v0): Γ :=
-⟨
-  (s.atoms.sub a t0 v0 sw.enough).add a t1 sw.y,
-  s.mints,
-  (s.amms.sub_r1 t0 t1 sw.exi sw.y sw.nodrain).add_r0 t0 t1 (by simp[sw.exi]) v0
-⟩
+  ⟨
+    (s.atoms.sub a t0 v0 sw.enough).add a t1 sw.y,
+    s.mints,
+    (s.amms.sub_r1 t0 t1 sw.exi sw.y sw.nodrain).add_r0 t0 t1 (by simp[sw.exi]) v0
+  ⟩
 
 def Swap.is_solution (sw: Swap sx s a t0 t1 x₀) (o: O): Prop :=
   ∀ (x: ℝ+) (sw2: Swap sx s a t0 t1 x),

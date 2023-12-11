@@ -1,8 +1,9 @@
 import AMMLib.State.AMMSet
+open NNReal
 
-def Sₐ.r0₀ (amms: Sₐ) (t0 t1: T): NNReal := amms.f t0 t1
+def Sₐ.r0₀ (amms: Sₐ) (t0 t1: T): ℝ≥0 := amms.f t0 t1
 
-def Sₐ.r1₀ (amms: Sₐ) (t0 t1: T): NNReal := amms.f t1 t0
+def Sₐ.r1₀ (amms: Sₐ) (t0 t1: T): ℝ≥0 := amms.f t1 t0
 
 @[simp] theorem Sₐ.r0_same₀ (amms: Sₐ) (t: T):
   amms.r0₀ t t = 0 := by simp [r0₀, amms.h2]

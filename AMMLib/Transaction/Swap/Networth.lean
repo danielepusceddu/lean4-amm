@@ -2,6 +2,7 @@ import AMMLib.Transaction.Swap.Basic
 import AMMLib.Transaction.Swap.Rate
 import AMMLib.State.Networth
 import HelpersLib.PReal.Subtraction
+open NNReal
 
 @[simp] theorem swap_price_mint_diff
 (sw: Swap sx s a t0 t1 v0) (o: O)
@@ -70,7 +71,7 @@ theorem Swap.self_gain_eq (sw: Swap sx s a t0 t1 x) (o: O) :
   rw [W₁.worth_destruct _ (sw.apply.T₁Price o) t0 t1 _]
   rw [W₁.worth_destruct _ (s.T₁Price o) t0 t1 _]
 
-  have h': (sw.y: NNReal) ≤ ((s.amms.r1 t0 t1 sw.exi): NNReal) := by
+  have h': (sw.y: ℝ≥0) ≤ ((s.amms.r1 t0 t1 sw.exi): ℝ≥0) := by
     rw [PReal.toNNReal_le_toNNReal_iff]
     simp [Swap.y, Swap.rate, le_of_lt sw.nodrain]
 

@@ -27,11 +27,23 @@ noncomputable def Create.apply
   s.amms.initialize v.hdif v0 v1
   ⟩
 
+@[simp] theorem Create.supply_minted_diff'
+{s: Γ} (v: Create s t0 t1 a r0 r1)
+(t0' t1': T) (hdifp: diffmint t0 t1 t0' t1'):
+v.apply.mints.supply t0' t1' = s.mints.supply t0' t1' := by
+  simp [apply, Γ.mintsupply, hdifp]
+
 @[simp] theorem Create.supply_minted_diff
 {s: Γ} (v: Create s t0 t1 a r0 r1)
 (t0' t1': T) (hdifp: diffmint t0 t1 t0' t1'):
 v.apply.mintsupply t0' t1' = s.mintsupply t0' t1' := by
   simp [apply, Γ.mintsupply, hdifp]
+
+@[simp] theorem Create.init_same (v: Create s t0 t1 a r0 r1) (t0' t1': T) (same: samemint t0 t1 t0' t1'): v.apply.amms.init t0' t1' := by
+  rcases same with ⟨a,b⟩|⟨a,b⟩
+  . simp [← a, ← b, apply]
+  . apply Sₐ.init.swap
+    simp [← a, ← b, apply]
 
 @[simp] theorem Create.init_diff_iff
   {s: Γ} (v: Create s t0 t1 a r0 r1) (t0' t1': T) (hdifp: diffmint t0 t1 t0' t1'):
