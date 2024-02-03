@@ -5,7 +5,7 @@ open NNReal
 
 def SX.reversible
 (sx: SX) (bound: sx.outputbound): Prop :=
-  ∀ (x r0 r1: ℝ+),
+  ∀ (x r0 r1: ℝ>0),
     sx (x*(sx x r0 r1))
        (r1.sub (x*(sx x r0 r1)) (bound x r0 r1))
        (x + r0)
@@ -103,7 +103,7 @@ theorem Swap.inv_apply_eq_amms
 
 theorem Swap.rev_gain
   (sw: Swap sx s a t0 t1 x) (hrev: SX.reversible sx hbound)
-  (o: T → ℝ+):
+  (o: T → ℝ>0):
   - a.gain o sw.apply (sw.inv hrev).apply = a.gain o s sw.apply := by
     rw [Swap.self_gain_eq, Swap.self_gain_eq]
     simp only [inv_y_eq_x, mints, (s.mints.get a).get_reorder t1 t0,

@@ -120,7 +120,7 @@ theorem Swap.swaprate_vs_exchrate_gt
 
 def Swap.swappedtoks
 (sw: Swap sx s a t0 t1 v0)
-{x: ℝ+} (henough: x ≤ s.atoms.get a t1)
+{x: ℝ>0} (henough: x ≤ s.atoms.get a t1)
 (nodrain: x*(sx x (s.amms.r0 t1 t0 sw.exi.swap) (s.amms.r1 t1 t0 sw.exi.swap)) < (s.amms.r1 t1 t0 sw.exi.swap)): Swap sx s a t1 t0 x :=
 ⟨
   henough,

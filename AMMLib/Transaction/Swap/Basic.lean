@@ -7,7 +7,7 @@ import AMMLib.State.Networth
 import AMMLib.Transaction.Swap.Rate
 
 structure Swap
-  (sx: SX) (s: Γ) (a: A) (t0 t1: T) (v0: ℝ+)
+  (sx: SX) (s: Γ) (a: A) (t0 t1: T) (v0: ℝ>0)
   where
   enough: v0 ≤ s.atoms.get a t0
   exi: s.amms.init t0 t1
@@ -22,10 +22,10 @@ theorem Swap.singleton
     cases sw1
     rfl
 
-def Swap.rate (sw: Swap sx s a t0 t1 v0): ℝ+
+def Swap.rate (sw: Swap sx s a t0 t1 v0): ℝ>0
   := sx v0 (s.amms.r0 t0 t1 sw.exi) (s.amms.r1 t0 t1 sw.exi)
 
-def Swap.y (sw: Swap sx s a t0 t1 v0): ℝ+
+def Swap.y (sw: Swap sx s a t0 t1 v0): ℝ>0
   := v0*sw.rate
 
 theorem Swap.y_eq (s: Swap sx s a t0 t1 x):
@@ -47,7 +47,7 @@ noncomputable def Swap.apply (sw: Swap sx s a t0 t1 v0): Γ :=
   ⟩
 
 def Swap.is_solution (sw: Swap sx s a t0 t1 x₀) (o: O): Prop :=
-  ∀ (x: ℝ+) (sw2: Swap sx s a t0 t1 x),
+  ∀ (x: ℝ>0) (sw2: Swap sx s a t0 t1 x),
   x ≠ x₀ → (s.mints.get a).get t0 t1 = 0 → a.gain o s sw2.apply <  a.gain o s sw.apply
 
 @[simp] theorem Swap.atoms (sw: Swap sx s a t0 t1 v0):

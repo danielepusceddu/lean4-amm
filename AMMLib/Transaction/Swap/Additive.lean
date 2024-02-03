@@ -5,7 +5,7 @@ import AMMLib.Transaction.Swap.Reversible
 open NNReal
 
 def SX.additive (sx: SX): Prop :=
-∀ (x y r0 r1: ℝ+) (h: x*(sx x r0 r1) < r1),
+∀ (x y r0 r1: ℝ>0) (h: x*(sx x r0 r1) < r1),
   sx (x+y) r0 r1
   =
   (x*(sx x r0 r1) + y*(sx y (r0+x) (r1.sub (x*(sx x r0 r1)) h))) / (x + y)
@@ -193,7 +193,7 @@ theorem Swap.additive_gain
   (sw1: Swap sx sw0.apply a t0 t1 x₁)
   (sw2: Swap sx s a t0 t1 (x₀+x₁))
   (addi: SX.additive sx)
-  (o: T → ℝ+):
+  (o: T → ℝ>0):
   a.gain o s sw2.apply = a.gain o s sw0.apply + a.gain o sw0.apply sw1.apply := by
 
   have sw2y_toreal: ((x₀:ℝ)+x₁)*sw2.rate = sw2.y := by

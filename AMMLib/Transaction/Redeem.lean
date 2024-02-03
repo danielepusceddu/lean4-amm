@@ -3,7 +3,7 @@ import AMMLib.State.State
 import AMMLib.State.Supply
 open NNReal
 
-structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ+) where
+structure Redeem (s: Γ) (a: A) (t0 t1: T) (v: ℝ>0) where
   -- The AMM must have been initialized
   exi: s.amms.init t0 t1
 

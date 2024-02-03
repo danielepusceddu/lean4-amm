@@ -2,7 +2,7 @@ import AMMLib.State.AMMSet
 import AMMLib.State.State
 import AMMLib.State.Supply
 
-structure Create (s: Γ) (t0 t1: T) (a: A) (v0 v1: ℝ+) where
+structure Create (s: Γ) (t0 t1: T) (a: A) (v0 v1: ℝ>0) where
   -- Tokens must be different to form a valid minted token
   hdif: t0 ≠ t1
 

@@ -8,7 +8,7 @@ Deposit gain v = v0 * (mintedsupp)/r0
 v0 = v * rx0 = v0 * mintedsupp/r0 * r0/mintedsupp = v0 ok
 v1 = v * rx1 = v0 * mintedsupp/r0 * r1/mintedsupp = v0*r1/r0
 -/
-structure Deposit (s: Γ) (a: A) (t0 t1: T) (v0: ℝ+) where
+structure Deposit (s: Γ) (a: A) (t0 t1: T) (v0: ℝ>0) where
   -- {r0:t0, r1:t1} exists in state s
   exi: s.amms.init t0 t1
 

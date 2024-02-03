@@ -28,17 +28,17 @@ theorem Sₐ.r1_reorder₀
   simp [r0₀, r1₀]
 
 @[simp] theorem Sₐ.r0_of_initialize₀
-  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+):
+  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ>0):
   (amms.initialize hdif r0 r1).r0₀ t0 t1 = r0 := by
   simp [Sₐ.r0₀, Sₐ.initialize, hdif]
 
 @[simp] theorem Sₐ.r1_of_initialize₀
-  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+):
+  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ>0):
   (amms.initialize hdif r0 r1).r1₀ t0 t1 = r1 := by
   simp [Sₐ.r1₀, Sₐ.initialize, hdif]
 
 @[simp] theorem Sₐ.r0_of_initialize_diffpair₀
-  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
+  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ>0)
   (t0' t1': T) (difp: diffmint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).r0₀ t0' t1' = amms.r0₀ t0' t1' := by
 
@@ -58,7 +58,7 @@ theorem Sₐ.r1_reorder₀
         . simp [Sₐ.r0₀, Sₐ.initialize, a.symm, c, hdif', d]
 
 @[simp] theorem Sₐ.r1_of_initialize_diffpair₀
-  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ+)
+  (amms: Sₐ) {t0 t1: T} (hdif: t0 ≠ t1) (r0 r1: ℝ>0)
   (t0' t1': T) (difp: diffmint t0 t1 t0' t1'):
   (amms.initialize hdif r0 r1).r1₀ t0' t1' = amms.r1₀ t0' t1' := by
   rw [r1_reorder₀ _ t0' t1']
@@ -103,7 +103,7 @@ theorem Sₐ.r1_reorder₀
   simp [add_r1, hdiff]
 
 @[simp] theorem Sₐ.r1_of_add_r1₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0):
   (amms.add_r1 t0 t1 h x).r1₀ t0 t1
   =
   x + amms.r1₀ t0 t1
@@ -119,14 +119,14 @@ theorem Sₐ.r1_reorder₀
   := by simp [add_r1, hdiff]
 
 @[simp] theorem Sₐ.r1_of_add_r0₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0):
   (amms.add_r0 t0 t1 h x).r1₀ t0 t1
   =
   amms.r1₀ t0 t1
   := by simp [add_r0]
 
 @[simp] theorem Sₐ.r1_of_add_r0_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0):
   (amms.add_r0 t1 t0 h.swap x).r1₀ t0 t1
   =
   x + amms.r1₀ t0 t1
@@ -134,7 +134,7 @@ theorem Sₐ.r1_reorder₀
         simp
 
 @[simp] theorem Sₐ.r1_of_add_r1_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0):
   (amms.add_r1 t1 t0 h.swap x).r1₀ t0 t1
   =
   amms.r1₀ t0 t1
@@ -142,7 +142,7 @@ theorem Sₐ.r1_reorder₀
         simp
 
 @[simp] theorem Sₐ.r0_of_add_r1_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0):
   (amms.add_r1 t1 t0 h.swap x).r0₀ t0 t1
   =
   x + amms.r0₀ t0 t1
@@ -150,7 +150,7 @@ theorem Sₐ.r1_reorder₀
         simp
 
 @[simp] theorem Sₐ.r0_of_add_r0_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0):
   (amms.add_r0 t1 t0 h.swap x).r0₀ t0 t1
   =
   amms.r0₀ t0 t1
@@ -169,42 +169,42 @@ theorem Sₐ.r1_reorder₀
   := by simp [add_r0, hdiff]
 
 @[simp] theorem Sₐ.r0_of_sub_r0₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t0 t1 h):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r0 t0 t1 h):
   (amms.sub_r0 t0 t1 h x h').r0₀ t0 t1
   =
   amms.r0₀ t0 t1 - x
   := by simp [sub_r0]
 
 @[simp] theorem Sₐ.r0_of_sub_r1₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t0 t1 h):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r1 t0 t1 h):
   (amms.sub_r1 t0 t1 h x h').r0₀ t0 t1
   =
   amms.r0₀ t0 t1
   := by simp [sub_r1]
 
 @[simp] theorem Sₐ.r1_of_sub_r1₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t0 t1 h):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r1 t0 t1 h):
   (amms.sub_r1 t0 t1 h x h').r1₀ t0 t1
   =
   amms.r1₀ t0 t1 - x
   := by simp [sub_r1]
 
 @[simp] theorem Sₐ.r1_of_sub_r0₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t0 t1 h):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r0 t0 t1 h):
   (amms.sub_r0 t0 t1 h x h').r1₀ t0 t1
   =
   amms.r1₀ t0 t1
   := by simp [sub_r0]
 
 @[simp] theorem Sₐ.r0_of_sub_r0_diff₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t0 t1 h) (t0' t1': T) (hdiff: diffmint t0 t1 t0' t1'):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r0 t0 t1 h) (t0' t1': T) (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r0 t0 t1 h x h').r0₀ t0' t1'
   =
   amms.r0₀ t0' t1'
   := by simp [sub_r0, hdiff]
 
 @[simp] theorem Sₐ.r0_of_sub_r1_diff₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t0 t1 h)
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r1 t0 t1 h)
   (t0' t1': T)
   (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r1 t0 t1 h x h').r0₀ t0' t1'
@@ -213,7 +213,7 @@ theorem Sₐ.r1_reorder₀
   := by simp [sub_r1, hdiff]
 
 @[simp] theorem Sₐ.r1_of_sub_r1_diff₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t0 t1 h) (t0' t1': T)
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r1 t0 t1 h) (t0' t1': T)
   (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r1 t0 t1 h x h').r1₀ t0' t1'
   =
@@ -221,7 +221,7 @@ theorem Sₐ.r1_reorder₀
   := by simp [sub_r1, hdiff]
 
 @[simp] theorem Sₐ.r1_of_sub_r0_diff₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t0 t1 h) (t0' t1': T)
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r0 t0 t1 h) (t0' t1': T)
   (hdiff: diffmint t0 t1 t0' t1'):
   (amms.sub_r0 t0 t1 h x h').r1₀ t0' t1'
   =
@@ -229,7 +229,7 @@ theorem Sₐ.r1_reorder₀
   := by simp [sub_r0, hdiff]
 
 @[simp] theorem Sₐ.r0_of_sub_r0_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t1 t0 h.swap):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r0 t1 t0 h.swap):
   (amms.sub_r0 t1 t0 h.swap x h').r0₀ t0 t1
   =
   amms.r0₀ t0 t1
@@ -237,7 +237,7 @@ theorem Sₐ.r1_reorder₀
         simp
 
 @[simp] theorem Sₐ.r0_of_sub_r1_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t1 t0 h.swap):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r1 t1 t0 h.swap):
   (amms.sub_r1 t1 t0 h.swap x h').r0₀ t0 t1
   =
   amms.r0₀ t0 t1 - x
@@ -245,7 +245,7 @@ theorem Sₐ.r1_reorder₀
         simp
 
 @[simp] theorem Sₐ.r1_of_sub_r1_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r1 t1 t0 h.swap):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r1 t1 t0 h.swap):
   (amms.sub_r1 t1 t0 h.swap x h').r1₀ t0 t1
   =
   amms.r1₀ t0 t1
@@ -253,7 +253,7 @@ theorem Sₐ.r1_reorder₀
         simp
 
 @[simp] theorem Sₐ.r1_of_sub_r0_swapped₀
-  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ+) (h': x < amms.r0 t1 t0 h.swap):
+  (amms: Sₐ) (t0 t1: T) (h: amms.init t0 t1) (x: ℝ>0) (h': x < amms.r0 t1 t0 h.swap):
   (amms.sub_r0 t1 t0 h.swap x h').r1₀ t0 t1
   =
   amms.r1₀ t0 t1 - x

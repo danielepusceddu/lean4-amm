@@ -5,7 +5,7 @@ import HelpersLib.PReal.Sqrt
 import HelpersLib.PReal.Order
 
 noncomputable def SX.constprod: SX :=
-  λ (x r0 r1: ℝ+) => r1/(r0 + x)
+  λ (x r0 r1: ℝ>0) => r1/(r0 + x)
 
 def SX.constprod.outputbound: SX.outputbound SX.constprod := by
   unfold SX.outputbound
@@ -121,9 +121,9 @@ GOAL
 r0 / (r1 + y) < p1 / p0                 by transitivity
 -/
 theorem SX.constprod.lemma61
-  (x r0 r1 p0 p1: ℝ+)
+  (x r0 r1 p0 p1: ℝ>0)
   (h: p0/p1 ≤ constprod x r0 r1):
-  ∀ (y: ℝ+), constprod y r1 r0 < p1/p0 := by
+  ∀ (y: ℝ>0), constprod y r1 r0 < p1/p0 := by
   intro y
   unfold constprod at h ⊢
 
