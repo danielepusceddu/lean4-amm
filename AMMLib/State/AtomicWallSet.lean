@@ -17,7 +17,7 @@ theorem S₀.ext {s1 s2: S₀} (h: ∀ a, s1.get a = s2.get a): s1 = s2 := by
     ext a: 1
     exact h a
 
-@[simp] theorem S₀.f_eq_get (s: S₀): s.f = s.get := by simp [get]
+@[simp] theorem S₀.f_eq_get (s: S₀): s.f = s.get := by ext; simp [get]
 
 noncomputable def S₀.add (s: S₀) (a: A) (t: T) (x: ℝ≥0): S₀ :=
   ⟨s.f.update a ((s.f a).add t x)⟩

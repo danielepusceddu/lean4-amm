@@ -181,7 +181,7 @@ def Swap.bound_split2
   rw [Γ.eq_iff]
   rw [Swap.join_additive_amms _ _ addi]
   rw [Swap.join_additive_atoms _ _ addi]
-  simp_rw [Swap.mints]
+  simp [Swap.mints]
 
 /- Lemma 5.7
    Here we do not take outputbound as parameter, because in the original

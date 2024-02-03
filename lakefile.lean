@@ -6,7 +6,7 @@ package «lean4-amm» {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.5.0"
 
 lean_lib HelpersLib {
   -- add any library configuration options here

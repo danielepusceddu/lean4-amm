@@ -54,7 +54,10 @@ theorem SX.constprod.strictmono:
       <;> simp [c, h', Right.mul_lt_mul]
     )
   else
-    simp [h, div_le_div_iff', mul_le_mul', c, h']
+    simp only [h, div_le_iff_le_mul, ite_false, ge_iff_le]
+    refine mul_inv_le_iff_le_mul.mp ?_
+    rw [← div_eq_mul_inv, div_le_div_iff']
+    exact mul_le_mul' c h'
 
 theorem SX.constprod.additive: SX.additive SX.constprod := by
   unfold additive

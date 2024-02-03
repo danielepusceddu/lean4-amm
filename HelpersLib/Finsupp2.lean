@@ -5,7 +5,7 @@ import HelpersLib.Prod
 
 -- If g gives you zero for an element,
 -- then erasing it from the finsupp has no effect on the sum
-theorem Finsupp.sum_zero' {α β γ: Type} [Zero β] [AddCommMonoid γ] [DecidableEq α] 
+theorem Finsupp.sum_zero' {α β γ: Type} [Zero β] [AddCommMonoid γ] [DecidableEq α]
   (f: α →₀ β) (g: α → β → γ) (x: α) (h: g x (f x) = 0):
   f.sum g = (Finsupp.erase x f).sum g := by
 
@@ -14,14 +14,6 @@ theorem Finsupp.sum_zero' {α β γ: Type} [Zero β] [AddCommMonoid γ] [Decidab
     rw [h, zero_add]
   . rw [Finsupp.erase_of_not_mem_support outsupp]
 
-theorem Finsupp.update_comm {α β: Type} [DecidableEq α] [Zero β]
-(f: α →₀ β) (a a': α) (b b': β) (hdif: a ≠ a'):
-(f.update a b).update a' b' = (f.update a' b').update a b :=
-by
-  ext
-  simp
-  rw [Function.update_comm hdif b b' f]
-  
 
 theorem Finsupp.update_diff {α β: Type} [DecidableEq α] [Zero β]
 (f: α →₀ β) (a': α) (b: β) (a: α) (hdif: a ≠ a'):
@@ -35,16 +27,16 @@ noncomputable def Finsupp.up {α β γ: Type} [Zero γ]
 
 theorem Finsupp.up_eq {α β γ: Type} [AddZeroClass γ]
 (f: α →₀ β →₀ γ) (a: α) (b: β) (c: γ)
-: f.up a b c = 
+: f.up a b c =
 (Finsupp.erase a f) + (Finsupp.single a ((f a).update b c))
  := by unfold up
        rw [Finsupp.update_eq_erase_add_single]
 
 /- New map as an ite with new value and old map -/
-theorem Finsupp.up_apply  
+theorem Finsupp.up_apply
 {α β γ: Type} [Zero γ] [DecidableEq α] [DecidableEq β]
 (f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ) (a: α) (b: β)
-: f.up a' b' c a b = if a=a' ∧ b=b' then c else f a b := by 
+: f.up a' b' c a b = if a=a' ∧ b=b' then c else f a b := by
   unfold up
   simp only [Finsupp.coe_update]
   simp only [Function.update_apply]
@@ -54,19 +46,19 @@ theorem Finsupp.up_apply
 
 /- New map equal to old map when key 1 is different -/
 @[simp] theorem Finsupp.up_diff {α β γ: Type} [DecidableEq α] [Zero γ]
-(f: α →₀ β →₀ γ) (a': α) (b: β) (c: γ) 
+(f: α →₀ β →₀ γ) (a': α) (b: β) (c: γ)
 (a: α) (hdif: a ≠ a')
-: (f.up a' b c) a = f a := by 
+: (f.up a' b c) a = f a := by
   unfold up; simp [Finsupp.update_diff _ _ _ _ hdif]
 
 /- New map equal to old map when key 2 is different -/
-@[simp] theorem Finsupp.up_diff2 
+@[simp] theorem Finsupp.up_diff2
 {α β γ: Type} [DecidableEq α] [DecidableEq β] [Zero γ]
-(f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ) 
+(f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ)
 (a: α) (b: β) (hdif: b ≠ b')
-: (f.up a' b' c) a b = f a b := by 
+: (f.up a' b' c) a b = f a b := by
   unfold up;
-  apply @Decidable.byCases (a=a') 
+  apply @Decidable.byCases (a=a')
   . intro aeq; simp [aeq]
     simp [update_diff, hdif]
   . intro aneq; simp [update_diff, aneq]
@@ -74,21 +66,21 @@ theorem Finsupp.up_apply
 /- New map when using the keys that were just updated -/
 @[simp] theorem Finsupp.up_self
 {α β γ: Type} [DecidableEq α] [DecidableEq β] [Zero γ]
-(f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ) 
+(f: α →₀ β →₀ γ) (a': α) (b': β) (c: γ)
 : (f.up a' b' c) a' b' = c := by
   unfold up
   simp
 
 /- The finsupp same as f except the input pair is swapped -/
-def Finsupp.uncurried_swap {α β M: Type} [e: AddCommMonoid M] 
-  (f: α × β →₀ M): β × α →₀ M := 
+def Finsupp.uncurried_swap {α β M: Type} [e: AddCommMonoid M]
+  (f: α × β →₀ M): β × α →₀ M :=
   ⟨
   -- The domain
   f.support.map Prod.swap_emb,
   -- The function's definition
-   λ ((b,a): β×α) => f (Prod.swap_emb (b,a)), 
+   λ ((b,a): β×α) => f (Prod.swap_emb (b,a)),
   -- The proof that x ∈ domain ↔ f x ≠ 0
-  by 
+  by
   intro x
   apply Iff.intro
   . intro xin
@@ -107,37 +99,37 @@ def Finsupp.uncurried_swap {α β M: Type} [e: AddCommMonoid M]
     exact (Finset.mem_map' _).mpr h
   ⟩
 
-theorem Finsupp.uncurried_swap_def {α β M: Type} [e: AddCommMonoid M] 
-  (f: α × β →₀ M) (x: α × β): 
+theorem Finsupp.uncurried_swap_def {α β M: Type} [e: AddCommMonoid M]
+  (f: α × β →₀ M) (x: α × β):
   f.uncurried_swap x.swap = f x := by
   simp [uncurried_swap, Prod.swap_emb]
 
-theorem Finsupp.uncurried_swap_def' {α β M: Type} [e: AddCommMonoid M] 
-  (f: α × β →₀ M) (x: β × α): 
+theorem Finsupp.uncurried_swap_def' {α β M: Type} [e: AddCommMonoid M]
+  (f: α × β →₀ M) (x: β × α):
   f.uncurried_swap x = f x.swap := by
   simp [uncurried_swap, Prod.swap_emb]
 
-noncomputable def Finsupp.curried_swap {α β M: Type} [AddCommMonoid M] 
-  (f: α →₀ β →₀ M): β →₀ α →₀ M := 
+noncomputable def Finsupp.curried_swap {α β M: Type} [AddCommMonoid M]
+  (f: α →₀ β →₀ M): β →₀ α →₀ M :=
     f.uncurry.uncurried_swap.curry
-  
+
 -- Copied from finsuppProdEquiv.left_inv
 -- I couldn't figure out how to reuse it
-theorem Finsupp.uncurry_curry {α β M: Type} [e: AddCommMonoid M] 
+theorem Finsupp.uncurry_curry {α β M: Type} [e: AddCommMonoid M]
   (f: α →₀ β →₀ M):
   f.uncurry.curry = f := by
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
     sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
     forall₃_true_iff, Prod.mk.eta, (single_sum _ _ _).symm, sum_single]
 
-theorem Finsupp.uncurry_apply {α β M: Type} [e: AddCommMonoid M] 
+theorem Finsupp.uncurry_apply {α β M: Type} [e: AddCommMonoid M]
   (f: α →₀ β →₀ M) (a: α) (b: β):
   f.uncurry (a,b) = f a b := by
   conv => rhs
           rw [← uncurry_curry f]
   rw [curry_apply]
 
-theorem Finsupp.curried_swap_def {α β M: Type} [e: AddCommMonoid M] 
+theorem Finsupp.curried_swap_def {α β M: Type} [e: AddCommMonoid M]
   (f: α →₀ β →₀ M) (a: α) (b: β):
   f.curried_swap b a = f a b := by
   unfold curried_swap
@@ -145,7 +137,7 @@ theorem Finsupp.curried_swap_def {α β M: Type} [e: AddCommMonoid M]
         Finsupp.uncurry_apply]
 
 
-theorem Finsupp.up_swap 
+theorem Finsupp.up_swap
 {α β M: Type} [DecidableEq α] [DecidableEq β] [AddCommMonoid M]
   (f: α →₀ β →₀ M) (a': α) (b': β) (m: M):
   (f.up a' b' m).curried_swap = f.curried_swap.up b' a' m := by
