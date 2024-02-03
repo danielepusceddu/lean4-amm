@@ -7,7 +7,7 @@ import AMMLib.State.MintedWallSet
 -- This is where I would add φ.
 -- The price oracle should be moved to
 -- State to implement price updates.
-abbrev O := T → PReal
+abbrev O := T → ℝ>0
 
 -- State
 structure Γ where

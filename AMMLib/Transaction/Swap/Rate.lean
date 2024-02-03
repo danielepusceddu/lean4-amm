@@ -2,7 +2,7 @@ import HelpersLib.PReal.Basic
 import HelpersLib.PReal.Order
 import HelpersLib.PReal.Subtraction
 
-abbrev SX := PReal → PReal → PReal → PReal
+abbrev SX := ℝ>0 → ℝ>0 → ℝ>0 → ℝ>0
 /-
 abbrev SX := ℝ>0 → ℝ>0 → ℝ>0 → ℝ>0
 -/

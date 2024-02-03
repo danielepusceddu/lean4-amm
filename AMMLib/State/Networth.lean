@@ -18,12 +18,12 @@ however, W₀.worth and W₁.worth will remain NNReals
 so is it worth it?
 -/
 
-noncomputable def Γ.T₁Price (s: Γ) (o: T → PReal) (t0 t1: T): ℝ≥0 :=
+noncomputable def Γ.T₁Price (s: Γ) (o: T → ℝ>0) (t0 t1: T): ℝ≥0 :=
   if h:s.amms.init t0 t1 then
   ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mints.supply t0 t1)
   else 0
 
-theorem Γ.T₁Price_reorder (s: Γ) (o: T → PReal) (t1 t0: T):
+theorem Γ.T₁Price_reorder (s: Γ) (o: T → ℝ>0) (t1 t0: T):
   s.T₁Price o t1 t0 = s.T₁Price o t0 t1 := by
   unfold Γ.T₁Price
   rcases Decidable.em (s.amms.init t0 t1) with init|uninit
@@ -33,8 +33,8 @@ theorem Γ.T₁Price_reorder (s: Γ) (o: T → PReal) (t1 t0: T):
   . have b := (Sₐ.init_swap_iff s.amms t0 t1).not
     simp [uninit, b.mp uninit]
 
-noncomputable def Γ.networth (s: Γ) (a: A) (o: T → PReal): ℝ≥0 :=
+noncomputable def Γ.networth (s: Γ) (a: A) (o: T → ℝ>0): ℝ≥0 :=
   (W₀.worth (s.atoms.get a) o) + (W₁.worth (s.mints.get a) (s.T₁Price o))
 
-noncomputable def A.gain (a: A) (o: T → PReal) (s s': Γ): ℝ :=
+noncomputable def A.gain (a: A) (o: T → ℝ>0) (s s': Γ): ℝ :=
   ((s'.networth a o): ℝ) - ((s.networth a o): ℝ)

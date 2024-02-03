@@ -19,13 +19,13 @@ structure Deposit (s: Γ) (a: A) (t0 t1: T) (v0: ℝ>0) where
   hen1: v0*(s.amms.r0 t0 t1 exi)/(s.mints.supply t0 t1) ≤ s.atoms.get a t1
 
 -- The deposited amount v1:t1
-noncomputable def Deposit.v1 (d: Deposit s a t0 t1 v0): PReal :=
+noncomputable def Deposit.v1 (d: Deposit s a t0 t1 v0): ℝ>0 :=
   v0*(s.amms.r0 t0 t1 d.exi)
   /
   ((s.mints.supply t0 t1).toPReal d.possupp)
 
 -- User's reward of minted tokens
-noncomputable def Deposit.v (d: Deposit s a t0 t1 v0): PReal :=
+noncomputable def Deposit.v (d: Deposit s a t0 t1 v0): ℝ>0 :=
   v0*((s.mints.supply t0 t1).toPReal d.possupp)
   /
   (s.amms.r0 t0 t1 d.exi)

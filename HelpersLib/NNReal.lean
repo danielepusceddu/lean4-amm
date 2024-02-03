@@ -10,12 +10,12 @@ theorem NNReal.pos_imp_add_pos
 field_simp
 intro contra; contradiction
 
-def NNReal.toPReal (x: ℝ≥0) (h: 0 < x): PReal :=
+def NNReal.toPReal (x: ℝ≥0) (h: 0 < x): ℝ>0 :=
   ⟨
     x, h
   ⟩
 
-def NNReal.toPReal' (x: ℝ≥0) (h: x ≠ 0): PReal :=
+def NNReal.toPReal' (x: ℝ≥0) (h: x ≠ 0): ℝ>0 :=
   ⟨
     x, neq_zero_imp_gt h
   ⟩

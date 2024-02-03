@@ -26,7 +26,7 @@ theorem Redeem.nodrain_toNNReal (d: Redeem s a t0 t1 v):
     exact nodrain
 
 
-noncomputable def Redeem.gain0 (d: Redeem s a t0 t1 v): PReal :=
+noncomputable def Redeem.gain0 (d: Redeem s a t0 t1 v): ℝ>0 :=
   v * (s.amms.r0 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
     calc 0 < (v: ℝ≥0) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := d.hen0)
@@ -41,7 +41,7 @@ theorem Redeem.gain0_lt_r0 (r: Redeem s a t0 t1 v):
   rw [mul_comm]
   simp [r.nodrain]
 
-noncomputable def Redeem.gain1 (d: Redeem s a t0 t1 v): PReal :=
+noncomputable def Redeem.gain1 (d: Redeem s a t0 t1 v): ℝ>0 :=
   v * (s.amms.r1 t0 t1 d.exi)/((s.mints.supply t0 t1).toPReal (S₁.get_pos_imp_supp_pos s.mints t0 t1 a (by
     calc 0 < (v: ℝ≥0) := v.property
          _ ≤ (s.mints.get a).get t0 t1 := d.hen0)

@@ -25,7 +25,7 @@ instance: DecidableEq T := fun t1 t2 => by
   rw [T.mk.injEq] -- t1 = t2 ↔ t1.n = t2.n
   infer_instance  -- -- naturals have decidable equality
 
-abbrev AtomicOracle  := T → PReal
+abbrev AtomicOracle  := T → ℝ>0
 
 def diffmint (t0 t1 t0' t1': T): Prop :=
   (t0 ≠ t0' ∧ t0 ≠ t1') ∨ (t1 ≠ t0' ∧ t1 ≠ t1')

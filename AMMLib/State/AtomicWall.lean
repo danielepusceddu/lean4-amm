@@ -103,7 +103,7 @@ theorem W₀.drain_comm (w: W₀) (t0 t1: T):
     simp [hdif, hdif.symm]
   . simp [(Ne.intro left).symm, (Ne.intro right).symm]
 
-noncomputable def W₀.worth (w: W₀) (o: T → PReal): ℝ≥0 :=
+noncomputable def W₀.worth (w: W₀) (o: T → ℝ>0): ℝ≥0 :=
   w.sum (λ t x => x*(o t))
 
 theorem Finsupp.update_zero_eq_erase {α β: Type} [DecidableEq α] [Zero β] (f: α →₀ β) (a: α):
@@ -113,7 +113,7 @@ theorem Finsupp.update_zero_eq_erase {α β: Type} [DecidableEq α] [Zero β] (f
   . rw [eq]; simp
   . simp [(Ne.intro neq).symm]
 
-theorem W₀.worth_destruct (w: W₀) (o: T → PReal) (t: T):
+theorem W₀.worth_destruct (w: W₀) (o: T → ℝ>0) (t: T):
   w.worth o = (w.drain t).worth o + (w t)*(o t) := by
   unfold worth
   unfold drain
