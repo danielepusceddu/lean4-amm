@@ -1,4 +1,4 @@
-import AMMLib.State.AMMSet
+import AMMLib.State.AMMs
 import AMMLib.State.State
 import AMMLib.State.Supply
 
@@ -42,7 +42,7 @@ v.apply.mintsupply t0' t1' = s.mintsupply t0' t1' := by
 @[simp] theorem Create.init_same (v: Create s t0 t1 a r0 r1) (t0' t1': T) (same: samemint t0 t1 t0' t1'): v.apply.amms.init t0' t1' := by
   rcases same with ⟨a,b⟩|⟨a,b⟩
   . simp [← a, ← b, apply]
-  . apply Sₐ.init.swap
+  . apply AMMs.init.swap
     simp [← a, ← b, apply]
 
 @[simp] theorem Create.init_diff_iff

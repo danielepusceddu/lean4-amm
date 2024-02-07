@@ -11,7 +11,7 @@ Wallets are split into two types.
 - [MintedWall.lean](AMMLib/State/MintedWall.lean) contains definitions for wallets of minted token types `W₁`. They are modeled as constrained finitely supported functions from pairs of `Token` to non-negative reals.
 Then, [AtomicWallSet.lean](AMMLib/State/AtomicWallSet.lean) and [MintedWallSet.lean](AMMLib/State/MintedWallSet.lean) define sets of atomic token wallets `S₀` and sets of minted token wallets `S₁` as finitely supported functions from `Account` to `W₀` and from `Account` to `W₁` respectively.
 ### Automated Market Makers
-We do not define a type for a singular AMM, instead we directly define sets of AMMs `Sₐ` in [AMMSet.lean](AMMLib/State/AMMSet.lean). Similarly to minted token type wallets, they are modeled as constrained finitely supported functions from pairs of `Token` to non-negative reals. The constraints on a set `f` of AMMs are:
+We do not define a type for a singular AMM, instead we directly define sets of AMMs `AMMs` in [AMMs.lean](AMMLib/State/AMMs.lean). Similarly to minted token type wallets, they are modeled as constrained finitely supported functions from pairs of `Token` to non-negative reals. The constraints on a set `f` of AMMs are:
 - `f t0 t1 ≠ 0 ↔ f t1 t0 ≠ 0`
 - `f t t = 0`
 The intuition is that `f t0 t1` and `f t1 t0` will be the amount of token `t0` and of token `t1` respectively in the liquidity pool of the `t0` - `t1` decentralized exchange.

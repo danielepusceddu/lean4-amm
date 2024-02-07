@@ -1,4 +1,4 @@
-import AMMLib.State.AMMSet
+import AMMLib.State.AMMs
 import AMMLib.State.State
 import AMMLib.State.Supply
 open NNReal

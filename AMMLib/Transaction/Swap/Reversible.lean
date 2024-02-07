@@ -1,6 +1,6 @@
 import AMMLib.Transaction.Swap.Basic
 import AMMLib.Transaction.Swap.Networth
-import AMMLib.State.AMMSetNN
+import AMMLib.State.AMMsNN
 open NNReal
 
 def SX.reversible
@@ -27,7 +27,7 @@ def Swap.inv (sw: Swap sx s a t0 t1 v0)
     -- Prove the reward won't drain the AMM
     by unfold SX.outputbound at hbound
        unfold SX.reversible at hrev
-       rw [Sₐ.r0_reorder _ t1 t0, Sₐ.r1_reorder _ t1 t0]
+       rw [AMMs.r0_reorder _ t1 t0, AMMs.r1_reorder _ t1 t0]
        simp [hrev, y, rate]
   ⟩
 
@@ -35,8 +35,8 @@ theorem Swap.rate_of_inv_eq_inv_rate (sw: Swap sx s a t0 t1 x)
   (hrev: SX.reversible sx hbound)
   : (sw.inv hrev).rate = sw.rate⁻¹ := by
   unfold rate
-  rw [Sₐ.r0_reorder _ t1 t0 _,
-      Sₐ.r1_reorder _ t1 t0 _]
+  rw [AMMs.r0_reorder _ t1 t0 _,
+      AMMs.r1_reorder _ t1 t0 _]
   unfold SX.reversible at hrev
   simp [y, rate, hrev]
 
@@ -45,8 +45,8 @@ theorem Swap.rate_of_inv_eq_inv_rate (sw: Swap sx s a t0 t1 x)
   : (sw.inv hrev).y = x := by
   unfold y
   unfold rate
-  rw [Sₐ.r0_reorder _ t1 t0 _,
-      Sₐ.r1_reorder _ t1 t0 _]
+  rw [AMMs.r0_reorder _ t1 t0 _,
+      AMMs.r1_reorder _ t1 t0 _]
   rw [mul_assoc]
   unfold SX.reversible at hrev
   simp [y, rate, hrev]
@@ -73,7 +73,7 @@ theorem Swap.inv_apply_eq_amms
   (sw.inv hrev).apply.amms = s.amms := by
 
   -- Apply extensionality lemma
-  rw [Sₐ.eq_iff]
+  rw [AMMs.eq_iff]
   intro t0' t1'
 
   -- Check if the minted token is different

@@ -1,6 +1,6 @@
 import AMMLib.State.Tokens
-import AMMLib.State.AMMSet
-import AMMLib.State.AMMSetNN
+import AMMLib.State.AMMs
+import AMMLib.State.AMMsNN
 import AMMLib.State.State
 import AMMLib.State.Supply
 import AMMLib.State.Networth
@@ -36,7 +36,7 @@ theorem Swap.y_lt_r1 (sw: Swap sx s a t0 t1 v0):
 
 theorem Swap.y_lt_r1₀ (sw: Swap sx s a t0 t1 v0):
   sw.y < s.amms.r1₀ t0 t1 := by
-    rw [← Sₐ.r1_toNNReal _ _ _ sw.exi]
+    rw [← AMMs.r1_toNNReal _ _ _ sw.exi]
     exact sw.nodrain
 
 noncomputable def Swap.apply (sw: Swap sx s a t0 t1 v0): Γ :=

@@ -1,5 +1,5 @@
-import AMMLib.State.AMMSet
-import AMMLib.State.AMMSetNN
+import AMMLib.State.AMMs
+import AMMLib.State.AMMsNN
 import AMMLib.State.AtomicWall
 import AMMLib.State.AtomicWallSet
 import AMMLib.State.MintedWall

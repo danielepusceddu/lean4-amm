@@ -178,8 +178,8 @@ theorem SX.constprod.lemma62
   -- →
   -- ammrate(t1,t0) < extrate(t1,t0)
   apply lemma61 x
-  rw [Sₐ.r0_reorder s.amms t1 t0,
-      Sₐ.r1_reorder s.amms t1 t0]
+  rw [AMMs.r0_reorder s.amms t1 t0,
+      AMMs.r1_reorder s.amms t1 t0]
   exact le_of_lt
         ((Swap.swaprate_vs_exchrate_gt sw1 o hzero).mp hgain)
 
@@ -227,8 +227,8 @@ theorem SX.constprod.lemma63
       rw [← h]
       unfold Swap.rate
       unfold SX.constprod
-      simp only [Swap.amms, Sₐ.r1_of_add_r0, Sₐ.r1_of_sub_r1,
-                 Sₐ.r0_of_add_r0, Sₐ.r0_of_sub_r1,
+      simp only [Swap.amms, AMMs.r1_of_add_r0, AMMs.r1_of_sub_r1,
+                 AMMs.r0_of_add_r0, AMMs.r0_of_sub_r1,
                  Swap.y, prop₁, Swap.rate]
 
       -- same denumerator

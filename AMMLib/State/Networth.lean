@@ -28,9 +28,9 @@ theorem Γ.T₁Price_reorder (s: Γ) (o: T → ℝ>0) (t1 t0: T):
   unfold Γ.T₁Price
   rcases Decidable.em (s.amms.init t0 t1) with init|uninit
   . simp only [init, init.swap, dite_true]
-    rw [Sₐ.r0_reorder _ t1 t0, Sₐ.r1_reorder _ t1 t0,
+    rw [AMMs.r0_reorder _ t1 t0, AMMs.r1_reorder _ t1 t0,
         add_comm, S₁.supply_reorder]
-  . have b := (Sₐ.init_swap_iff s.amms t0 t1).not
+  . have b := (AMMs.init_swap_iff s.amms t0 t1).not
     simp [uninit, b.mp uninit]
 
 noncomputable def Γ.networth (s: Γ) (a: A) (o: T → ℝ>0): ℝ≥0 :=

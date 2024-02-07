@@ -1,5 +1,5 @@
 import AMMLib.State.Tokens
-import AMMLib.State.AMMSet
+import AMMLib.State.AMMs
 import AMMLib.State.AtomicWallSet
 import AMMLib.State.MintedWallSet
 
@@ -13,7 +13,7 @@ abbrev O := T → ℝ>0
 structure Γ where
   atoms: S₀
   mints: S₁
-  amms: Sₐ
+  amms: AMMs
 
 theorem Γ.eq_iff (s s': Γ):
   s = s' ↔ s.atoms = s'.atoms ∧ s.mints = s'.mints ∧ s.amms = s'.amms := by

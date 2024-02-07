@@ -33,7 +33,7 @@ inductive Tx (sx: SX) (init: Γ): Γ → Type where
       Tx sx init sw.apply
 
 def validInit (s: Γ): Prop :=
-  (s.amms = Sₐ.empty ∧ s.mints = S₁.empty)
+  (s.amms = AMMs.empty ∧ s.mints = S₁.empty)
 
 def reachable (sx: SX) (s: Γ): Prop :=
   ∃ (init: Γ) (tx: Tx sx init s), validInit init
@@ -79,7 +79,7 @@ theorem AMMimpMintSupply (r: reachable sx s)
   -- there cannot be an initialized AMM in the empty AMM Set.
   | empty =>
       exfalso
-      simp [Sₐ.init, Sₐ.empty, init_amms] at h
+      simp [AMMs.init, AMMs.empty, init_amms] at h
 
   -- Creation of AMM case: trivial by
   -- cases on the created tokens t0' t1'.
@@ -194,7 +194,7 @@ theorem SuppAMMimpMintSupply (r: reachable sx s)
   -- there cannot be an initialized AMM in the empty AMM Set.
   | empty =>
       exfalso
-      simp [Sₐ.init, Sₐ.empty, init_amms, init_accs] at h
+      simp [AMMs.init, AMMs.empty, init_amms, init_accs] at h
 
   -- Creation of AMM case: trivial by
   -- cases on the created tokens t0' t1'.

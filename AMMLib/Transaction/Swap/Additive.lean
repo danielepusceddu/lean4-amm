@@ -1,5 +1,5 @@
 import AMMLib.Transaction.Swap.Basic
-import AMMLib.State.AMMSetNN
+import AMMLib.State.AMMsNN
 import AMMLib.Transaction.Swap.Networth
 import AMMLib.Transaction.Swap.Reversible
 open NNReal
@@ -154,7 +154,7 @@ def Swap.bound_split2
   sw1.apply.amms = (additive sw0 sw1 addi).apply.amms := by
 
   -- Apply extensionality lemma
-  rw [Sₐ.eq_iff]
+  rw [AMMs.eq_iff]
   intro t0' t1'
 
   -- Check if the minted token is different
@@ -167,7 +167,7 @@ def Swap.bound_split2
     rcases samem with ⟨a,b⟩|⟨a,b⟩
     . simp [apply, a, b, ← add_assoc, add_comm x₁.toNNReal _]
     . simp [apply, ← a, ← b, sw0.exi.dif,
-            Sₐ.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
+            AMMs.r0_reorder₀ _ t1 t0, tsub_add_eq_tsub_tsub]
 
 -- The atom set obtained by applying the consecutive swaps
 -- is the same as the one obtained by applying the additive swap

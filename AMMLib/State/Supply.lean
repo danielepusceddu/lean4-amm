@@ -1,11 +1,11 @@
 import HelpersLib.Finsupp2
 import AMMLib.State.Tokens
-import AMMLib.State.AMMSet
+import AMMLib.State.AMMs
 import AMMLib.State.State
 open BigOperators
 open NNReal
 
-noncomputable def Sₐ.supply (amms: Sₐ) (t: T): ℝ≥0 := (amms.f t).sum λ _ x => x
+noncomputable def AMMs.supply (amms: AMMs) (t: T): ℝ≥0 := (amms.res t).sum λ _ x => x
 
 noncomputable def Γ.atomsupply
 (s: Γ) (t: T): ℝ≥0 :=
