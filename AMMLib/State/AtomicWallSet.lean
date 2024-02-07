@@ -2,10 +2,10 @@ import AMMLib.State.AtomicWall
 open NNReal
 
 structure S₀ where
-  f: A →₀ W₀
+  map: A →₀ W₀
 
 def S₀.get (s: S₀) (a: A): W₀ :=
-  s.f a
+  s.map a
 
 @[ext]
 theorem S₀.ext {s1 s2: S₀} (h: ∀ a, s1.get a = s2.get a): s1 = s2 := by
@@ -17,10 +17,10 @@ theorem S₀.ext {s1 s2: S₀} (h: ∀ a, s1.get a = s2.get a): s1 = s2 := by
     ext a: 1
     exact h a
 
-@[simp] theorem S₀.f_eq_get (s: S₀): s.f = s.get := by ext; simp [get]
+@[simp] theorem S₀.map_eq_get (s: S₀): s.map = s.get := by ext; simp [get]
 
 noncomputable def S₀.add (s: S₀) (a: A) (t: T) (x: ℝ≥0): S₀ :=
-  ⟨s.f.update a ((s.f a).add t x)⟩
+  ⟨s.map.update a ((s.map a).add t x)⟩
 
 @[simp] theorem S₀.get_add_self (s: S₀) (a: A) (t: T) (x: ℝ≥0):
   (s.add a t x).get a = (s.get a).add t x := by
@@ -32,7 +32,7 @@ noncomputable def S₀.add (s: S₀) (a: A) (t: T) (x: ℝ≥0): S₀ :=
   simp [get, add, hdif.symm]
 
 noncomputable def S₀.sub (s: S₀) (a: A) (t: T) (x: ℝ≥0) (h: x ≤ s.get a t): S₀ :=
-  ⟨s.f.update a ((s.f a).sub t x h)⟩
+  ⟨s.map.update a ((s.map a).sub t x h)⟩
 
 @[simp] theorem S₀.get_sub_self (s: S₀) (a: A) (t: T) (x: ℝ≥0) (h: x ≤ s.get a t):
   (s.sub a t x h).get a = (s.get a).sub t x h := by
@@ -43,10 +43,10 @@ noncomputable def S₀.sub (s: S₀) (a: A) (t: T) (x: ℝ≥0) (h: x ≤ s.get 
   simp [get, sub, hdif.symm]
 
 noncomputable def S₀.drainw (s: S₀) (a: A): S₀ :=
-  ⟨Finsupp.erase a s.f⟩
+  ⟨Finsupp.erase a s.map⟩
 
 theorem S₀.supply (s: S₀) (t: T): ℝ≥0 :=
-  s.f.sum (λ _ w => w t)
+  s.map.sum (λ _ w => w t)
 
 -- When adding balance to a wallet,
 -- we are adding to the set's supply of that token as well.
@@ -54,11 +54,11 @@ theorem S₀.supply (s: S₀) (t: T): ℝ≥0 :=
   (t: T) (x: ℝ≥0):
   (s.add a t x).supply t = s.supply t + x := by
   unfold supply
-  rw [← Finsupp.add_sum_erase' (s.f) a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' (s.map) a _ (by simp)]
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
 
   have h:
-    Finsupp.erase a (s.add a t x).f = Finsupp.erase a s.f := by
+    Finsupp.erase a (s.add a t x).map = Finsupp.erase a s.map := by
     ext a' t'
     rcases Decidable.em (a'=a) with uh|uh
     . simp [uh]
@@ -73,10 +73,10 @@ theorem S₀.supply (s: S₀) (t: T): ℝ≥0 :=
   (s.add a t x).supply t' = s.supply t' := by
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
-  rw [← Finsupp.add_sum_erase' s.f a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' s.map a _ (by simp)]
 
   have h:
-    Finsupp.erase a (s.add a t x).f = Finsupp.erase a s.f := by
+    Finsupp.erase a (s.add a t x).map = Finsupp.erase a s.map := by
     ext a' t'
     rcases Decidable.em (a'=a) with uh|uh
     . simp [uh]
@@ -87,27 +87,27 @@ theorem S₀.supply (s: S₀) (t: T): ℝ≥0 :=
 @[simp] theorem S₀.supply_of_sub_self (s: S₀) (a: A) (t: T) (x: ℝ≥0) (h: x ≤ s.get a t):
   (s.sub a t x h).supply t = s.supply t - x := by
   unfold supply
-  rw [← Finsupp.add_sum_erase' (s.f) a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' (s.map) a _ (by simp)]
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
 
-  have h': Finsupp.erase a (s.sub a t x h).f = Finsupp.erase a s.f := by
+  have h': Finsupp.erase a (s.sub a t x h).map = Finsupp.erase a s.map := by
     ext a' t'
     rcases Decidable.em (a'=a) with uh|uh
     . simp [uh]
     . simp [Ne.intro uh, (Ne.intro uh).symm]
 
   rw [h']
-  rw [f_eq_get, f_eq_get]
+  rw [map_eq_get, map_eq_get]
   rw [← tsub_add_eq_add_tsub h]
   simp
 
 @[simp] theorem S₀.supply_of_sub_diff (s: S₀) (a: A) (t: T) (x: ℝ≥0) (h: x ≤ s.get a t) (t': T) (hdifp: t ≠ t'):
   (s.sub a t x h).supply t' = s.supply t' := by
   unfold supply
-  rw [← Finsupp.add_sum_erase' (s.f) a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' (s.map) a _ (by simp)]
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
 
-  have h': Finsupp.erase a (s.sub a t x h).f = Finsupp.erase a s.f := by
+  have h': Finsupp.erase a (s.sub a t x h).map = Finsupp.erase a s.map := by
     ext a' t'
     rcases Decidable.em (a'=a) with uh|uh
     . simp [uh]

@@ -3,18 +3,18 @@ open NNReal
 
 -- Set of minted token wallets
 structure S₁ where
-  f: A →₀ W₁
+  map: A →₀ W₁
 
 def S₁.empty: S₁ := ⟨0⟩
 
 def S₁.get (s: S₁) (a: A): W₁ :=
-  s.f a
+  s.map a
 
-@[simp] theorem S₁.f_eq_get (s: S₁):
-  s.f = s.get := by rfl
+@[simp] theorem S₁.map_eq_get (s: S₁):
+  s.map = s.get := by rfl
 
 noncomputable def S₁.add (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0): S₁ :=
-  ⟨s.f.update a ((s.f a).add t0 t1 hdif x)⟩
+  ⟨s.map.update a ((s.map a).add t0 t1 hdif x)⟩
 
 @[simp] theorem S₁.get_add_self (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0):
   (s.add a t0 t1 hdif x).get a = (s.get a).add t0 t1 hdif x := by
@@ -24,19 +24,19 @@ noncomputable def S₁.add (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ
   (s.add a t0 t1 hdif x).get a' = s.get a' := by
   simp [get, add, hdiff.symm]
 
-noncomputable def S₁.sub (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).f t0 t1): S₁ :=
-  ⟨s.f.update a ((s.f a).sub t0 t1 hdif x h)⟩
+noncomputable def S₁.sub (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).bal t0 t1): S₁ :=
+  ⟨s.map.update a ((s.map a).sub t0 t1 hdif x h)⟩
 
-@[simp] theorem S₁.get_sub_self (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).f t0 t1):
+@[simp] theorem S₁.get_sub_self (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).bal t0 t1):
   (s.sub a t0 t1 hdif x h).get a = (s.get a).sub t0 t1 hdif x h := by
   simp [get, sub]
 
-@[simp] theorem S₁.get_sub_diff (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).f t0 t1) (a': A) (hdiff: a ≠ a'):
+@[simp] theorem S₁.get_sub_diff (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).bal t0 t1) (a': A) (hdiff: a ≠ a'):
   (s.sub a t0 t1 hdif x h).get a' = s.get a' := by
   simp [get, sub, hdiff.symm]
 
 noncomputable def S₁.drain (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1): S₁ :=
-  ⟨s.f.update a ((s.f a).drain t0 t1 hdif)⟩
+  ⟨s.map.update a ((s.map a).drain t0 t1 hdif)⟩
 
 @[simp] theorem S₁.get_drain_self (w: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1):
   (w.drain a t0 t1 hdif).get a = (w.get a).drain t0 t1 hdif := by
@@ -51,7 +51,7 @@ noncomputable def S₁.drain (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1): S₁
   simp [hdiff.symm]
 
 theorem S₁.supply (s: S₁) (t0 t1: T): ℝ≥0 :=
-  s.f.sum (λ _ w => w.get t0 t1)
+  s.map.sum (λ _ w => w.get t0 t1)
 
 @[simp] theorem S₁.supply_of_empty (t0 t1: T): empty.supply t0 t1 = 0 := by
   unfold supply
@@ -74,7 +74,7 @@ theorem S₁.supply_samepair (s: S₁) (t0 t1 t0' t1': T) (samepair: samemint t0
 theorem S₁.supply_destroy (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1):
   s.supply t0 t1 = (s.drain a t0 t1 hdif).supply t0 t1 + (s.get a).get t0 t1 := by
 
-  have h: Finsupp.erase a (drain s a t0 t1 hdif).f = Finsupp.erase a s.f
+  have h: Finsupp.erase a (drain s a t0 t1 hdif).map = Finsupp.erase a s.map
   := by ext a'
         rcases Decidable.em (a' = a) with eq|neq
         . simp [eq]
@@ -82,7 +82,7 @@ theorem S₁.supply_destroy (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1):
 
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
-  rw [Finsupp.sum_zero' (drain s a t0 t1 hdif).f _ a (by simp)]
+  rw [Finsupp.sum_zero' (drain s a t0 t1 hdif).map _ a (by simp)]
   rw [add_comm]
   rw [h, get]
 
@@ -93,7 +93,7 @@ theorem S₁.get_pos_imp_supp_pos
   have hdif: t0 ≠ t1 := by
     by_contra contra
     rw [contra] at h
-    have h' := (w.get a).h2 t1
+    have h' := (w.get a).distinct t1
     unfold W₁.get at h
     have h'' := (ne_of_lt h).symm
     contradiction
@@ -107,9 +107,9 @@ theorem S₁.get_pos_imp_supp_pos
   (s.add a t0 t1 hdif x).supply t0 t1 = s.supply t0 t1 + x := by
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
-  rw [← Finsupp.add_sum_erase' s.f a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' s.map a _ (by simp)]
 
-  have h: Finsupp.erase a (s.add a t0 t1 hdif x).f = Finsupp.erase a s.f :=
+  have h: Finsupp.erase a (s.add a t0 t1 hdif x).map = Finsupp.erase a s.map :=
   by ext a'
      rcases Decidable.em (a'=a) with eq|neq
      . simp [eq]
@@ -125,9 +125,9 @@ theorem S₁.get_pos_imp_supp_pos
   (s.add a t0 t1 hdif x).supply t0' t1' = s.supply t0' t1' := by
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
-  rw [← Finsupp.add_sum_erase' s.f a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' s.map a _ (by simp)]
 
-  have h: Finsupp.erase a (s.add a t0 t1 hdif x).f = Finsupp.erase a s.f :=
+  have h: Finsupp.erase a (s.add a t0 t1 hdif x).map = Finsupp.erase a s.map :=
   by ext a'
      rcases Decidable.em (a'=a) with eq|neq
      . simp [eq]
@@ -142,9 +142,9 @@ theorem S₁.get_pos_imp_supp_pos
   (s.sub a t0 t1 hdif x h).supply t0 t1 = s.supply t0 t1 - x := by
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
-  rw [← Finsupp.add_sum_erase' s.f a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' s.map a _ (by simp)]
 
-  have h': Finsupp.erase a (s.sub a t0 t1 hdif x h).f = Finsupp.erase a s.f :=
+  have h': Finsupp.erase a (s.sub a t0 t1 hdif x h).map = Finsupp.erase a s.map :=
   by ext a'
      rcases Decidable.em (a'=a) with eq|neq
      . simp [eq]
@@ -152,18 +152,18 @@ theorem S₁.get_pos_imp_supp_pos
        rw [Finsupp.erase_ne (Ne.intro neq)]
        simp [(Ne.intro neq).symm]
 
-  rw [h', f_eq_get, f_eq_get]
+  rw [h', map_eq_get, map_eq_get]
   conv => rhs; rw [← tsub_add_eq_add_tsub h]
   simp
 
-@[simp] theorem S₁.supply_of_sub_diff (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).f t0 t1) (t0' t1': T) (hdiffp: diffmint t0 t1 t0' t1'):
+@[simp] theorem S₁.supply_of_sub_diff (s: S₁) (a: A) (t0 t1: T) (hdif: t0 ≠ t1) (x: ℝ≥0) (h: x ≤ (s.get a).bal t0 t1) (t0' t1': T) (hdiffp: diffmint t0 t1 t0' t1'):
   (s.sub a t0 t1 hdif x h).supply t0' t1' = s.supply t0' t1' := by
 
   unfold supply
   rw [← Finsupp.add_sum_erase' _ a _ (by simp)]
-  rw [← Finsupp.add_sum_erase' s.f a _ (by simp)]
+  rw [← Finsupp.add_sum_erase' s.map a _ (by simp)]
 
-  have h': Finsupp.erase a (s.sub a t0 t1 hdif x h).f = Finsupp.erase a s.f :=
+  have h': Finsupp.erase a (s.sub a t0 t1 hdif x h).map = Finsupp.erase a s.map :=
   by ext a'
      rcases Decidable.em (a'=a) with eq|neq
      . simp [eq]

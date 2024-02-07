@@ -43,10 +43,10 @@ theorem Swap.atoms_drain_drain_worth (sw: Swap sx s a t0 t1 v0) (o: O):
   . rcases Decidable.em (diffmint t0 t1 p.fst p.snd) with dif|ndif
     . simp [init, dif]
     . rw [not_diffmint_iff_samemint _ _ _ _ sw.exi.dif] at ndif
-      rw [W₁.f_eq_get]
+      rw [W₁.bal_eq_get]
       rw [← W₁.samepair_get _ ndif]
       simp [h]
-  . rw [W₁.f_eq_get]
+  . rw [W₁.bal_eq_get]
     simp [uninit, h, Γ.T₁Price]
 
 theorem expandprice (s: Γ) (o: O) (t0 t1: T) (init: s.amms.init t0 t1):
