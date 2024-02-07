@@ -320,7 +320,7 @@ theorem SX.constprod.arbitrage_solve
   (h: x₀ = ((o t1)*(o t0)⁻¹*(s.amms.r0 t0 t1 (by simp[sw.exi]))*(s.amms.r1 t0 t1 (by simp[sw.exi]))).sqrt.sub (s.amms.r0 t0 t1 (by simp[sw.exi])) less):
   sw.is_solution o := by
 
-  have huh: sw.apply.amms.r1 t0 t1 (by simp[sw.exi]) / sw.apply.amms.r0 t0 t1 (by simp[sw.exi]) = (o t0) / (o t1) := by
+  have aligned: sw.apply.amms.r1 t0 t1 (by simp[sw.exi]) / sw.apply.amms.r0 t0 t1 (by simp[sw.exi]) = (o t0) / (o t1) := by
     simp [Swap.y, Swap.rate, constprod, h]
     simp_rw [PReal.sub_mul'] -- right distrib step
     simp_rw [div_eq_mul_inv]
@@ -331,4 +331,4 @@ theorem SX.constprod.arbitrage_solve
     rw [mul_assoc, mul_assoc, mul_assoc, mul_comm _ (o t0)]
     simp
 
-  exact optimality_suff sw o huh
+  exact optimality_suff sw o aligned
