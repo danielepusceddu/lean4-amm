@@ -123,7 +123,7 @@ r0/(r1+y) < r0/r1 < r0/r1 + x/r1 ≤ p1/p0   by greater denumerator
 GOAL
 r0 / (r1 + y) < p1 / p0                 by transitivity
 -/
-theorem SX.constprod.lemma61
+theorem SX.constprod.exchrate_vs_oracle
   (x r0 r1 p0 p1: ℝ>0)
   (h: p0/p1 ≤ constprod x r0 r1):
   ∀ (y: ℝ>0), constprod y r1 r0 < p1/p0 := by
@@ -143,9 +143,7 @@ theorem SX.constprod.lemma61
 
 
 /-
-Lemma 6.2: Unique direction for swap gains
-
-Sketch Proof
+Unique direction for swap gains Sketch Proof
 With sw1,sw2,sx1,sx2 for original and swapped
 
 h0: We know mintedb = 0
@@ -159,7 +157,7 @@ Goal:
   p0/p1 ≤ sx x r0 r1 by applying lemma 6.1
   Qed by h1
 -/
-theorem SX.constprod.lemma62
+theorem SX.constprod.gain_direction
   (sw1: Swap SX.constprod s a t0 t1 x)
   (sw2: Swap SX.constprod s a t1 t0 x') (o: O)
   (hzero: (s.mints.get a).get t0 t1 = 0)
@@ -177,13 +175,13 @@ theorem SX.constprod.lemma62
   -- extrate(t0,t1) ≤ ammrate(t0,t1)
   -- →
   -- ammrate(t1,t0) < extrate(t1,t0)
-  apply lemma61 x
+  apply exchrate_vs_oracle x
   rw [AMMs.r0_reorder s.amms t1 t0,
       AMMs.r1_reorder s.amms t1 t0]
   exact le_of_lt
         ((Swap.swaprate_vs_exchrate_gt sw1 o hzero).mp hgain)
 
-theorem SX.constprod.lemma63
+theorem SX.constprod.optimality_suff
   (sw1: Swap SX.constprod s a t0 t1 x₀)
   (o: O)
   (h: sw1.apply.amms.r1 t0 t1 (by simp[sw1.exi]) / sw1.apply.amms.r0 t0 t1 (by simp[sw1.exi]) = (o t0) / (o t1)):
@@ -315,7 +313,7 @@ p0*p1⁻¹
 
 p0 / p1 GOAL
 -/
-theorem SX.constprod.lemma64
+theorem SX.constprod.arbitrage_solve
   (sw: Swap SX.constprod s a t0 t1 x₀)
   (o: O)
   (less: s.amms.r0 t0 t1 (by simp[sw.exi]) < ((o t1)*(o t0)⁻¹*(s.amms.r0 t0 t1 (by simp[sw.exi]))*(s.amms.r1 t0 t1 (by simp[sw.exi]))).sqrt)
@@ -333,4 +331,4 @@ theorem SX.constprod.lemma64
     rw [mul_assoc, mul_assoc, mul_assoc, mul_comm _ (o t0)]
     simp
 
-  exact lemma63 sw o huh
+  exact optimality_suff sw o huh

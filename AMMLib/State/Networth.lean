@@ -13,19 +13,19 @@ choose that, destruct the supply and we'll get:
 s.mints t0 t1 + ((s.mints.drain a t0 t1).supply t0 t1)
 which must be positive
 
-this will turn Γ.T₁Price into a PReal
+this will turn Γ.mintedprice into a PReal
 however, W₀.worth and W₁.worth will remain NNReals
 so is it worth it?
 -/
 
-noncomputable def Γ.T₁Price (s: Γ) (o: T → ℝ>0) (t0 t1: T): ℝ≥0 :=
+noncomputable def Γ.mintedprice (s: Γ) (o: T → ℝ>0) (t0 t1: T): ℝ≥0 :=
   if h:s.amms.init t0 t1 then
   ((s.amms.r0 t0 t1 h)*(o t0) + (s.amms.r1 t0 t1 h)*(o t1)) / (s.mints.supply t0 t1)
   else 0
 
-theorem Γ.T₁Price_reorder (s: Γ) (o: T → ℝ>0) (t1 t0: T):
-  s.T₁Price o t1 t0 = s.T₁Price o t0 t1 := by
-  unfold Γ.T₁Price
+theorem Γ.mintedprice_reorder (s: Γ) (o: T → ℝ>0) (t1 t0: T):
+  s.mintedprice o t1 t0 = s.mintedprice o t0 t1 := by
+  unfold Γ.mintedprice
   rcases Decidable.em (s.amms.init t0 t1) with init|uninit
   . simp only [init, init.swap, dite_true]
     rw [AMMs.r0_reorder _ t1 t0, AMMs.r1_reorder _ t1 t0,
@@ -34,7 +34,7 @@ theorem Γ.T₁Price_reorder (s: Γ) (o: T → ℝ>0) (t1 t0: T):
     simp [uninit, b.mp uninit]
 
 noncomputable def Γ.networth (s: Γ) (a: A) (o: T → ℝ>0): ℝ≥0 :=
-  (W₀.worth (s.atoms.get a) o) + (W₁.worth (s.mints.get a) (s.T₁Price o))
+  (W₀.worth (s.atoms.get a) o) + (W₁.worth (s.mints.get a) (s.mintedprice o))
 
 noncomputable def A.gain (a: A) (o: T → ℝ>0) (s s': Γ): ℝ :=
   ((s'.networth a o): ℝ) - ((s.networth a o): ℝ)

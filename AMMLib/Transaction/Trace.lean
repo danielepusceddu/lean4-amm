@@ -259,10 +259,10 @@ theorem SuppAMMimpMintSupply (r: reachable sx s)
       . have hen := d.hen0;
         rw [not_diffmint_iff_samemint _ _ _ _ d.exi.dif] at samemi
         rw [W₁.samepair_get _ samemi] at hen
-        have bruhh: 0 < (sprev.mints.get a).get t0 t1 := by
+        have prev_possupply: 0 < (sprev.mints.get a).get t0 t1 := by
           calc 0 < (v: NNReal) := v.2
                _ ≤ (sprev.mints.get a).get t0 t1 := hen
-        exact ih re (S₁.get_pos_imp_supp_pos _ _ _ _ bruhh)
+        exact ih re (S₁.get_pos_imp_supp_pos _ _ _ _ prev_possupply)
 
   -- The swap case is trivial since minted wallets are
   -- unchanged by swap transactions.

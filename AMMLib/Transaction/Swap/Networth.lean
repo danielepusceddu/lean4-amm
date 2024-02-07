@@ -8,8 +8,8 @@ open NNReal
 (sw: Swap sx s a t0 t1 v0) (o: O)
 (t0' t1': T) (init: s.amms.init t0' t1')
 (hdif: diffmint t0 t1 t0' t1')
-: sw.apply.T₁Price o t0' t1' = s.T₁Price o t0' t1' := by
-  unfold Γ.T₁Price
+: sw.apply.mintedprice o t0' t1' = s.mintedprice o t0' t1' := by
+  unfold Γ.mintedprice
   simp [init, hdif]
 
 @[simp] theorem Swap.networth_erase
@@ -31,7 +31,7 @@ theorem Swap.atoms_drain_drain_worth (sw: Swap sx s a t0 t1 v0) (o: O):
 @[simp] theorem Swap.worth_wallet_without_minted
   (sw: Swap sx s a t0 t1 v0) (o: O) (w: W₁)
   (h: w.get t0 t1 = 0):
-  w.worth (sw.apply.T₁Price o) = w.worth (s.T₁Price o) := by
+  w.worth (sw.apply.mintedprice o) = w.worth (s.mintedprice o) := by
   unfold W₁.worth
   rw [Finsupp.sum_congr]
   intro p _
@@ -47,10 +47,10 @@ theorem Swap.atoms_drain_drain_worth (sw: Swap sx s a t0 t1 v0) (o: O):
       rw [← W₁.samepair_get _ ndif]
       simp [h]
   . rw [W₁.bal_eq_get]
-    simp [uninit, h, Γ.T₁Price]
+    simp [uninit, h, Γ.mintedprice]
 
 theorem expandprice (s: Γ) (o: O) (t0 t1: T) (init: s.amms.init t0 t1):
-  s.T₁Price o t0 t1 = ((s.amms.r0 t0 t1 init)*(o t0) + (s.amms.r1 t0 t1 init)*(o t1)) / (s.mints.supply t0 t1) := by simp [Γ.T₁Price, init]
+  s.mintedprice o t0 t1 = ((s.amms.r0 t0 t1 init)*(o t0) + (s.amms.r1 t0 t1 init)*(o t1)) / (s.mints.supply t0 t1) := by simp [Γ.mintedprice, init]
 
 theorem Swap.self_gain_eq (sw: Swap sx s a t0 t1 x) (o: O) :
   (a.gain o s sw.apply)
@@ -68,8 +68,8 @@ theorem Swap.self_gain_eq (sw: Swap sx s a t0 t1 x) (o: O) :
   rw [W₀.worth_destruct ((s.atoms.get a).drain t0) o t1]
 
   rw [Swap.atoms_drain_drain_worth]
-  rw [W₁.worth_destruct _ (sw.apply.T₁Price o) t0 t1 _]
-  rw [W₁.worth_destruct _ (s.T₁Price o) t0 t1 _]
+  rw [W₁.worth_destruct _ (sw.apply.mintedprice o) t0 t1 _]
+  rw [W₁.worth_destruct _ (s.mintedprice o) t0 t1 _]
 
   have h': (sw.y: ℝ≥0) ≤ ((s.amms.r1 t0 t1 sw.exi): ℝ≥0) := by
     rw [PReal.toNNReal_le_toNNReal_iff]
@@ -79,9 +79,9 @@ theorem Swap.self_gain_eq (sw: Swap sx s a t0 t1 x) (o: O) :
         sw.enough, NNReal.coe_sub h', le_of_lt sw.y_lt_r1₀]
 
   ring_nf
-  . rw [Γ.T₁Price_reorder]
+  . rw [Γ.mintedprice_reorder]
   . exact sw.exi.dif
-  . rw [Γ.T₁Price_reorder]
+  . rw [Γ.mintedprice_reorder]
 
 theorem Swap.swaprate_vs_exchrate
   (sw: Swap sx s a t0 t1 x) (o: O)
